@@ -44,6 +44,7 @@ services:
       - pg-du-lieu:/var/lib/postgresql/data
       - ../platform/postgres/100_nen_tang.sh:/docker-entrypoint-initdb.d/100_nen_tang.sh:ro
       - ../platform/postgres/110_postgraphile.sh:/docker-entrypoint-initdb.d/110_postgraphile.sh:ro
+      - ../platform/postgres/120_prefect.sh:/docker-entrypoint-initdb.d/120_prefect.sh:ro
       - ../platform/postgres/999_zz_stac.sh:/docker-entrypoint-initdb.d/999_zz_stac.sh:ro
       - bimat:/run/bimat:ro
     depends_on:
@@ -183,6 +184,42 @@ services:
       interval: 3s
       retries: 40
 
+  prefect:
+    # Prefect server: workflow engine, trạng thái lưu PostgreSQL. API qua gateway /workflow (JWT); UI quản trị chỉ 127.0.0.1.
+    image: prefecthq/prefect:${PREFECT_TAG:-3.9.0-python3.12}
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        export PREFECT_API_DATABASE_CONNECTION_URL="postgresql+asyncpg://prefect:$$(cat /run/bimat/prefect-db)@postgres:5432/prefect" &&
+        exec prefect server start --host 0.0.0.0 --port 4200
+    environment:
+      PREFECT_UI_API_URL: http://localhost:${PREFECT_PORT:-4200}/api
+      PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+    ports:
+      - "127.0.0.1:${PREFECT_PORT:-4200}:4200"   # UI quản trị, chỉ máy dev
+    volumes:
+      - bimat:/run/bimat:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4200/api/health')"]
+      interval: 3s
+      retries: 60
+
+  prefect-chay-mau:
+    # Tiến trình đăng ký và thực thi deployment mẫu xu-ly-co-duyet/mau (flow tổng quát có bước chờ duyệt).
+    image: prefecthq/prefect:${PREFECT_TAG:-3.9.0-python3.12}
+    command: ["python", "/flows/xu_ly_co_duyet.py"]
+    environment:
+      PREFECT_API_URL: http://prefect:4200/api
+    volumes:
+      - ../platform/prefect/flows:/flows:ro
+    depends_on:
+      prefect:
+        condition: service_healthy
+
   apisix:
     image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
     environment:
@@ -200,6 +237,8 @@ services:
       stac:
         condition: service_healthy
       tiles:
+        condition: service_healthy
+      prefect:
         condition: service_healthy
 
 volumes:
