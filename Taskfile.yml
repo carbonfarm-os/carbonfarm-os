@@ -39,6 +39,9 @@ tasks:
         --test --variables-file /e2e/compose.env
         --variable kc_secret="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu)"
         --variable kc_secret_qt="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu-quan-tri)"
+        --variable s3_truy_cap="$({{.COMPOSE}} exec -T s3 cat /run/bimat/s3-truy-cap)"
+        --variable s3_bi_mat="$({{.COMPOSE}} exec -T s3 cat /run/bimat/s3-bi-mat)"
+        --file-root /e2e
         --glob '/e2e/*.hurl'
 
   check:

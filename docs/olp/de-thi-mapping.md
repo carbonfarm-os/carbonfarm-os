@@ -11,7 +11,7 @@ Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn
 | A2 | Identity / SSO | Keycloak, realm tổng quát `dxos`, OTP bắt buộc với vai `quan_tri` (luồng đăng nhập riêng) | `platform/keycloak/realm-dxos.json`, `tests/e2e/platform.hurl` (#6) | ☑ |
 | A3 | API Gateway | APISIX standalone, kiểm JWT bằng JWKS của Keycloak (`plugin_configs.kiem-jwt`) | `platform/apisix/apisix.yaml`, smoke 401/200 (#6) | ☑ |
 | A4 | Dữ liệu có cấu trúc | PostgreSQL 17 + PostGIS; PostGraphile v5 tự sinh GraphQL, vai realm → role PostgreSQL, quyền bằng RLS (bảng mẫu `nen_tang.ghi_chu_mau`) | `platform/postgraphile/`, `platform/postgres/110_postgraphile.sh`, `tests/e2e/graphql.hurl` (#7) | ☑ |
-| A5 | Dữ liệu phi cấu trúc | Versity S3 + danh mục STAC (pgSTAC + stac-fastapi) + TiTiler | | ☐ |
+| A5 | Dữ liệu phi cấu trúc | Versity S3 (nội bộ) + danh mục STAC (pgSTAC + stac-fastapi, Transactions) + TiTiler tile COG | `compose/platform.yaml`, `tests/e2e/luu-tru.hurl` (#8) | ☑ |
 | A6 | Workflow engine | Prefect (flow MRV có bước chờ duyệt) | | ☐ |
 | A7 | ≥1 ứng dụng Tầng 2 có giao diện theo H-P-D-I, chỉ gọi lõi qua gateway | `domains/carbon/` – trọng tâm [P] + [D] | | ☐ |
 | A8 | Tầng 1 độc lập nghiệp vụ (BTC #1396, #1423) | Ranh giới ở `docs/architecture.md` §1; `/pof-check` dò từ khóa nghiệp vụ trong `platform/` | | ◐ |

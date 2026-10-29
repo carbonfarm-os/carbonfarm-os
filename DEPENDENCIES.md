@@ -21,10 +21,10 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | OpenBao | `openbao/openbao:2.7.2` | MPL-2.0 | github.com/openbao/openbao | Dịch vụ riêng, image gốc, lưu raft; sinh và giữ mật khẩu dịch vụ | 1 | ✔ |
 | PostGraphile v5 | `postgraphile` 5.1.5 (npm, image `carbonfarm/postgraphile` build từ `platform/postgraphile/`, Node 22) | MIT | github.com/graphile/crystal | API GraphQL tự sinh từ PostgreSQL; vai từ JWT, quyền bằng RLS | 1 | ✔ |
 | Node.js (nền build) | `node:22.23.4-alpine3.24` | MIT | github.com/nodejs/node | Nền image PostGraphile | 1 | ✔ |
-| Versity S3 Gateway | `versity/versitygw` v1.10.0 | Apache-2.0 | github.com/versity/versitygw | Lưu trữ đối tượng S3 trên thư mục POSIX | 1 | ☐ |
-| pgSTAC | v0.10.0 (trong image PostgreSQL ở trên) | MIT | github.com/stac-utils/pgstac | Danh mục STAC trong PostgreSQL | 1 | ◐ |
-| stac-fastapi-pgstac | 7.2.0 | MIT | github.com/stac-utils/stac-fastapi-pgstac | API STAC | 1 | ☐ |
-| TiTiler | 2.4.0 | MIT | github.com/developmentseed/titiler | Tile ảnh COG cho bản đồ | 1 | ☐ |
+| Versity S3 Gateway | `versity/versitygw:v1.10.0` | Apache-2.0 | github.com/versity/versitygw | Dịch vụ riêng: S3 trên thư mục POSIX, chỉ trong mạng nội bộ; khóa do OpenBao sinh | 1 | ✔ |
+| pgSTAC | v0.10.0 (trong image PostgreSQL ở trên) | MIT | github.com/stac-utils/pgstac | Danh mục STAC trong PostgreSQL | 1 | ✔ |
+| stac-fastapi-pgstac | `ghcr.io/stac-utils/stac-fastapi-pgstac:7.2.0` | MIT | github.com/stac-utils/stac-fastapi-pgstac | Dịch vụ riêng: API STAC có Transactions, qua gateway `/stac` | 1 | ✔ |
+| TiTiler | `ghcr.io/developmentseed/titiler:2.4.0` | MIT | github.com/developmentseed/titiler | Dịch vụ riêng: tile ảnh COG đọc từ S3, qua gateway `/tiles` | 1 | ✔ |
 | Prefect (server + worker) | 3.9.0 | Apache-2.0 | github.com/PrefectHQ/prefect | Workflow engine, pipeline MRV có bước chờ duyệt | 1 | ☐ |
 | Valkey | 9.1.3 | BSD-3-Clause | github.com/valkey-io/valkey | Event bus (Streams) | 1 | ☐ |
 | Dolt (`dolt-sql-server`) | 2.6.1 | Apache-2.0 | github.com/dolthub/dolt | Sổ cái có phiên bản: mỗi lần ghi là một commit có mã băm (ADR) | 1 | ☐ |

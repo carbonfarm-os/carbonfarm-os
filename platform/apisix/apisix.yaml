@@ -5,6 +5,9 @@
 #   /auth/*              Keycloak (đăng nhập, JWKS) – công khai
 #   /nen-tang/kiem-tra   route kiểm tra JWT: không token → 401, token hợp lệ → thông tin realm
 #   /graphql             PostGraphile (dữ liệu có cấu trúc), JWT bắt buộc; quyền theo RLS trong CSDL
+#   /stac/*              API STAC – danh mục ảnh vệ tinh (dữ liệu phi cấu trúc), JWT bắt buộc
+#   /tiles/*             TiTiler – tile ảnh COG cho bản đồ, JWT bắt buộc
+#   (S3 không qua gateway: chữ ký SigV4 gắn đường dẫn; dịch vụ gọi s3:7070 trong mạng nội bộ)
 plugin_configs:
   - id: kiem-jwt
     desc: Kiểm JWT của realm dxos bằng JWKS (không gọi introspection)
@@ -46,5 +49,27 @@ routes:
       type: roundrobin
       nodes:
         "postgraphile:5678": 1
+  - id: stac
+    uris: ["/stac", "/stac/*"]
+    plugin_config_id: kiem-jwt
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/stac/?(.*)", "/$1"]
+    upstream:
+      type: roundrobin
+      nodes:
+        "stac:8080": 1
+
+  - id: tiles
+    uris: ["/tiles", "/tiles/*"]
+    methods: ["GET"]
+    plugin_config_id: kiem-jwt
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/tiles/?(.*)", "/$1"]
+    upstream:
+      type: roundrobin
+      nodes:
+        "tiles:8000": 1
 # yamllint disable-line rule:comments
 #END

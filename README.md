@@ -31,7 +31,7 @@ Chi tiết và sơ đồ: [`docs/architecture.md`](docs/architecture.md). Các q
 *Tier 1 is a generic headless platform; tier 2 holds the carbon domain; connectors are pluggable mocks. See `docs/architecture.md` and the ADRs.*
 
 ## Bắt đầu · Getting started
-Đang dựng sprint 1 (30/10–08/11/2026). Tầng 1 đã chạy: OpenBao (sinh và giữ mật khẩu dịch vụ), PostgreSQL + PostGIS + pgSTAC, Keycloak realm `dxos` (OTP cho quản trị), APISIX kiểm JWT, PostGraphile (`/graphql`, quyền bằng RLS). Lần chạy đầu OpenBao ghi khóa mở vào `.data/openbao/` (ngoài git) – **giữ kín, mất là không mở được dữ liệu OpenBao**.
+Đang dựng sprint 1 (30/10–08/11/2026). Tầng 1 đã chạy: OpenBao (sinh và giữ mật khẩu dịch vụ), PostgreSQL + PostGIS + pgSTAC, Keycloak realm `dxos` (OTP cho quản trị), APISIX kiểm JWT, PostGraphile (`/graphql`, quyền bằng RLS), Versity S3 + danh mục STAC (`/stac`) + TiTiler (`/tiles`). Lần chạy đầu OpenBao ghi khóa mở vào `.data/openbao/` (ngoài git) – **giữ kín, mất là không mở được dữ liệu OpenBao**.
 *Work in progress: only a minimal tier 1 runs today.*
 
 ```bash

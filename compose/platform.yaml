@@ -44,6 +44,7 @@ services:
       - pg-du-lieu:/var/lib/postgresql/data
       - ../platform/postgres/100_nen_tang.sh:/docker-entrypoint-initdb.d/100_nen_tang.sh:ro
       - ../platform/postgres/110_postgraphile.sh:/docker-entrypoint-initdb.d/110_postgraphile.sh:ro
+      - ../platform/postgres/999_zz_stac.sh:/docker-entrypoint-initdb.d/999_zz_stac.sh:ro
       - bimat:/run/bimat:ro
     depends_on:
       openbao-khoi-tao:
@@ -108,6 +109,80 @@ services:
       interval: 3s
       retries: 40
 
+  s3:
+    # Versity S3 Gateway: API S3 trên thư mục POSIX. Chỉ trong mạng nội bộ (chữ ký SigV4 gắn đường dẫn, không đi qua
+    # gateway); dịch vụ Tầng 1/2 và TiTiler gọi trực tiếp. Bucket mặc định: anh-ve-tinh.
+    image: versity/versitygw:${VERSITYGW_TAG:-v1.10.0}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >-
+        mkdir -p /du-lieu/anh-ve-tinh &&
+        exec /usr/local/bin/versitygw --access "$$(cat /run/bimat/s3-truy-cap)" --secret "$$(cat /run/bimat/s3-bi-mat)"
+        --port :7070 --health /suc-khoe posix /du-lieu
+    volumes:
+      - s3-du-lieu:/du-lieu
+      - bimat:/run/bimat:ro
+    depends_on:
+      openbao-khoi-tao:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:7070/suc-khoe || exit 1"]
+      interval: 3s
+      retries: 30
+
+  stac:
+    # API STAC (danh mục ảnh vệ tinh) trên pgSTAC, có Transactions để thêm collection/item. Qua gateway /stac (JWT).
+    image: ghcr.io/stac-utils/stac-fastapi-pgstac:${STAC_FASTAPI_TAG:-7.2.0}
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        export PGPASSWORD="$$(cat /run/bimat/stac-db)" &&
+        exec uvicorn stac_fastapi.pgstac.app:create_app --factory --host 0.0.0.0 --port 8080
+    environment:
+      PGUSER: stac
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: nen_tang
+      ENABLE_TRANSACTIONS_EXTENSIONS: "TRUE"
+      UVICORN_ROOT_PATH: /stac
+    volumes:
+      - bimat:/run/bimat:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/_mgmt/ping')"]
+      interval: 3s
+      retries: 40
+
+  tiles:
+    # TiTiler: tile ảnh COG (đọc từ S3 nội bộ) cho bản đồ. Qua gateway /tiles (JWT).
+    image: ghcr.io/developmentseed/titiler:${TITILER_TAG:-2.4.0}
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        export AWS_ACCESS_KEY_ID="$$(cat /run/bimat/s3-truy-cap)" AWS_SECRET_ACCESS_KEY="$$(cat /run/bimat/s3-bi-mat)" &&
+        exec gunicorn -k uvicorn.workers.UvicornWorker titiler.application.main:app --bind 0.0.0.0:8000 --workers 1
+    environment:
+      AWS_S3_ENDPOINT: s3:7070
+      AWS_HTTPS: "NO"
+      AWS_VIRTUAL_HOSTING: "FALSE"
+      AWS_REGION: us-east-1
+      TITILER_API_ROOT_PATH: /tiles
+      GDAL_DISABLE_READDIR_ON_OPEN: EMPTY_DIR
+    volumes:
+      - bimat:/run/bimat:ro
+    depends_on:
+      s3:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
+      interval: 3s
+      retries: 40
+
   apisix:
     image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
     environment:
@@ -122,8 +197,13 @@ services:
         condition: service_healthy
       postgraphile:
         condition: service_healthy
+      stac:
+        condition: service_healthy
+      tiles:
+        condition: service_healthy
 
 volumes:
   bao-du-lieu:
   bimat:
   pg-du-lieu:
+  s3-du-lieu:
