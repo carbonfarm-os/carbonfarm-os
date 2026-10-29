@@ -26,3 +26,6 @@ Thư viện:
 
 Dữ liệu: ảnh Sentinel-2 từ Copernicus Data Space Ecosystem
 (chứa dữ liệu Copernicus Sentinel đã qua xử lý). Dữ liệu hợp tác xã, xã viên, lô đất trong repo là dữ liệu giả.
+
+Hình ảnh nhận diện (docs/images/banner.png, docs/images/logo.png) do nhóm tạo bằng công cụ sinh ảnh
+(Codex imagegen) ngày 29/10/2026, phát hành cùng giấy phép của dự án.
