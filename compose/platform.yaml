@@ -52,7 +52,9 @@ services:
       openbao-khoi-tao:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d nen_tang"]
+      # Kiểm qua TCP: lúc chạy initdb, server tạm chỉ nghe Unix socket rồi khởi động lại – kiểm socket sẽ báo
+      # "healthy" quá sớm và dịch vụ phụ thuộc (migrate) bị từ chối kết nối.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d nen_tang"]
       interval: 3s
       retries: 40
 
