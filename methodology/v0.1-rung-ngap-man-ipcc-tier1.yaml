@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Tham số máy đọc của phương pháp v0.1 – đặc tả và trích dẫn: v0.1-rung-ngap-man-ipcc-tier1.md
+# Không sửa tệp đã phát hành; đổi tham số → phiên bản mới, tệp mới.
+phien_ban: v0.1-rung-ngap-man-ipcc-tier1
+he_sinh_thai: rung_ngap_man
+vung_khi_hau_ipcc: tropical_wet
+
+anh:
+  danh_muc_stac: https://earth-search.aws.element84.com/v1
+  collection: sentinel-2-l2a
+  bang: {do: red, can_hong_ngoai: nir, phan_lop: scl}
+  may_toan_canh_toi_da_phan_tram: 20
+  ti_le_diem_anh_hop_le_toi_thieu: 0.80
+  do_phan_giai_m: 10
+
+phan_loai:
+  scl_loai_bo: [0, 1, 3, 8, 9, 10]
+  scl_thuc_vat: [4]
+  nguong_ndvi_tan: 0.40          # tham số vận hành của đội, cần hiệu chỉnh thực địa (§3)
+  diem_anh_thuoc_lo: tam_diem_anh
+
+he_so:                           # cận dưới KTC 95 %, IPCC 2013 Wetlands Supplement Ch.4, Tropical Wet
+  cf: {dung: 0.429, trung_binh: 0.451, ktc95: [0.429, 0.471], nguon: "Bảng 4.2"}
+  g_w_t_ha_nam: {dung: 9.4, trung_binh: 9.9, ktc95: [9.4, 10.4], nguon: "Bảng 4.4"}
+  r: {dung: 0.47, trung_binh: 0.49, ktc95: [0.47, 0.51], nguon: "Bảng 4.5"}
+  b_max_t_ha: {dung: 187, trung_binh: 192, ktc95: [187, 204], nguon: "Bảng 4.3"}
+  co2_tren_c: 3.6666667
+
+mat_tan:
+  ti_le_giam_can_duyet: 0.10
