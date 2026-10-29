@@ -43,6 +43,7 @@ services:
     volumes:
       - pg-du-lieu:/var/lib/postgresql/data
       - ../platform/postgres/100_nen_tang.sh:/docker-entrypoint-initdb.d/100_nen_tang.sh:ro
+      - ../platform/postgres/110_postgraphile.sh:/docker-entrypoint-initdb.d/110_postgraphile.sh:ro
       - bimat:/run/bimat:ro
     depends_on:
       openbao-khoi-tao:
@@ -61,6 +62,7 @@ services:
         export KC_DB_PASSWORD="$$(cat /run/bimat/keycloak-db)"
         KC_BOOTSTRAP_ADMIN_PASSWORD="$$(cat /run/bimat/keycloak-admin)"
         KC_CLIENT_SECRET_KIEM_THU="$$(cat /run/bimat/kc-kiem-thu)"
+        KC_CLIENT_SECRET_KIEM_THU_QUAN_TRI="$$(cat /run/bimat/kc-kiem-thu-quan-tri)"
         && exec /opt/keycloak/bin/kc.sh start-dev --import-realm
     environment:
       KC_DB: postgres
@@ -83,6 +85,29 @@ services:
       interval: 5s
       retries: 60
 
+  postgraphile:
+    build: ../platform/postgraphile
+    image: carbonfarm/postgraphile:5.1.5
+    environment:
+      JWKS_URL: http://keycloak:8080/auth/realms/dxos/protocol/openid-connect/certs
+      JWT_ISSUER: http://localhost:${GATEWAY_PORT:-9080}/auth/realms/dxos
+      GRAPHQL_SCHEMAS: nen_tang
+    volumes:
+      - bimat:/run/bimat:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          wget -q -O /dev/null --header='Content-Type: application/json'
+          --post-data='{"query":"{__typename}"}' http://127.0.0.1:5678/graphql || exit 1
+      interval: 3s
+      retries: 40
+
   apisix:
     image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
     environment:
@@ -94,6 +119,8 @@ services:
       - "127.0.0.1:${GATEWAY_PORT:-9080}:9080"
     depends_on:
       keycloak:
+        condition: service_healthy
+      postgraphile:
         condition: service_healthy
 
 volumes:

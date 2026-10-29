@@ -19,7 +19,8 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | Keycloak | `quay.io/keycloak/keycloak:26.8.1` | Apache-2.0 | github.com/keycloak/keycloak | Dịch vụ riêng; realm `dxos` | 1 | ✔ |
 | Apache APISIX | `apache/apisix:3.19.0-debian` | Apache-2.0 | github.com/apache/apisix | Dịch vụ riêng, standalone, kiểm JWT bằng JWKS | 1 | ✔ |
 | OpenBao | `openbao/openbao:2.7.2` | MPL-2.0 | github.com/openbao/openbao | Dịch vụ riêng, image gốc, lưu raft; sinh và giữ mật khẩu dịch vụ | 1 | ✔ |
-| PostGraphile v5 | `postgraphile` 5.x (npm, image tự build tuần 1) | MIT | github.com/graphile/crystal | API GraphQL tự sinh từ PostgreSQL (RLS) | 1 | ☐ |
+| PostGraphile v5 | `postgraphile` 5.1.5 (npm, image `carbonfarm/postgraphile` build từ `platform/postgraphile/`, Node 22) | MIT | github.com/graphile/crystal | API GraphQL tự sinh từ PostgreSQL; vai từ JWT, quyền bằng RLS | 1 | ✔ |
+| Node.js (nền build) | `node:22.23.4-alpine3.24` | MIT | github.com/nodejs/node | Nền image PostGraphile | 1 | ✔ |
 | Versity S3 Gateway | `versity/versitygw` v1.10.0 | Apache-2.0 | github.com/versity/versitygw | Lưu trữ đối tượng S3 trên thư mục POSIX | 1 | ☐ |
 | pgSTAC | v0.10.0 (trong image PostgreSQL ở trên) | MIT | github.com/stac-utils/pgstac | Danh mục STAC trong PostgreSQL | 1 | ◐ |
 | stac-fastapi-pgstac | 7.2.0 | MIT | github.com/stac-utils/stac-fastapi-pgstac | API STAC | 1 | ☐ |
@@ -36,6 +37,9 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | GDAL | 3.13 (conda-forge) | MIT/X (tệp LICENSE.TXT liệt kê giấy phép từng phần) | github.com/OSGeo/gdal | MRV engine |
 | rasterio | 1.5 | BSD-3-Clause | github.com/rasterio/rasterio | MRV engine |
 | pystac / pystac-client | 1.15 / mới nhất | Apache-2.0 | github.com/stac-utils | MRV engine |
+| jose | 6.2.13 | MIT | github.com/panva/jose | PostGraphile kiểm lại JWT bằng JWKS |
+| pg | 8.23.1 | MIT | github.com/brianc/node-postgres | PostGraphile kết nối PostgreSQL |
+| Gói phụ thuộc gián tiếp của PostGraphile (186 gói, `platform/postgraphile/package-lock.json`) | — | MIT, Apache-2.0, ISC, BSD-2/3, 0BSD, PSF-2.0 (`argparse`) – đều OSI | npm | |
 | SvelteKit | 2.x | MIT | github.com/sveltejs/kit | Web Tầng 2 |
 | MapLibre GL JS | 6.16 | BSD-3-Clause | github.com/maplibre/maplibre-gl-js | Bản đồ |
 
