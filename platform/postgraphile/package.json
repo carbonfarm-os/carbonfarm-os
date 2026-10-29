@@ -1,0 +1,12 @@
+{
+  "name": "carbonfarm-nen-tang-postgraphile",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "description": "PostGraphile v5 của Tầng 1: GraphQL tự sinh từ PostgreSQL, vai lấy từ JWT Keycloak, quyền bằng RLS",
+  "dependencies": {
+    "jose": "6.2.13",
+    "pg": "8.23.1",
+    "postgraphile": "5.1.5"
+  }
+}

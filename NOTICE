@@ -12,7 +12,7 @@ Dịch vụ chạy riêng (image gốc, không sửa mã, không nhúng vào mã
 - Keycloak (Apache-2.0)
 - Apache APISIX (Apache-2.0)
 - OpenBao (MPL-2.0)
-- PostGraphile (MIT)
+- PostGraphile (MIT) – image tự build từ npm (platform/postgraphile), kèm jose (MIT), pg (MIT)
 - Versity S3 Gateway (Apache-2.0)
 - pgSTAC, stac-fastapi-pgstac, TiTiler (MIT)
 - Prefect (Apache-2.0)

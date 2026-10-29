@@ -4,6 +4,7 @@
 # khai báo, không viết thẳng vào đây.
 #   /auth/*              Keycloak (đăng nhập, JWKS) – công khai
 #   /nen-tang/kiem-tra   route kiểm tra JWT: không token → 401, token hợp lệ → thông tin realm
+#   /graphql             PostGraphile (dữ liệu có cấu trúc), JWT bắt buộc; quyền theo RLS trong CSDL
 plugin_configs:
   - id: kiem-jwt
     desc: Kiểm JWT của realm dxos bằng JWKS (không gọi introspection)
@@ -37,5 +38,13 @@ routes:
       type: roundrobin
       nodes:
         "keycloak:8080": 1
+  - id: graphql
+    uri: /graphql
+    methods: ["POST", "OPTIONS"]
+    plugin_config_id: kiem-jwt
+    upstream:
+      type: roundrobin
+      nodes:
+        "postgraphile:5678": 1
 # yamllint disable-line rule:comments
 #END

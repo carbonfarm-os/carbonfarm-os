@@ -38,6 +38,7 @@ tasks:
         docker run --rm --network carbonfarm_default -v "{{.ROOT_DIR}}/tests/e2e:/e2e:ro" {{.HURL}}
         --test --variables-file /e2e/compose.env
         --variable kc_secret="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu)"
+        --variable kc_secret_qt="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu-quan-tri)"
         --glob '/e2e/*.hurl'
 
   check:
