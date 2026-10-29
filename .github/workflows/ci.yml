@@ -19,6 +19,7 @@ jobs:
       - uses: arduino/setup-task@v2
         with:
           version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}  # tránh giới hạn API khi tải go-task
       - name: Công cụ lint
         run: pip install yamllint ruff
       - name: task check
