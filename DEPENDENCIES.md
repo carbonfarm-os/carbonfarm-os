@@ -15,13 +15,13 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 
 | Thành phần | Phiên bản | Giấy phép | Nguồn | Cách dùng | Tầng | Trạng thái |
 |---|---|---|---|---|---|---|
-| PostgreSQL + PostGIS | `postgis/postgis:17-3.5` | PostgreSQL License / GPL-2.0-or-later | github.com/postgis/docker-postgis | Dịch vụ riêng | 1 | ◐ |
-| Keycloak | `quay.io/keycloak/keycloak:26.8.1` | Apache-2.0 | github.com/keycloak/keycloak | Dịch vụ riêng | 1 | ◐ |
-| Apache APISIX | `apache/apisix:3.19.0-debian` | Apache-2.0 | github.com/apache/apisix | Dịch vụ riêng, standalone | 1 | ◐ |
-| OpenBao | `openbao/openbao:2.7.2` | MPL-2.0 | github.com/openbao/openbao | Dịch vụ riêng, image gốc | 1 | ◐ |
+| PostgreSQL 17 + PostGIS + pgSTAC | `ghcr.io/stac-utils/pgstac:v0.10.0` (image chính thức của stac-utils, có arm64; `postgis/postgis` chỉ có amd64) | PostgreSQL License / GPL-2.0-or-later (PostGIS) / MIT (pgSTAC) | github.com/stac-utils/pgstac | Dịch vụ riêng, image gốc | 1 | ✔ |
+| Keycloak | `quay.io/keycloak/keycloak:26.8.1` | Apache-2.0 | github.com/keycloak/keycloak | Dịch vụ riêng; realm `dxos` | 1 | ✔ |
+| Apache APISIX | `apache/apisix:3.19.0-debian` | Apache-2.0 | github.com/apache/apisix | Dịch vụ riêng, standalone, kiểm JWT bằng JWKS | 1 | ✔ |
+| OpenBao | `openbao/openbao:2.7.2` | MPL-2.0 | github.com/openbao/openbao | Dịch vụ riêng, image gốc, lưu raft; sinh và giữ mật khẩu dịch vụ | 1 | ✔ |
 | PostGraphile v5 | `postgraphile` 5.x (npm, image tự build tuần 1) | MIT | github.com/graphile/crystal | API GraphQL tự sinh từ PostgreSQL (RLS) | 1 | ☐ |
 | Versity S3 Gateway | `versity/versitygw` v1.10.0 | Apache-2.0 | github.com/versity/versitygw | Lưu trữ đối tượng S3 trên thư mục POSIX | 1 | ☐ |
-| pgSTAC | v0.10.0 | MIT | github.com/stac-utils/pgstac | Danh mục STAC trong PostgreSQL | 1 | ☐ |
+| pgSTAC | v0.10.0 (trong image PostgreSQL ở trên) | MIT | github.com/stac-utils/pgstac | Danh mục STAC trong PostgreSQL | 1 | ◐ |
 | stac-fastapi-pgstac | 7.2.0 | MIT | github.com/stac-utils/stac-fastapi-pgstac | API STAC | 1 | ☐ |
 | TiTiler | 2.4.0 | MIT | github.com/developmentseed/titiler | Tile ảnh COG cho bản đồ | 1 | ☐ |
 | Prefect (server + worker) | 3.9.0 | Apache-2.0 | github.com/PrefectHQ/prefect | Workflow engine, pipeline MRV có bước chờ duyệt | 1 | ☐ |
@@ -45,7 +45,7 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 |---|---|---|
 | go-task | MIT | Chạy lệnh (`Taskfile.yml`) |
 | pixi | BSD-3-Clause | Môi trường Python + GDAL |
-| Hurl | Apache-2.0 | Kiểm thử đầu-cuối |
+| Hurl (`ghcr.io/orange-opensource/hurl:7.0.0`, chạy bằng Docker trong `task smoke`) | Apache-2.0 | Kiểm thử đầu-cuối |
 | pre-commit, ruff, yamllint | MIT / MIT / GPL-3.0 | Kiểm trước commit |
 | release-please | Apache-2.0 | CHANGELOG, phiên bản, Release |
 | Syft (anchore/sbom-action) | Apache-2.0 | SBOM CycloneDX |

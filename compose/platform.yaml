@@ -1,37 +1,87 @@
 # SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Tầng 1 (khung tuần đầu). Mỗi dịch vụ dùng image gốc, ghim phiên bản; giấy phép ở DEPENDENCIES.md.
-# Tuần 1 điền tiếp: PostGraphile, Versity S3, pgSTAC + stac-fastapi + TiTiler, Prefect, Valkey, Dolt.
+# Tầng 1 – dịch vụ lõi tổng quát, không chứa nghiệp vụ. Image gốc, ghim phiên bản; giấy phép ở DEPENDENCIES.md.
+# Thứ tự khởi động: openbao → openbao-khoi-tao (sinh bí mật ra volume bimat) → postgres → keycloak → apisix.
+# Mật khẩu dịch vụ không nằm trong .env: OpenBao sinh và giữ, dịch vụ đọc qua tệp /run/bimat/<tên>.
 services:
-  postgres:
-    image: postgis/postgis:${POSTGIS_TAG:-17-3.5}
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-carbonfarm}
-      POSTGRES_USER: ${POSTGRES_USER:-carbonfarm}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?đặt trong .env}
+  openbao:
+    image: openbao/openbao:${OPENBAO_TAG:-2.7.2}
+    command: ["server", "-config=/openbao/cau-hinh/config.hcl"]
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ../platform/openbao/config.hcl:/openbao/cau-hinh/config.hcl:ro
+      - bao-du-lieu:/openbao/file
+    ports:
+      - "127.0.0.1:${OPENBAO_PORT:-8200}:8200"   # UI quản trị, chỉ máy dev
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
-      retries: 20
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8200/v1/sys/health?sealedcode=200&uninitcode=200 || exit 1"]
+      interval: 3s
+      retries: 30
+
+  openbao-khoi-tao:
+    image: openbao/openbao:${OPENBAO_TAG:-2.7.2}
+    entrypoint: ["/bin/sh", "/khoi-tao.sh"]
+    user: "0"   # chỉ dịch vụ chạy một lần này ghi volume bimat; dịch vụ khác mount chỉ đọc
+    environment:
+      BAO_ADDR: http://openbao:8200
+    volumes:
+      - ../platform/openbao/khoi-tao.sh:/khoi-tao.sh:ro
+      - ../.data/openbao:/khoa
+      - bimat:/run/bimat
+    depends_on:
+      openbao:
+        condition: service_healthy
+    restart: "no"
+
+  postgres:
+    # PostgreSQL 17 + PostGIS + pgSTAC trong một image chính thức của stac-utils (có arm64).
+    image: ghcr.io/stac-utils/pgstac:${PGSTAC_TAG:-v0.10.0}
+    command: ["postgres", "-c", "shared_buffers=256MB", "-c", "effective_cache_size=1GB"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nen_tang
+      POSTGRES_PASSWORD_FILE: /run/bimat/postgres
+    volumes:
+      - pg-du-lieu:/var/lib/postgresql/data
+      - ../platform/postgres/100_nen_tang.sh:/docker-entrypoint-initdb.d/100_nen_tang.sh:ro
+      - bimat:/run/bimat:ro
+    depends_on:
+      openbao-khoi-tao:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nen_tang"]
+      interval: 3s
+      retries: 40
 
   keycloak:
     image: quay.io/keycloak/keycloak:${KEYCLOAK_TAG:-26.8.1}
-    command: ["start-dev", "--http-relative-path=/auth"]
+    entrypoint:
+      - /bin/bash
+      - -c
+      - >-
+        export KC_DB_PASSWORD="$$(cat /run/bimat/keycloak-db)"
+        KC_BOOTSTRAP_ADMIN_PASSWORD="$$(cat /run/bimat/keycloak-admin)"
+        KC_CLIENT_SECRET_KIEM_THU="$$(cat /run/bimat/kc-kiem-thu)"
+        && exec /opt/keycloak/bin/kc.sh start-dev --import-realm
     environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:?đặt trong .env}
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME: http://localhost:${GATEWAY_PORT:-9080}/auth
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+    volumes:
+      - ../platform/keycloak/realm-dxos.json:/opt/keycloak/data/import/realm-dxos.json:ro
+      - bimat:/run/bimat:ro
     depends_on:
       postgres:
         condition: service_healthy
-
-  openbao:
-    image: openbao/openbao:${OPENBAO_TAG:-2.7.2}
-    command: ["server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
-    environment:
-      BAO_DEV_ROOT_TOKEN_ID: ${OPENBAO_DEV_TOKEN:?đặt trong .env, chỉ dùng cho máy dev}
-    cap_add: [IPC_LOCK]
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /auth/health/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 5s
+      retries: 60
 
   apisix:
     image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
@@ -42,7 +92,11 @@ services:
       - ../platform/apisix/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
     ports:
       - "127.0.0.1:${GATEWAY_PORT:-9080}:9080"
-    depends_on: [keycloak]
+    depends_on:
+      keycloak:
+        condition: service_healthy
 
 volumes:
-  pgdata:
+  bao-du-lieu:
+  bimat:
+  pg-du-lieu:
