@@ -220,6 +220,53 @@ services:
       prefect:
         condition: service_healthy
 
+  dolt:
+    # Sổ cái có phiên bản (Dolt, giao thức MySQL): mỗi lần ghi là một commit có mã băm. Chỉ trong mạng nội bộ.
+    image: dolthub/dolt-sql-server:${DOLT_TAG:-2.6.1}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >-
+        export DOLT_ROOT_PASSWORD="$$(cat /run/bimat/dolt-root)" DOLT_PASSWORD="$$(cat /run/bimat/dolt-so-cai)" &&
+        exec tini -- docker-entrypoint.sh
+    environment:
+      DOLT_ROOT_HOST: localhost
+      DOLT_DATABASE: so_cai
+      DOLT_USER: so_cai
+    volumes:
+      - dolt-du-lieu:/var/lib/dolt
+      - ../platform/dolt/khoi-tao.sql:/docker-entrypoint-initdb.d/khoi-tao.sql:ro
+      - bimat:/run/bimat:ro
+    depends_on:
+      openbao-khoi-tao:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          dolt --host 127.0.0.1 --port 3306 --no-tls -u so_cai -p "$$(cat /run/bimat/dolt-so-cai)"
+          sql -q 'select 1' >/dev/null
+      interval: 3s
+      retries: 40
+
+  valkey:
+    # Event bus (Valkey Streams): dịch vụ phát sự kiện, dịch vụ khác đọc theo nhóm. Có mật khẩu, chỉ trong mạng nội bộ.
+    image: valkey/valkey:${VALKEY_TAG:-9.1.3}
+    command:
+      - /bin/sh
+      - -c
+      - exec valkey-server --requirepass "$$(cat /run/bimat/valkey)" --appendonly yes
+    volumes:
+      - valkey-du-lieu:/data
+      - bimat:/run/bimat:ro
+    depends_on:
+      openbao-khoi-tao:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli --no-auth-warning -a \"$$(cat /run/bimat/valkey)\" ping | grep -q PONG"]
+      interval: 3s
+      retries: 30
+
   apisix:
     image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
     environment:
@@ -246,3 +293,5 @@ volumes:
   bimat:
   pg-du-lieu:
   s3-du-lieu:
+  dolt-du-lieu:
+  valkey-du-lieu:

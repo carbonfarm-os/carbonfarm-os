@@ -21,7 +21,7 @@ Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn
 |---|---|---|
 | [H] | Cổng nông dân / cán bộ hợp tác xã: xã viên, lô đất, hồ sơ MRV, ví tín chỉ | ☐ |
 | [P] | Đăng ký lô → MRV → duyệt → cấp tín chỉ → bán; Poka-yoke: ranh giới không chồng lấn, diện tích khớp bản đồ, không cấp hai lần cho cùng lô và kỳ | ☐ |
-| [D] | Bản đồ lô + ảnh vệ tinh, phả hệ dữ liệu MRV, sổ cái Dolt kiểm chứng được, dashboard Metabase | ☐ |
+| [D] | Bản đồ lô + ảnh vệ tinh, phả hệ dữ liệu MRV, sổ cái Dolt kiểm chứng được, dashboard Metabase. Đã có: sổ cái Dolt + event bus Valkey ở Tầng 1 (#10, ADR 0003) | ◐ |
 | [I] | Để sau MVP (AI ước lượng, trợ lý giải thích); mọi đề xuất AI có người duyệt | ☐ |
 
 ## C. Sáu tiêu chí PoF (50 điểm)

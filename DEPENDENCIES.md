@@ -26,8 +26,8 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | stac-fastapi-pgstac | `ghcr.io/stac-utils/stac-fastapi-pgstac:7.2.0` | MIT | github.com/stac-utils/stac-fastapi-pgstac | Dịch vụ riêng: API STAC có Transactions, qua gateway `/stac` | 1 | ✔ |
 | TiTiler | `ghcr.io/developmentseed/titiler:2.4.0` | MIT | github.com/developmentseed/titiler | Dịch vụ riêng: tile ảnh COG đọc từ S3, qua gateway `/tiles` | 1 | ✔ |
 | Prefect (server + tiến trình chạy flow) | `prefecthq/prefect:3.9.0-python3.12` | Apache-2.0 | github.com/PrefectHQ/prefect | Dịch vụ riêng: workflow engine, trạng thái trong PostgreSQL, API qua gateway `/workflow`; flow mẫu có bước chờ duyệt | 1 | ✔ |
-| Valkey | 9.1.3 | BSD-3-Clause | github.com/valkey-io/valkey | Event bus (Streams) | 1 | ☐ |
-| Dolt (`dolt-sql-server`) | 2.6.1 | Apache-2.0 | github.com/dolthub/dolt | Sổ cái có phiên bản: mỗi lần ghi là một commit có mã băm (ADR) | 1 | ☐ |
+| Valkey | `valkey/valkey:9.1.3` | BSD-3-Clause | github.com/valkey-io/valkey | Dịch vụ riêng: event bus (Streams), có mật khẩu, chỉ nội bộ | 1 | ✔ |
+| Dolt | `dolthub/dolt-sql-server:2.6.1` | Apache-2.0 | github.com/dolthub/dolt | Dịch vụ riêng: sổ cái có phiên bản, mỗi lần ghi là commit có mã băm (ADR 0003), chỉ nội bộ | 1 | ✔ |
 | Metabase **OSS** | `metabase/metabase:v0.64.3` | AGPL-3.0 (bản OSS) | github.com/metabase/metabase | Dịch vụ riêng, image gốc; KHÔNG dùng `metabase-enterprise` | 2 | ☐ |
 
 ## 2. Thư viện
