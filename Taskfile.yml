@@ -32,7 +32,7 @@ tasks:
       - echo "Chưa có dữ liệu mẫu — làm ở issue tuần 2 (domains/carbon/seed/)"
 
   smoke:
-    desc: Kiểm thử đầu-cuối bằng Hurl (chạy trong Docker, cùng mạng compose) trên hệ thống đang chạy
+    desc: "Kiểm thử đầu-cuối – Hurl (trong Docker, cùng mạng compose; localhost:9080 trỏ tới apisix) + kiểm thử tích hợp Python"
     cmds:
       - >-
         docker run --rm --network carbonfarm_default -v "{{.ROOT_DIR}}/tests/e2e:/e2e:ro" {{.HURL}}
@@ -41,6 +41,8 @@ tasks:
         --variable kc_secret_qt="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu-quan-tri)"
         --variable s3_truy_cap="$({{.COMPOSE}} exec -T s3 cat /run/bimat/s3-truy-cap)"
         --variable s3_bi_mat="$({{.COMPOSE}} exec -T s3 cat /run/bimat/s3-bi-mat)"
+        --variable mk_nguoi_dung_mau="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/nguoi-dung-mau)"
+        --connect-to localhost:9080:apisix:9080
         --file-root /e2e
         --glob '/e2e/*.hurl'
       - python3 -m unittest discover -s tests/tich-hop -v

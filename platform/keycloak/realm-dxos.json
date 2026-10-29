@@ -169,6 +169,25 @@
         "default-roles-dxos",
         "quan_tri"
       ]
+    },
+    {
+      "username": "nguoi-dung-mau",
+      "enabled": true,
+      "firstName": "Người dùng",
+      "lastName": "Mẫu",
+      "email": "nguoi-dung-mau@example.invalid",
+      "emailVerified": true,
+      "realmRoles": [
+        "default-roles-dxos",
+        "nguoi_dung"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KC_MAT_KHAU_NGUOI_DUNG_MAU}",
+          "temporary": false
+        }
+      ]
     }
   ]
 }

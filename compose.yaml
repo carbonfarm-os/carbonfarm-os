@@ -7,3 +7,4 @@
 name: carbonfarm
 include:
   - compose/platform.yaml
+  - compose/carbon.yaml

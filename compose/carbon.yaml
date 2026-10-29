@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Tầng 2 – miền tín chỉ carbon. Chỉ gọi lõi qua gateway; route gateway khai ở domains/carbon/gateway/routes.yaml.
+services:
+  web:
+    build: ../domains/carbon/web
+    image: carbonfarm/carbon-web:0.0.0
+    environment:
+      ORIGIN: http://localhost:${GATEWAY_PORT:-9080}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 3s
+      retries: 30
