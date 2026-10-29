@@ -8,7 +8,9 @@
 
 > "Người dân sống được với rừng nhờ carbon." · *"People can live with the forest thanks to carbon."*
 
-[![Giấy phép GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
+[![Giấy phép GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE) [![CI](https://github.com/carbonfarm-os/carbonfarm-os/actions/workflows/ci.yml/badge.svg)](https://github.com/carbonfarm-os/carbonfarm-os/actions/workflows/ci.yml)
+
+Kho mã: https://github.com/carbonfarm-os/carbonfarm-os · Kế hoạch sprint: https://github.com/orgs/carbonfarm-os/projects/1
 
 > ⚠️ **Điều kiện dự thi · Eligibility.** Dự án do nhóm DTU3 làm cho OLP PMNM 2026. Trường đã có 2 đội (DTU_DZ_1, DTU_DZ_2) và thể lệ cho phép tối đa 2 đội mỗi trường. DTU3 chỉ dự thi được nếu thay một đội hoặc đăng ký qua trường khác. **Trạng thái: CHỜ XÁC NHẬN.**
 > *DTU3 can only enter if it replaces one of the school's two registered teams or enters through another school. Status: pending confirmation.*
