@@ -7,6 +7,7 @@
 	import { batDauDangNhap, dangXuat, nguoiDung, tokenHienTai } from '#lib/dang-nhap.ts';
 	import { goiGraphql, LoiNghiepVu } from '#lib/graphql.ts';
 	import { dienTichHa } from '#lib/dien-tich.ts';
+	import ChiTietLo from '#lib/ChiTietLo.svelte';
 
 	type Polygon = { type: 'Polygon'; coordinates: [number, number][][] };
 	type Lo = {
@@ -20,11 +21,14 @@
 	};
 	type XaVien = { rowId: string; hoTen: string; maXaVien: string };
 
+	// Cùng truy vấn với tests/e2e/web.hurl (ca "truy vấn trang chính") – sửa ở đây thì sửa cả ở đó.
+	// orderBy chỉ có trên cột có index; tên lô sắp xếp phía trình duyệt.
 	const DU_LIEU = `{
-		allCarbonLoDats(condition: { trangThai: "hoat_dong" }, orderBy: TEN_ASC) {
+		allCarbonLoDats(condition: { trangThai: "hoat_dong" }) {
 			nodes { rowId ten dienTichHa dienTichKhaiBaoHa namTrong ranhGioi carbonXaVienByXaVienId { hoTen } }
 		}
 		allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } }
+		allCarbonCanBoHtxes { totalCount }
 	}`;
 	const DANG_KY = `mutation($xv: UUID, $ten: String, $r: JSON, $dt: BigFloat, $nam: Int) {
 		carbonDangKyLoDat(input: { xaVienId: $xv, ten: $ten, ranhGioi: $r, dienTichKhaiBaoHa: $dt, namTrong: $nam }) { result }
@@ -44,6 +48,9 @@
 	let loi = $state<{ thongBao: string; goiY?: string } | null>(null);
 	let thanhCong = $state('');
 	let dangGui = $state(false);
+	let laCanBo = $state(false);
+	let loChon = $state<Lo | null>(null);
+	let lopNdvi = $state<string | null>(null);
 
 	const dienTichVe = $derived(dienTichHa(dinh));
 	const lechKhaiBao = $derived.by(() => {
@@ -55,7 +62,11 @@
 		const nguon = banDo?.getSource<GeoJSONSource>('lo');
 		nguon?.setData({
 			type: 'FeatureCollection',
-			features: lo.map((l) => ({ type: 'Feature', geometry: l.ranhGioi, properties: { ten: l.ten } }))
+			features: lo.map((l) => ({
+				type: 'Feature',
+				geometry: l.ranhGioi,
+				properties: { id: l.rowId, ten: l.ten, chon: l.rowId === loChon?.rowId }
+			}))
 		});
 		const nhap = banDo?.getSource<GeoJSONSource>('nhap');
 		const vong = dinh.length >= 3 ? [...dinh, dinh[0]] : dinh;
@@ -76,9 +87,15 @@
 	async function taiDuLieu() {
 		if (!token) return;
 		try {
-			const d = await goiGraphql<{ allCarbonLoDats: { nodes: Lo[] }; allCarbonXaViens: { nodes: XaVien[] } }>(token, DU_LIEU);
-			lo = d.allCarbonLoDats.nodes;
+			const d = await goiGraphql<{
+				allCarbonLoDats: { nodes: Lo[] };
+				allCarbonXaViens: { nodes: XaVien[] };
+				allCarbonCanBoHtxes: { totalCount: number };
+			}>(token, DU_LIEU);
+			lo = d.allCarbonLoDats.nodes.sort((a, b) => a.ten.localeCompare(b.ten, 'vi'));
 			xaVien = d.allCarbonXaViens.nodes;
+			// Nút yêu cầu đo / duyệt chỉ hiện cho cán bộ hợp tác xã và quản trị; CSDL vẫn kiểm lại (UC011)
+			laCanBo = d.allCarbonCanBoHtxes.totalCount > 0 || (nd?.vai.includes('quan_tri') ?? false);
 			if (!form.xaVienId && xaVien.length) form.xaVienId = xaVien[0].rowId;
 			loiTai = '';
 			veLai();
@@ -87,13 +104,41 @@
 		}
 	}
 
-	function denLo(l: Lo) {
+	function chonLo(l: Lo) {
+		loChon = l;
+		xemLop(null);
+		veLai();
 		const b = new LngLatBounds();
 		for (const d of l.ranhGioi.coordinates[0]) b.extend(d);
 		banDo?.fitBounds(b, { padding: 60, maxZoom: 16 });
 	}
 
+	function boChon() {
+		loChon = null;
+		xemLop(null);
+		veLai();
+	}
+
+	/** Lớp NDVI (COG trong S3 nền tảng) qua TiTiler /tiles; thang màu đỏ–vàng–xanh, NDVI 0 → 1. */
+	function xemLop(cog: string | null) {
+		lopNdvi = cog;
+		const b = banDo;
+		if (!b?.isStyleLoaded()) return;
+		if (b.getLayer('ndvi')) b.removeLayer('ndvi');
+		if (b.getSource('ndvi')) b.removeSource('ndvi');
+		if (!cog) return;
+		const q = new URLSearchParams({ url: cog, rescale: '0,1', colormap_name: 'rdylgn' });
+		b.addSource('ndvi', {
+			type: 'raster',
+			tiles: [`${location.origin}/tiles/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?${q}`],
+			tileSize: 256,
+			attribution: 'Chứa dữ liệu Copernicus Sentinel đã qua xử lý'
+		});
+		b.addLayer({ id: 'ndvi', type: 'raster', source: 'ndvi', paint: { 'raster-opacity': 0.85 } }, 'lo-vien');
+	}
+
 	function batDauVe() {
+		boChon();
 		dangVe = true;
 		dinh = [];
 		loi = null;
@@ -152,14 +197,29 @@
 				layers: [{ id: 'osm', type: 'raster', source: 'osm' }]
 			},
 			center: [104.77, 8.625],
-			zoom: 13
+			zoom: 13,
+			// Tile ảnh của nền tảng (/tiles) cần JWT như mọi API qua gateway
+			transformRequest: (url) =>
+				token && url.startsWith(`${location.origin}/tiles/`)
+					? { url, headers: { Authorization: `Bearer ${token.access_token}` } }
+					: { url }
 		});
 		banDo.addControl(new NavigationControl(), 'top-right');
 		banDo.on('load', () => {
 			const b = banDo!;
 			b.addSource('lo', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-			b.addLayer({ id: 'lo-nen', type: 'fill', source: 'lo', paint: { 'fill-color': '#2d6a4f', 'fill-opacity': 0.35 } });
-			b.addLayer({ id: 'lo-vien', type: 'line', source: 'lo', paint: { 'line-color': '#1b4332', 'line-width': 2 } });
+			b.addLayer({
+				id: 'lo-nen',
+				type: 'fill',
+				source: 'lo',
+				paint: { 'fill-color': '#2d6a4f', 'fill-opacity': ['case', ['get', 'chon'], 0.1, 0.35] }
+			});
+			b.addLayer({
+				id: 'lo-vien',
+				type: 'line',
+				source: 'lo',
+				paint: { 'line-color': ['case', ['get', 'chon'], '#e76f51', '#1b4332'], 'line-width': ['case', ['get', 'chon'], 3, 2] }
+			});
 			b.addLayer({
 				id: 'lo-ten',
 				type: 'symbol',
@@ -191,6 +251,12 @@
 			});
 			taiDuLieu();
 		});
+		banDo.on('click', 'lo-nen', (e) => {
+			if (dangVe) return;
+			const id = e.features?.[0]?.properties?.id;
+			const l = lo.find((x) => x.rowId === id);
+			if (l) chonLo(l);
+		});
 		banDo.on('click', (e: MapMouseEvent) => {
 			if (!dangVe) return;
 			dinh = [...dinh, [Number(e.lngLat.lng.toFixed(7)), Number(e.lngLat.lat.toFixed(7))]];
@@ -218,6 +284,8 @@
 			<p>Đăng nhập để xem và đăng ký lô đất của hợp tác xã.</p>
 		{:else if loiTai}
 			<p role="alert" class="loi">{loiTai}</p>
+		{:else if loChon && token}
+			<ChiTietLo {token} lo={loChon} {laCanBo} lopDangXem={lopNdvi} onXemLop={xemLop} onDong={boChon} />
 		{:else if dangVe}
 			<h2>Đăng ký lô mới</h2>
 			<p class="huong-dan">Bấm lên bản đồ để đặt từng góc lô, theo một chiều quanh ranh giới. Cần ít nhất 3 điểm.</p>
@@ -263,7 +331,7 @@
 			<ul>
 				{#each lo as l (l.rowId)}
 					<li>
-						<button type="button" class="lo" onclick={() => denLo(l)}>
+						<button type="button" class="lo" onclick={() => chonLo(l)}>
 							<b>{l.ten}</b>
 							<span>{l.carbonXaVienByXaVienId?.hoTen ?? ''}</span>
 							<span>{l.dienTichHa} ha{#if l.namTrong} · trồng {l.namTrong}{/if}</span>
@@ -303,7 +371,7 @@
 	}
 	main {
 		display: grid;
-		grid-template-columns: 1fr 22rem;
+		grid-template-columns: 1fr 26rem;
 		gap: 1rem;
 		padding: 1rem;
 	}
