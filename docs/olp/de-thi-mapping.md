@@ -1,0 +1,40 @@
+<!-- SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+# Đối chiếu đề thi OLP PMNM 2026
+
+Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn làm bằng chứng). Cập nhật sau mỗi PR (lệnh `/update-mapping`).
+
+## A. Yêu cầu bắt buộc
+| # | Yêu cầu | Cách đáp ứng | Bằng chứng | Trạng thái |
+|---|---|---|---|---|
+| A1 | Lõi Tầng 1 headless, không UI cho người dùng cuối (UI quản trị được phép, BTC #1393) | `platform/`: chỉ API, không nghiệp vụ carbon | `platform/README.md`, `compose/platform.yaml` | ◐ |
+| A2 | Identity / SSO | Keycloak, realm riêng của nền tảng, OTP cho vai quản trị | | ◐ |
+| A3 | API Gateway | APISIX standalone, kiểm JWT | `platform/apisix/` | ◐ |
+| A4 | Dữ liệu có cấu trúc | PostgreSQL + PostGIS, PostGraphile (RLS) | | ☐ |
+| A5 | Dữ liệu phi cấu trúc | Versity S3 + danh mục STAC (pgSTAC + stac-fastapi) + TiTiler | | ☐ |
+| A6 | Workflow engine | Prefect (flow MRV có bước chờ duyệt) | | ☐ |
+| A7 | ≥1 ứng dụng Tầng 2 có giao diện theo H-P-D-I, chỉ gọi lõi qua gateway | `domains/carbon/` – trọng tâm [P] + [D] | | ☐ |
+| A8 | Tầng 1 độc lập nghiệp vụ (BTC #1396, #1423) | Ranh giới ở `docs/architecture.md` §1; `/pof-check` dò từ khóa nghiệp vụ trong `platform/` | | ◐ |
+
+## B. H-P-D-I (Tầng 2)
+| Không gian | Nội dung | Trạng thái |
+|---|---|---|
+| [H] | Cổng nông dân / cán bộ hợp tác xã: xã viên, lô đất, hồ sơ MRV, ví tín chỉ | ☐ |
+| [P] | Đăng ký lô → MRV → duyệt → cấp tín chỉ → bán; Poka-yoke: ranh giới không chồng lấn, diện tích khớp bản đồ, không cấp hai lần cho cùng lô và kỳ | ☐ |
+| [D] | Bản đồ lô + ảnh vệ tinh, phả hệ dữ liệu MRV, sổ cái Dolt kiểm chứng được, dashboard Metabase | ☐ |
+| [I] | Để sau MVP (AI ước lượng, trợ lý giải thích); mọi đề xuất AI có người duyệt | ☐ |
+
+## C. Sáu tiêu chí PoF (50 điểm)
+| # | Tiêu chí | Cách đáp ứng | Trạng thái |
+|---|---|---|---|
+| 1 | Quản lý mã nguồn trên Internet | Repo GitHub công khai; commit đều của cả nhóm; PR có người duyệt (CODEOWNERS) | ☐ chưa đẩy lên GitHub |
+| 2 | Giấy phép OSI | `LICENSE` GPL-3.0-or-later; SPDX mọi tệp (`task check`); `DEPENDENCIES.md`, `NOTICE`, SBOM mỗi Release; README nêu lý do chọn giấy phép | ◐ |
+| 3 | Release `.tar.gz` trước hạn | release-please: tag + `.tar.gz` + `SHA256SUMS` + SBOM | ◐ (đã có workflow) |
+| 4 | Build từ mã nguồn | `task up` từ máy sạch, `.env.example`, Dev Container | ◐ |
+| 5 | Thư viện, gói đính kèm | Không vendor; pixi (conda-forge), npm/pnpm có lockfile | ◐ |
+| 6 | Tài liệu, giao tiếp | README song ngữ, CHANGELOG (release-please), Issue Forms, CONTRIBUTING, CODE_OF_CONDUCT, ADR | ◐ |
+
+## D. Cộng đồng
+- [ ] Demo công khai trên Internet, người dùng thật (cán bộ hợp tác xã, sinh viên) thử, phản hồi thành issue.
+- [ ] Bài giới thiệu (VFOSSA, diễn đàn); Discussions.
+- [ ] Công bố đặc tả phương pháp MRV (`methodology/`) cho cộng đồng dùng lại.

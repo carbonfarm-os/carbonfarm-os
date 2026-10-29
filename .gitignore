@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+.env
+.data/
+.claude/settings.local.json
+.pixi/
+__pycache__/
+*.pyc
+node_modules/
+.svelte-kit/
+dist/
+site/
+*.tif
+*.tiff
+*.SAFE/

@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+extends: default
+ignore: |
+  .pixi/
+  node_modules/
+rules:
+  line-length: {max: 140}
+  document-start: disable
+  truthy: {check-keys: false}
+  comments: {min-spaces-from-content: 1}

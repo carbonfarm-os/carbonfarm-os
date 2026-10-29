@@ -1,0 +1,11 @@
+{
+  "name": "CarbonFarm OS",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/node:1": {"version": "22"}
+  },
+  "postCreateCommand": "curl -fsSL https://pixi.sh/install.sh | bash && ~/.pixi/bin/pixi install && ~/.pixi/bin/pixi run pre-commit install",
+  "forwardPorts": [9080],
+  "customizations": {"vscode": {"extensions": ["svelte.svelte-vscode", "redhat.vscode-yaml", "charliermarsh.ruff"]}}
+}

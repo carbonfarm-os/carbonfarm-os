@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Báo lỗi
+description: Hệ thống chạy sai so với mong đợi
+labels: ["bug"]
+body:
+  - type: textarea
+    id: buoc
+    attributes:
+      label: Các bước tái hiện
+    validations: {required: true}
+  - type: textarea
+    id: mong-doi
+    attributes:
+      label: Mong đợi và thực tế
+    validations: {required: true}
+  - type: input
+    id: phien-ban
+    attributes:
+      label: Phiên bản hoặc commit

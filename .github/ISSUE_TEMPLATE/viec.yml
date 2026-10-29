@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Việc cần làm
+description: Một việc nhỏ, làm xong trong 1–3 ngày, một người phụ trách
+title: "<loại>(<phạm vi>): <mô tả ngắn>"
+labels: ["viec"]
+body:
+  - type: dropdown
+    id: vai
+    attributes:
+      label: Vai
+      options: ["V1 – nền tảng", "V2 – dữ liệu, MRV", "V3 – web, dashboard"]
+    validations: {required: true}
+  - type: textarea
+    id: mo-ta
+    attributes:
+      label: Mô tả
+      description: Làm gì, vì sao, liên quan tới luồng nào (đăng ký lô → MRV → duyệt → cấp tín chỉ → bán → kiểm chứng)
+    validations: {required: true}
+  - type: textarea
+    id: hoan-thanh
+    attributes:
+      label: Tiêu chí hoàn thành
+      value: |
+        - [ ]
+        - [ ] task check, task lint đạt
+        - [ ] Có kiểm thử (Hurl hoặc pytest) hoặc giải thích vì sao không cần
+    validations: {required: true}

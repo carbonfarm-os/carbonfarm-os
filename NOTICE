@@ -1,0 +1,28 @@
+CarbonFarm OS
+Copyright 2026 CarbonFarm OS contributors
+
+Mã nguồn của dự án phát hành theo GNU General Public License v3.0 hoặc mới hơn
+(GPL-3.0-or-later), toàn văn trong tệp LICENSE.
+
+Dự án dùng các thành phần bên thứ ba dưới đây, mỗi thành phần giữ giấy phép riêng.
+Danh sách đầy đủ kèm phiên bản và nguồn: DEPENDENCIES.md; SBOM CycloneDX kèm mỗi Release.
+
+Dịch vụ chạy riêng (image gốc, không sửa mã, không nhúng vào mã của dự án):
+- PostgreSQL (PostgreSQL License), PostGIS (GPL-2.0-or-later)
+- Keycloak (Apache-2.0)
+- Apache APISIX (Apache-2.0)
+- OpenBao (MPL-2.0)
+- PostGraphile (MIT)
+- Versity S3 Gateway (Apache-2.0)
+- pgSTAC, stac-fastapi-pgstac, TiTiler (MIT)
+- Prefect (Apache-2.0)
+- Valkey (BSD-3-Clause)
+- Dolt (Apache-2.0)
+- Metabase OSS (AGPL-3.0)
+
+Thư viện:
+- GDAL (MIT/X), rasterio (BSD-3-Clause), pystac (Apache-2.0)
+- SvelteKit (MIT), MapLibre GL JS (BSD-3-Clause)
+
+Dữ liệu: ảnh Sentinel-2 từ Copernicus Data Space Ecosystem
+(chứa dữ liệu Copernicus Sentinel đã qua xử lý). Dữ liệu hợp tác xã, xã viên, lô đất trong repo là dữ liệu giả.

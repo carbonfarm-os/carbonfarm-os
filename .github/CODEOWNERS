@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Chủ vùng mã: GitHub tự gán người duyệt PR. Người viết không tự duyệt; nhánh main yêu cầu 1 duyệt của chủ vùng.
+# Vai: V1 nền tảng (Minhthuan12) · V2 dữ liệu + MRV (Nhvuu918) · V3 web + dashboard (thành viên 3, bổ sung khi có tài khoản).
+*                     @Minhthuan12
+/platform/            @Minhthuan12
+/compose/             @Minhthuan12
+/.github/             @Minhthuan12
+/domains/carbon/      @Nhvuu918
+/methodology/         @Nhvuu918
+/connectors/          @Nhvuu918
+# /domains/carbon/web/  @<thành-viên-3>

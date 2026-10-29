@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Lệnh của dự án, chạy bằng go-task (https://taskfile.dev, MIT): `task --list` để xem.
+version: "3"
+
+vars:
+  COMPOSE: docker compose --env-file .env -f compose.yaml
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  up:
+    desc: Chạy Tầng 1 (platform) và Tầng 2 (carbon) bằng Docker Compose
+    preconditions:
+      - sh: test -f .env
+        msg: "Thiếu .env — chạy: cp .env.example .env"
+    cmds:
+      - "{{.COMPOSE}} up -d --wait"
+
+  down:
+    desc: Dừng mọi dịch vụ, giữ volume
+    cmds:
+      - "{{.COMPOSE}} down"
+
+  seed:
+    desc: Nạp dữ liệu GIẢ (hợp tác xã, xã viên, lô đất mẫu ở khu rừng ngập mặn mẫu)
+    cmds:
+      - echo "Chưa có dữ liệu mẫu — làm ở issue tuần 2 (domains/carbon/seed/)"
+
+  smoke:
+    desc: Kiểm thử đầu-cuối bằng Hurl trên hệ thống đang chạy (tests/e2e/*.hurl)
+    cmds:
+      - hurl --test --variables-file tests/e2e/local.env tests/e2e/*.hurl
+
+  check:
+    desc: Trước mọi PR — SPDX mọi tệp + compose hợp lệ
+    cmds:
+      - python3 scripts/spdx.py check
+      - docker compose --env-file .env.example -f compose.yaml config --quiet
+      - echo "OK: compose hợp lệ"
+
+  lint:
+    desc: Lint YAML, Python, shell (công cụ cài bằng pixi hoặc pip)
+    cmds:
+      - yamllint -s .
+      - ruff check .
+
+  license:
+    desc: Thêm header SPDX cho tệp mới
+    cmds:
+      - python3 scripts/spdx.py fix

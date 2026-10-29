@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Route của gateway. Tầng 1 chỉ có route tổng quát (auth, api, files, stac, tiles, workflow);
+# route riêng của miền carbon do domains/carbon khai báo, không viết thẳng vào đây.
+routes:
+  - id: keycloak
+    uri: /auth/*
+    upstream:
+      type: roundrobin
+      nodes:
+        "keycloak:8080": 1
+# yamllint disable-line rule:comments
+#END

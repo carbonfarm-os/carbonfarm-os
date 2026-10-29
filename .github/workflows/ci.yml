@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# CI trên mọi PR vào main: task check (SPDX + compose) và task lint.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+      - name: Công cụ lint
+        run: pip install yamllint ruff
+      - name: task check
+        run: task check
+      - name: task lint
+        run: task lint

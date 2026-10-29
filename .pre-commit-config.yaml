@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Chạy trên máy trước mỗi commit: pre-commit install (một lần). Hook "local" dùng công cụ trong môi trường pixi.
+repos:
+  - repo: local
+    hooks:
+      - id: spdx
+        name: header SPDX
+        entry: python3 scripts/spdx.py check
+        language: system
+        pass_filenames: false
+      - id: yamllint
+        name: yamllint
+        entry: yamllint -s
+        language: system
+        types: [yaml]
+      - id: ruff
+        name: ruff
+        entry: ruff check
+        language: system
+        types: [python]

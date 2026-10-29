@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Tầng 1 (khung tuần đầu). Mỗi dịch vụ dùng image gốc, ghim phiên bản; giấy phép ở DEPENDENCIES.md.
+# Tuần 1 điền tiếp: PostGraphile, Versity S3, pgSTAC + stac-fastapi + TiTiler, Prefect, Valkey, Dolt.
+services:
+  postgres:
+    image: postgis/postgis:${POSTGIS_TAG:-17-3.5}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-carbonfarm}
+      POSTGRES_USER: ${POSTGRES_USER:-carbonfarm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?đặt trong .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_TAG:-26.8.1}
+    command: ["start-dev", "--http-relative-path=/auth"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:?đặt trong .env}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  openbao:
+    image: openbao/openbao:${OPENBAO_TAG:-2.7.2}
+    command: ["server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+    environment:
+      BAO_DEV_ROOT_TOKEN_ID: ${OPENBAO_DEV_TOKEN:?đặt trong .env, chỉ dùng cho máy dev}
+    cap_add: [IPC_LOCK]
+
+  apisix:
+    image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
+    environment:
+      APISIX_STAND_ALONE: "true"
+    volumes:
+      - ../platform/apisix/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ../platform/apisix/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT:-9080}:9080"
+    depends_on: [keycloak]
+
+volumes:
+  pgdata:

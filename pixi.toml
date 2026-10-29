@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Môi trường Python + GDAL dùng chung cho cả nhóm (pixi, BSD-3; gói từ conda-forge).
+# GDAL/rasterio cài từ conda-forge ổn định hơn pip trên macOS/Linux. Ghim phiên bản cụ thể ở tuần 1 rồi commit pixi.lock.
+[workspace]
+name = "carbonfarm-os"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64", "osx-64"]
+
+[dependencies]
+python = "3.12.*"
+gdal = ">=3.13,<3.14"
+rasterio = ">=1.5,<1.6"
+pystac = ">=1.15,<1.16"
+pystac-client = "*"
+yamllint = "*"
+ruff = "*"
+pre-commit = "*"
+go-task = "*"
+hurl = "*"
+
+[tasks]
+check = "task check"
+lint = "task lint"

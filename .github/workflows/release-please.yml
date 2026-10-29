@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Phát hành: release-please đọc Conventional Commits trên main, mở "PR phát hành" (CHANGELOG + số phiên bản).
+# Merge PR đó → tag vX.Y.Z + GitHub Release; job sau đính kèm .tar.gz (git archive), SHA256SUMS và SBOM CycloneDX (Syft).
+name: release-please
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  release-please:
+    runs-on: ubuntu-24.04
+    outputs:
+      created: ${{ steps.rp.outputs.release_created }}
+      tag: ${{ steps.rp.outputs.tag_name }}
+    steps:
+      - id: rp
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+  goi-phat-hanh:
+    needs: release-please
+    if: needs.release-please.outputs.created == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gói nguồn và SHA256SUMS
+        env:
+          TAG: ${{ needs.release-please.outputs.tag }}
+        run: |
+          V="${TAG#v}"
+          git archive --format=tar.gz --prefix="carbonfarm-os-$V/" -o "carbonfarm-os-$V.tar.gz" "$TAG"
+          sha256sum "carbonfarm-os-$V.tar.gz" > SHA256SUMS
+      - name: SBOM CycloneDX
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+          upload-artifact: false
+      - name: Đính kèm vào Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.tag }}
+        run: gh release upload "$TAG" carbonfarm-os-*.tar.gz SHA256SUMS sbom.cdx.json --clobber

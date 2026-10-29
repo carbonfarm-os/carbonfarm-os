@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# APISIX chế độ standalone: route khai báo trong apisix.yaml, không cần etcd.
+deployment:
+  role: data_plane
+  role_data_plane:
+    config_provider: yaml

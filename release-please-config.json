@@ -1,0 +1,15 @@
+{
+  "release-type": "simple",
+  "bump-minor-pre-major": true,
+  "include-v-in-tag": true,
+  "changelog-sections": [
+    {"type": "feat", "section": "Tính năng mới"},
+    {"type": "fix", "section": "Sửa lỗi"},
+    {"type": "docs", "section": "Tài liệu"},
+    {"type": "test", "section": "Kiểm thử"},
+    {"type": "build", "section": "Hạ tầng và CI"},
+    {"type": "ci", "section": "Hạ tầng và CI"},
+    {"type": "chore", "section": "Việc khác", "hidden": true}
+  ],
+  "packages": {".": {}}
+}
