@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Smoke web Tầng 2 (#11): trang SvelteKit qua gateway, và luồng đăng nhập Authorization Code + PKCE của client "web"
+# Smoke web Tầng 2 (#11, #26): trang SvelteKit qua gateway, và luồng đăng nhập Authorization Code + PKCE của client "web"
 # như trình duyệt làm (form Keycloak → code → token), rồi gọi /graphql bằng token người dùng.
 # Cặp verifier/challenge là ví dụ của RFC 7636 (chỉ dùng trong kiểm thử).
 
@@ -66,3 +66,23 @@ HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
 jsonpath "$.data.allGhiChuMaus.totalCount" == 0
+
+# Truy vấn trang chính (domains/carbon/web/src/routes/+page.svelte, DU_LIEU) phải hợp lệ với lược đồ GraphQL thật:
+# chặn lỗi kiểu orderBy trên cột không có index (lược đồ chỉ sinh orderBy/condition cho cột có index)
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+{"query":"{ allCarbonLoDats(condition: { trangThai: \"hoat_dong\" }) { nodes { rowId ten dienTichHa dienTichKhaiBaoHa namTrong ranhGioi carbonXaVienByXaVienId { hoTen } } } allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } } allCarbonCanBoHtxes { totalCount } }"}
+HTTP 200
+[Asserts]
+jsonpath "$.errors" not exists
+jsonpath "$.data.allCarbonCanBoHtxes.totalCount" == 0
+
+# Truy vấn panel chi tiết lô (domains/carbon/web/src/lib/ChiTietLo.svelte, TRUY_VAN)
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+{"query":"query($lo: UUID!) { allCarbonKetQuaMrvs(condition: { loDatId: $lo }) { nodes { rowId kyTu kyDen trangThai canhId ngayChup mayPhanTram soDiemAnhLo soDiemAnhHopLe soDiemAnhTan dienTichTanHa co2ETan canhBao phuongPhap cogHref lyDoLoi ghiChuDuyet duyetLuc doltCommit phaHe } } }","variables":{"lo":"00000000-0000-4000-8000-0000000d0001"}}
+HTTP 200
+[Asserts]
+jsonpath "$.errors" not exists
