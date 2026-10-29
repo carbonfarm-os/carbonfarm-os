@@ -7,6 +7,7 @@
 #   /graphql             PostGraphile (dữ liệu có cấu trúc), JWT bắt buộc; quyền theo RLS trong CSDL
 #   /stac/*              API STAC – danh mục ảnh vệ tinh (dữ liệu phi cấu trúc), JWT bắt buộc
 #   /tiles/*             TiTiler – tile ảnh COG cho bản đồ, JWT bắt buộc
+#   /workflow/*          API Prefect (workflow engine), JWT bắt buộc; /workflow/x → /api/x
 #   (S3 không qua gateway: chữ ký SigV4 gắn đường dẫn; dịch vụ gọi s3:7070 trong mạng nội bộ)
 plugin_configs:
   - id: kiem-jwt
@@ -71,5 +72,15 @@ routes:
       type: roundrobin
       nodes:
         "tiles:8000": 1
+  - id: workflow
+    uris: ["/workflow", "/workflow/*"]
+    plugin_config_id: kiem-jwt
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/workflow/?(.*)", "/api/$1"]
+    upstream:
+      type: roundrobin
+      nodes:
+        "prefect:4200": 1
 # yamllint disable-line rule:comments
 #END
