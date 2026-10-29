@@ -39,7 +39,7 @@ tasks:
     cmds:
       - python3 scripts/spdx.py check
       - docker compose --env-file .env.example -f compose.yaml config --quiet
-      - echo "OK: compose hợp lệ"
+      - 'echo "OK – compose hợp lệ"'
 
   lint:
     desc: Lint YAML, Python, shell (công cụ cài bằng pixi hoặc pip)
