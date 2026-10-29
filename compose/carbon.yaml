@@ -26,3 +26,25 @@ services:
       keycloak:
         condition: service_healthy
     restart: "no"
+
+  carbon-mrv:
+    # MRV engine: phục vụ deployment Prefect mrv-lo-dat/carbon + cầu nối CSDL ↔ Prefect (domains/carbon/mrv).
+    # Cần Internet để đọc danh mục STAC Earth Search và ảnh Sentinel-2 (COG công khai).
+    build: ../domains/carbon/mrv
+    image: carbonfarm/carbon-mrv:0.0.0
+    environment:
+      PREFECT_API_URL: http://prefect:4200/api
+    volumes:
+      - ../methodology:/phuong-phap:ro
+      - bimat:/run/bimat:ro
+    depends_on:
+      prefect:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      stac:
+        condition: service_healthy
+      s3:
+        condition: service_healthy
+      dolt:
+        condition: service_healthy

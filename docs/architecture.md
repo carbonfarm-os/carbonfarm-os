@@ -68,6 +68,8 @@ flowchart TB
 
 **Lỗi nghiệp vụ:** hàm/trigger của miền báo lỗi bằng SQLSTATE bắt đầu bằng `U` (lớp PostgreSQL để dành cho ứng dụng) → PostGraphile trả nguyên thông báo, `extensions.code`, `extensions.hint`; mọi lỗi khác bị che, chỉ trả mã tra log (`platform/postgraphile/graphile.config.mjs`).
 
+**MRV (ADR 0005):** người dùng chỉ đi qua GraphQL (`carbonYeuCauMrv`, `carbonDuyetKetQuaMrv`, quyền và luật trong CSDL). Tiến trình `carbon-mrv` thăm dò `carbon.ket_qua_mrv`: dòng mới → tạo lượt chạy Prefect `mrv-lo-dat/carbon`; có quyết định → resume lượt chạy đang PAUSED; được duyệt → flow ghi Dolt. Vai đăng nhập của miền khai ở `domains/<miền>/db/vai-dang-nhap.txt`, Tầng 1 đặt mật khẩu từ OpenBao.
+
 Phân quyền dữ liệu miền carbon bằng RLS theo `sub` trong JWT: xã viên thấy lô của mình, cán bộ thấy cả hợp tác xã mình phụ trách, quản trị thấy tất cả (`domains/carbon/db/migrations/001_carbon.sql`, kiểm bằng `tests/e2e/carbon-rls.hurl`).
 
 ## 2. Luồng MRV
@@ -77,27 +79,30 @@ sequenceDiagram
   autonumber
   actor HTX as Cán bộ HTX
   participant WEB as Web (Tầng 2)
-  participant PG as PostgreSQL/PostGIS
+  participant PG as PostgreSQL/PostGIS (GraphQL, RLS)
+  participant CN as carbon-mrv (cầu nối + flow)
   participant PF as Prefect
-  participant MRV as MRV engine
-  participant CDSE as Copernicus STAC (ngoài)
+  participant ES as Earth Search STAC (ngoài)
   participant STAC as pgSTAC + Versity S3
   participant DOLT as Dolt
   participant REG as Registry (mock)
   HTX->>WEB: Đăng ký lô đất (vẽ ranh giới)
-  WEB->>PG: Lưu lô; Poka-yoke: không chồng lấn, diện tích khớp hình học
-  HTX->>WEB: Yêu cầu đo carbon cho kỳ báo cáo
-  WEB->>PF: Chạy flow "uoc-luong-carbon"(lô, kỳ)
-  PF->>MRV: Tác vụ
-  MRV->>CDSE: Tìm cảnh Sentinel-2 L2A (mây < ngưỡng)
-  MRV->>STAC: Lưu cảnh đã cắt (COG) + item STAC
-  MRV->>MRV: Chỉ số thực vật × hệ số (methodology/ phiên bản X)
-  MRV->>DOLT: Ghi kết quả + phả hệ (mã cảnh, ngày, mây, phiên bản thuật toán, tham số) → commit
-  PF-->>HTX: Flow tạm dừng, chờ duyệt
-  HTX->>PF: Duyệt / trả lại
-  PF->>REG: Đề nghị cấp tín chỉ (mock)
-  REG-->>PF: Mã tín chỉ
-  PF->>DOLT: Ghi cấp tín chỉ vào ví → commit (mã băm công bố cho người mua)
+  WEB->>PG: carbonDangKyLoDat – Poka-yoke: hình hợp lệ, 0,05–500 ha, lệch ≤ 10 %, không chồng lấn
+  HTX->>WEB: Yêu cầu đo cho kỳ
+  WEB->>PG: carbonYeuCauMrv – không đo chồng kỳ → dòng "cho_chay"
+  CN->>PG: thăm dò, thấy yêu cầu mới
+  CN->>PF: tạo lượt chạy mrv-lo-dat/carbon
+  PF->>CN: chạy flow
+  CN->>ES: tìm cảnh Sentinel-2 L2A C1 ít mây, đọc cửa sổ đỏ/NIR/SCL
+  CN->>CN: NDVI + SCL → diện tích tán × hệ số IPCC (methodology v0.1)
+  CN->>STAC: COG NDVI + item STAC (derived_from → cảnh nguồn)
+  CN->>PG: kết quả + phả hệ → "cho_duyet"; flow PAUSED
+  HTX->>WEB: Xem bản đồ + số liệu, duyệt / từ chối (kèm lý do)
+  WEB->>PG: carbonDuyetKetQuaMrv
+  CN->>PF: resume lượt chạy
+  CN->>DOLT: được duyệt → ghi bản ghi + DOLT_COMMIT
+  CN->>PG: mã băm commit, SHA-256 → "da_ghi_so"
+  Note over PG,REG: Sprint 3: đề nghị cấp tín chỉ (Registry mock), ví, bán cho người mua mock
 ```
 
 ## 3. Sổ cái có phiên bản (Dolt)

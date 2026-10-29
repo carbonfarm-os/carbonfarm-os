@@ -26,6 +26,8 @@ jobs:
         run: task check
       - name: task lint
         run: task lint
+      - name: task test
+        run: task test
 
   web:
     # Web Tầng 2 (SvelteKit): cài theo lockfile, svelte-check, build

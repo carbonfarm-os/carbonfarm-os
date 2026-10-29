@@ -54,6 +54,11 @@ tasks:
       - docker compose --env-file .env.example -f compose.yaml config --quiet
       - 'echo "OK – compose hợp lệ"'
 
+  test:
+    desc: "Kiểm thử đơn vị (không cần hệ thống chạy): công thức phương pháp MRV"
+    cmds:
+      - python3 -m unittest discover -s domains/carbon/mrv/tests -v
+
   lint:
     desc: Lint YAML, Python, shell (công cụ cài bằng pixi hoặc pip)
     cmds:

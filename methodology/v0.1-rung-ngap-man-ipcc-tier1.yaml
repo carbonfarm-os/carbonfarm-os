@@ -8,7 +8,7 @@ vung_khi_hau_ipcc: tropical_wet
 
 anh:
   danh_muc_stac: https://earth-search.aws.element84.com/v1
-  collection: sentinel-2-l2a
+  collection: sentinel-2-c1-l2a   # Collection 1: DN có +1000, raster:bands offset −0.1 khớp dữ liệu
   bang: {do: red, can_hong_ngoai: nir, phan_lop: scl}
   may_toan_canh_toi_da_phan_tram: 20
   ti_le_diem_anh_hop_le_toi_thieu: 0.80
