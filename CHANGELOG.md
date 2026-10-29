@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.1.0...v0.2.0) (2026-10-29)
+
+
+### Tính năng mới
+
+* **carbon:** đăng ký lô bằng vẽ ranh giới, CSDL chặn sai theo Poka-yoke ([#23](https://github.com/carbonfarm-os/carbonfarm-os/issues/23)) ([#31](https://github.com/carbonfarm-os/carbonfarm-os/issues/31)) ([92f6118](https://github.com/carbonfarm-os/carbonfarm-os/commit/92f61188cd209c7bdc1fff84dd920809044b2af3))
+* **carbon:** luồng MRV Prefect trên Sentinel-2, cán bộ duyệt, ghi sổ cái Dolt ([#25](https://github.com/carbonfarm-os/carbonfarm-os/issues/25)) ([#32](https://github.com/carbonfarm-os/carbonfarm-os/issues/32)) ([8d13144](https://github.com/carbonfarm-os/carbonfarm-os/commit/8d1314445950d72a9695dcd0522bf88e851f77d1))
+* **carbon:** mô hình dữ liệu hợp tác xã, xã viên, lô đất + RLS và dữ liệu giả ([#22](https://github.com/carbonfarm-os/carbonfarm-os/issues/22)) ([#28](https://github.com/carbonfarm-os/carbonfarm-os/issues/28)) ([7030826](https://github.com/carbonfarm-os/carbonfarm-os/commit/7030826c5c5aa6f4bb40b2b30351546d46e81960))
+* **carbon:** web xem lô, lớp NDVI, kết quả MRV + phả hệ, cán bộ yêu cầu đo và duyệt ([#26](https://github.com/carbonfarm-os/carbonfarm-os/issues/26)) ([#33](https://github.com/carbonfarm-os/carbonfarm-os/issues/33)) ([e15eac6](https://github.com/carbonfarm-os/carbonfarm-os/commit/e15eac648f307293b00355b7831857ab503a67d3))
+
+
+### Sửa lỗi
+
+* **platform:** healthcheck PostgreSQL kiểm qua TCP, tránh báo sẵn sàng khi initdb chưa xong ([#34](https://github.com/carbonfarm-os/carbonfarm-os/issues/34)) ([f891e81](https://github.com/carbonfarm-os/carbonfarm-os/commit/f891e813c3b004fd93c62a6a72a9acc44998acc3))
+
+
+### Tài liệu
+
+* **methodology:** đặc tả v0.1 rừng ngập mặn IPCC Tier 1, tham số máy đọc ([#24](https://github.com/carbonfarm-os/carbonfarm-os/issues/24)) ([#30](https://github.com/carbonfarm-os/carbonfarm-os/issues/30)) ([c22dfc2](https://github.com/carbonfarm-os/carbonfarm-os/commit/c22dfc257bbd5b78c47590a2596d769ca34c3e25))
+
 ## 0.1.0 (2026-10-29)
 
 
