@@ -56,6 +56,18 @@ flowchart TB
 - Tầng 2 và connector chỉ gọi lõi qua gateway hoặc giao thức chuẩn (S3, STAC, GraphQL).
 - Giao diện quản trị của dịch vụ lõi (Keycloak Admin, Prefect UI) chỉ dành cho quản trị viên, đặt sau xác thực (BTC #1393).
 
+**Điểm cắm miền (Tầng 1 không biết tên miền nào)** – Tầng 1 quét `domains/*/` theo quy ước, miền chỉ đặt tệp:
+
+| Tệp trong `domains/<miền>/` | Tầng 1 làm gì |
+|---|---|
+| `db/migrations/*.sql` | dịch vụ `migrate` áp theo thứ tự tên, mỗi tệp một transaction, ghi `nen_tang.lich_su_migration` (tên + SHA-256); tệp đã áp mà bị sửa → dừng báo lỗi |
+| `db/seed/*.sql` | nạp dữ liệu giả khi `NAP_DU_LIEU_MAU=true` (mặc định trong `.env.example`) |
+| `bi-mat.txt` | OpenBao sinh thêm các bí mật có tên này vào `/run/bimat/` |
+| `gateway/routes.yaml` | ghép vào cấu hình APISIX khi khởi động |
+| schema PostgreSQL | lộ qua GraphQL khi thêm vào `GRAPHQL_SCHEMAS` (`.env`) |
+
+Phân quyền dữ liệu miền carbon bằng RLS theo `sub` trong JWT: xã viên thấy lô của mình, cán bộ thấy cả hợp tác xã mình phụ trách, quản trị thấy tất cả (`domains/carbon/db/migrations/001_carbon.sql`, kiểm bằng `tests/e2e/carbon-rls.hurl`).
+
 ## 2. Luồng MRV
 
 ```mermaid

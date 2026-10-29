@@ -1,0 +1,23 @@
+{
+  "ifResourceExists": "SKIP",
+  "users": [
+    {
+      "id": "00000000-0000-4000-8000-0000000c0001", "username": "canbo-htx-mau", "enabled": true,
+      "firstName": "Cán bộ", "lastName": "Mẫu", "email": "canbo-htx-mau@example.invalid", "emailVerified": true,
+      "realmRoles": ["default-roles-dxos", "nguoi_dung"],
+      "credentials": [{"type": "password", "value": "__MK_CANBO__", "temporary": false}]
+    },
+    {
+      "id": "00000000-0000-4000-8000-0000000a0001", "username": "xavien-mau-1", "enabled": true,
+      "firstName": "Xã viên", "lastName": "Mẫu Một", "email": "xavien-mau-1@example.invalid", "emailVerified": true,
+      "realmRoles": ["default-roles-dxos", "nguoi_dung"],
+      "credentials": [{"type": "password", "value": "__MK_XV1__", "temporary": false}]
+    },
+    {
+      "id": "00000000-0000-4000-8000-0000000a0002", "username": "xavien-mau-2", "enabled": true,
+      "firstName": "Xã viên", "lastName": "Mẫu Hai", "email": "xavien-mau-2@example.invalid", "emailVerified": true,
+      "realmRoles": ["default-roles-dxos", "nguoi_dung"],
+      "credentials": [{"type": "password", "value": "__MK_XV2__", "temporary": false}]
+    }
+  ]
+}

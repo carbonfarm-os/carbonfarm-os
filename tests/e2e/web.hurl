@@ -21,7 +21,7 @@ action: xpath "string(//form[@id='kc-form-login']/@action)"
 POST {{action}}
 [FormParams]
 username: nguoi-dung-mau
-password: {{mk_nguoi_dung_mau}}
+password: {{bm_nguoi_dung_mau}}
 HTTP 302
 [Asserts]
 header "Location" startsWith "http://localhost:9080/dang-nhap/xong?"

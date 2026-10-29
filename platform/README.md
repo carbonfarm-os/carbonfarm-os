@@ -21,4 +21,8 @@ Kiểm nhanh: `grep -riE "carbon|tin.chi|lo.dat|hop.tac" platform/` phải rỗn
 |---|---|
 | `apisix/` | API Gateway (standalone) |
 | `keycloak/` | SSO, realm nền tảng (tạo ở sprint 1) |
-| `postgres/` | Khởi tạo CSDL tổng quát (tạo ở sprint 1) |
+| `postgres/` | Khởi tạo CSDL tổng quát; `ap-migration.sh` áp migration và dữ liệu mẫu của các miền (`domains/*/db/`) |
+| `openbao/` | Bí mật: khởi tạo, mở khóa, sinh bí mật nền tảng + tên bí mật miền khai trong `domains/*/bi-mat.txt` |
+| `postgraphile/` | GraphQL tự sinh; schema lộ ra chọn bằng `GRAPHQL_SCHEMAS` |
+| `prefect/` | Workflow engine, flow mẫu tổng quát |
+| `dolt/` | Sổ cái có phiên bản |

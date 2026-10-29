@@ -35,6 +35,11 @@ fi
 
 bao secrets list 2>/dev/null | grep -q '^secret/' || bao secrets enable -path=secret kv-v2 >/dev/null
 
+# Bí mật của các miền: mỗi miền khai tên trong domains/<miền>/bi-mat.txt (một tên mỗi dòng, # là chú thích).
+for tep in /mien/*/bi-mat.txt; do
+  [ -f "$tep" ] && BI_MAT="$BI_MAT $(grep -v '^#' "$tep" | tr '\n' ' ')"
+done
+
 mkdir -p /run/bimat
 for ten in $BI_MAT; do
   if ! gia_tri=$(bao kv get -field=gia_tri "secret/nen-tang/$ten" 2>/dev/null); then
@@ -45,4 +50,4 @@ for ten in $BI_MAT; do
   printf '%s' "$gia_tri" > "/run/bimat/$ten"
   chmod 0444 "/run/bimat/$ten"
 done
-echo "OpenBao: sẵn sàng, đã ghi $(echo $BI_MAT | wc -w) bí mật ra /run/bimat"
+echo "OpenBao: sẵn sàng, đã ghi $(echo "$BI_MAT" | wc -w) bí mật ra /run/bimat"

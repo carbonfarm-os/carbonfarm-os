@@ -34,17 +34,17 @@ tasks:
   smoke:
     desc: "Kiểm thử đầu-cuối – Hurl (trong Docker, cùng mạng compose; localhost:9080 trỏ tới apisix) + kiểm thử tích hợp Python"
     cmds:
+      # Bí mật do OpenBao sinh → tệp biến tạm trong .data/ (ngoài git), xóa ngay sau khi chạy
+      - defer: rm -f .data/smoke-bimat.env
       - >-
-        docker run --rm --network carbonfarm_default -v "{{.ROOT_DIR}}/tests/e2e:/e2e:ro" {{.HURL}}
-        --test --variables-file /e2e/compose.env
-        --variable kc_secret="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu)"
-        --variable kc_secret_qt="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/kc-kiem-thu-quan-tri)"
-        --variable s3_truy_cap="$({{.COMPOSE}} exec -T s3 cat /run/bimat/s3-truy-cap)"
-        --variable s3_bi_mat="$({{.COMPOSE}} exec -T s3 cat /run/bimat/s3-bi-mat)"
-        --variable mk_nguoi_dung_mau="$({{.COMPOSE}} exec -T keycloak cat /run/bimat/nguoi-dung-mau)"
-        --connect-to localhost:9080:apisix:9080
-        --file-root /e2e
-        --glob '/e2e/*.hurl'
+        {{.COMPOSE}} exec -T keycloak sh -c
+        'for f in /run/bimat/*; do printf "bm_%s=%s\n" "$(basename $f | tr - _)" "$(cat $f)"; done'
+        > .data/smoke-bimat.env
+      - >-
+        docker run --rm --network carbonfarm_default
+        -v "{{.ROOT_DIR}}/tests/e2e:/e2e:ro" -v "{{.ROOT_DIR}}/.data/smoke-bimat.env:/bimat.env:ro" {{.HURL}}
+        --test --variables-file /e2e/compose.env --variables-file /bimat.env
+        --connect-to localhost:9080:apisix:9080 --file-root /e2e --glob '/e2e/*.hurl'
       - python3 -m unittest discover -s tests/tich-hop -v
 
   check:

@@ -11,3 +11,18 @@ services:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
       interval: 3s
       retries: 30
+
+  carbon-nguoi-dung:
+    # Nạp người dùng mẫu của miền (cán bộ, 2 xã viên) vào realm dxos – chạy một lần, chạy lại không sao.
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_TAG:-26.8.1}
+    entrypoint: ["/bin/bash", "/nap-nguoi-dung.sh"]
+    environment:
+      KC_ADMIN_USER: ${KC_ADMIN_USER:-admin}
+    volumes:
+      - ../domains/carbon/keycloak/nap-nguoi-dung.sh:/nap-nguoi-dung.sh:ro
+      - ../domains/carbon/keycloak/nguoi-dung-mau.json:/nguoi-dung-mau.json:ro
+      - bimat:/run/bimat:ro
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: "no"

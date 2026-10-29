@@ -32,7 +32,8 @@ TEN_DAC_BIET: dict[str, tuple[str, str]] = {
     "Dockerfile": ("# ", ""), ".gitignore": ("# ", ""), ".dockerignore": ("# ", ""),
     "CODEOWNERS": ("# ", ""), ".gitattributes": ("# ", ""), ".npmrc": ("# ", ""),
 }
-BO_QUA_TEN = {"LICENSE", "NOTICE", "pixi.lock"}
+# CHANGELOG.md do release-please sinh và ghi đè mỗi lần phát hành
+BO_QUA_TEN = {"LICENSE", "NOTICE", "pixi.lock", "CHANGELOG.md"}
 BO_QUA_DUOI = {".json", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".tif", ".tiff", ".lock", ".woff2"}
 
 
