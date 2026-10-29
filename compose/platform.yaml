@@ -25,6 +25,7 @@ services:
       BAO_ADDR: http://openbao:8200
     volumes:
       - ../platform/openbao/khoi-tao.sh:/khoi-tao.sh:ro
+      - ../domains:/mien:ro
       - ../.data/openbao:/khoa
       - bimat:/run/bimat
     depends_on:
@@ -88,18 +89,33 @@ services:
       interval: 5s
       retries: 60
 
+  migrate:
+    # Áp migration (và dữ liệu mẫu nếu NAP_DU_LIEU_MAU=true) của mọi miền trong domains/*/db – cơ chế tổng quát.
+    image: ghcr.io/stac-utils/pgstac:${PGSTAC_TAG:-v0.10.0}
+    entrypoint: ["/bin/sh", "/ap-migration.sh"]
+    environment:
+      NAP_DU_LIEU_MAU: ${NAP_DU_LIEU_MAU:-false}
+    volumes:
+      - ../platform/postgres/ap-migration.sh:/ap-migration.sh:ro
+      - ../domains:/mien:ro
+      - bimat:/run/bimat:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   postgraphile:
     build: ../platform/postgraphile
     image: carbonfarm/postgraphile:5.1.5
     environment:
       JWKS_URL: http://keycloak:8080/auth/realms/dxos/protocol/openid-connect/certs
       JWT_ISSUER: http://localhost:${GATEWAY_PORT:-9080}/auth/realms/dxos
-      GRAPHQL_SCHEMAS: nen_tang
+      GRAPHQL_SCHEMAS: ${GRAPHQL_SCHEMAS:-nen_tang}
     volumes:
       - bimat:/run/bimat:ro
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       keycloak:
         condition: service_healthy
     healthcheck:

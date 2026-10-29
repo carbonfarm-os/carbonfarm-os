@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Bí mật của miền carbon – OpenBao (Tầng 1) sinh và giữ; tên mỗi dòng.
+mk-canbo-htx-mau
+mk-xavien-mau-1
+mk-xavien-mau-2

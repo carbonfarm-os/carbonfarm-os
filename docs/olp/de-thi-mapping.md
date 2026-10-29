@@ -19,7 +19,7 @@ Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn
 ## B. H-P-D-I (Tầng 2)
 | Không gian | Nội dung | Trạng thái |
 |---|---|---|
-| [H] | Cổng nông dân / cán bộ hợp tác xã: xã viên, lô đất, hồ sơ MRV, ví tín chỉ | ☐ |
+| [H] | Cổng nông dân / cán bộ hợp tác xã: xã viên, lô đất, hồ sơ MRV, ví tín chỉ. Đã có: mô hình dữ liệu hợp tác xã, cán bộ, xã viên, lô đất (PostGIS) + RLS theo người đăng nhập, dữ liệu giả (#22, `domains/carbon/db/`, `tests/e2e/carbon-rls.hurl`) | ◐ |
 | [P] | Đăng ký lô → MRV → duyệt → cấp tín chỉ → bán; Poka-yoke: ranh giới không chồng lấn, diện tích khớp bản đồ, không cấp hai lần cho cùng lô và kỳ | ☐ |
 | [D] | Bản đồ lô + ảnh vệ tinh, phả hệ dữ liệu MRV, sổ cái Dolt kiểm chứng được, dashboard Metabase. Đã có: sổ cái Dolt + event bus Valkey ở Tầng 1 (#10, ADR 0003) | ◐ |
 | [I] | Để sau MVP (AI ước lượng, trợ lý giải thích); mọi đề xuất AI có người duyệt | ☐ |

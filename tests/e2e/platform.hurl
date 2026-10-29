@@ -23,7 +23,7 @@ POST {{gateway}}/auth/realms/dxos/protocol/openid-connect/token
 [FormParams]
 grant_type: client_credentials
 client_id: kiem-thu
-client_secret: {{kc_secret}}
+client_secret: {{bm_kc_kiem_thu}}
 HTTP 200
 [Captures]
 token: jsonpath "$.access_token"

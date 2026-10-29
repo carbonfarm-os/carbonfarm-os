@@ -10,7 +10,7 @@ POST {{gateway}}/auth/realms/dxos/protocol/openid-connect/token
 [FormParams]
 grant_type: client_credentials
 client_id: kiem-thu-quan-tri
-client_secret: {{kc_secret_qt}}
+client_secret: {{bm_kc_kiem_thu_quan_tri}}
 HTTP 200
 [Captures]
 tk: jsonpath "$.access_token"
