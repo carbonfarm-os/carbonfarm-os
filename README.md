@@ -1,5 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors -->
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<p align="center"><img src="docs/images/banner.png" alt="CarbonFarm OS – Người dân sống được với rừng nhờ carbon" width="100%"></p>
+
 # CarbonFarm OS
 
 **Nền tảng nguồn mở tín chỉ carbon cho nông dân nhỏ, hợp tác xã và cộng đồng ven biển** · *An open-source carbon-credit platform for smallholders, cooperatives and coastal communities.*
