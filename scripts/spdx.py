@@ -23,7 +23,7 @@ GIAY_PHEP = "SPDX-License-Identifier: GPL-3.0-or-later"
 # Đuôi tệp → (mở chú thích, đóng chú thích)
 KIEU_CHU_THICH: dict[str, tuple[str, str]] = {
     ".py": ("# ", ""), ".sh": ("# ", ""), ".yaml": ("# ", ""), ".yml": ("# ", ""),
-    ".toml": ("# ", ""), ".hurl": ("# ", ""), ".env": ("# ", ""), ".example": ("# ", ""),
+    ".toml": ("# ", ""), ".hurl": ("# ", ""), ".hcl": ("# ", ""), ".env": ("# ", ""), ".example": ("# ", ""),
     ".sql": ("-- ", ""), ".ts": ("// ", ""), ".js": ("// ", ""), ".mjs": ("// ", ""),
     ".css": ("/* ", " */"), ".md": ("<!-- ", " -->"), ".svelte": ("<!-- ", " -->"),
     ".html": ("<!-- ", " -->"),

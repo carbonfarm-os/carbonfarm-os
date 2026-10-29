@@ -8,8 +8,8 @@ Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn
 | # | Yêu cầu | Cách đáp ứng | Bằng chứng | Trạng thái |
 |---|---|---|---|---|
 | A1 | Lõi Tầng 1 headless, không UI cho người dùng cuối (UI quản trị được phép, BTC #1393) | `platform/`: chỉ API, không nghiệp vụ carbon | `platform/README.md`, `compose/platform.yaml` | ◐ |
-| A2 | Identity / SSO | Keycloak, realm riêng của nền tảng, OTP cho vai quản trị | | ◐ |
-| A3 | API Gateway | APISIX standalone, kiểm JWT | `platform/apisix/` | ◐ |
+| A2 | Identity / SSO | Keycloak, realm tổng quát `dxos`, OTP bắt buộc với vai `quan_tri` (luồng đăng nhập riêng) | `platform/keycloak/realm-dxos.json`, `tests/e2e/platform.hurl` (#6) | ☑ |
+| A3 | API Gateway | APISIX standalone, kiểm JWT bằng JWKS của Keycloak (`plugin_configs.kiem-jwt`) | `platform/apisix/apisix.yaml`, smoke 401/200 (#6) | ☑ |
 | A4 | Dữ liệu có cấu trúc | PostgreSQL + PostGIS, PostGraphile (RLS) | | ☐ |
 | A5 | Dữ liệu phi cấu trúc | Versity S3 + danh mục STAC (pgSTAC + stac-fastapi) + TiTiler | | ☐ |
 | A6 | Workflow engine | Prefect (flow MRV có bước chờ duyệt) | | ☐ |

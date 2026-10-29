@@ -8,7 +8,7 @@ Dự án dùng các thành phần bên thứ ba dưới đây, mỗi thành ph�
 Danh sách đầy đủ kèm phiên bản và nguồn: DEPENDENCIES.md; SBOM CycloneDX kèm mỗi Release.
 
 Dịch vụ chạy riêng (image gốc, không sửa mã, không nhúng vào mã của dự án):
-- PostgreSQL (PostgreSQL License), PostGIS (GPL-2.0-or-later)
+- PostgreSQL (PostgreSQL License), PostGIS (GPL-2.0-or-later), pgSTAC (MIT) – image ghcr.io/stac-utils/pgstac
 - Keycloak (Apache-2.0)
 - Apache APISIX (Apache-2.0)
 - OpenBao (MPL-2.0)

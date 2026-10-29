@@ -1,0 +1,83 @@
+{
+  "realm": "dxos",
+  "displayName": "DX-OS nền tảng",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "bruteForceProtected": true,
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyDigits": 6,
+  "otpPolicyPeriod": 30,
+  "browserFlow": "trinh-duyet-otp-quan-tri",
+  "roles": {
+    "realm": [
+      {"name": "quan_tri", "description": "Quản trị nền tảng; bắt buộc OTP khi đăng nhập"},
+      {"name": "nguoi_dung", "description": "Người dùng ứng dụng Tầng 2 (vai nghiệp vụ do từng miền thêm)"}
+    ]
+  },
+  "defaultRole": {"name": "default-roles-dxos", "composite": true},
+  "clients": [
+    {
+      "clientId": "web",
+      "name": "Ứng dụng web Tầng 2",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:9080/*", "http://localhost:5173/*"],
+      "webOrigins": ["+"],
+      "attributes": {"pkce.code.challenge.method": "S256", "post.logout.redirect.uris": "+"}
+    },
+    {
+      "clientId": "kiem-thu",
+      "name": "Tài khoản dịch vụ cho kiểm thử đầu-cuối",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${KC_CLIENT_SECRET_KIEM_THU}",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    }
+  ],
+  "authenticatorConfig": [
+    {"alias": "vai-quan-tri", "config": {"condUserRole": "quan_tri", "negate": "false"}}
+  ],
+  "authenticationFlows": [
+    {
+      "alias": "trinh-duyet-otp-quan-tri",
+      "description": "Đăng nhập trình duyệt; OTP bắt buộc với vai quan_tri",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {"authenticator": "auth-cookie", "requirement": "ALTERNATIVE", "priority": 10, "autheticatorFlow": false, "userSetupAllowed": false},
+        {"flowAlias": "bieu-mau-dang-nhap", "requirement": "ALTERNATIVE", "priority": 20, "autheticatorFlow": true, "userSetupAllowed": false}
+      ]
+    },
+    {
+      "alias": "bieu-mau-dang-nhap",
+      "description": "Mật khẩu, rồi OTP nếu là quản trị",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {"authenticator": "auth-username-password-form", "requirement": "REQUIRED", "priority": 10, "autheticatorFlow": false, "userSetupAllowed": false},
+        {"flowAlias": "otp-quan-tri", "requirement": "CONDITIONAL", "priority": 20, "autheticatorFlow": true, "userSetupAllowed": false}
+      ]
+    },
+    {
+      "alias": "otp-quan-tri",
+      "description": "Điều kiện vai quan_tri → OTP",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {"authenticator": "conditional-user-role", "authenticatorConfig": "vai-quan-tri", "requirement": "REQUIRED", "priority": 10, "autheticatorFlow": false, "userSetupAllowed": false},
+        {"authenticator": "auth-otp-form", "requirement": "REQUIRED", "priority": 20, "autheticatorFlow": false, "userSetupAllowed": true}
+      ]
+    }
+  ]
+}

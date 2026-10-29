@@ -1,10 +1,38 @@
 # SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Route của gateway. Tầng 1 chỉ có route tổng quát (auth, api, files, stac, tiles, workflow);
-# route riêng của miền carbon do domains/carbon khai báo, không viết thẳng vào đây.
+# Route của gateway (APISIX standalone). Tầng 1 chỉ có route tổng quát; route riêng của miền carbon do domains/carbon
+# khai báo, không viết thẳng vào đây.
+#   /auth/*              Keycloak (đăng nhập, JWKS) – công khai
+#   /nen-tang/kiem-tra   route kiểm tra JWT: không token → 401, token hợp lệ → thông tin realm
+plugin_configs:
+  - id: kiem-jwt
+    desc: Kiểm JWT của realm dxos bằng JWKS (không gọi introspection)
+    plugins:
+      openid-connect:
+        client_id: gateway
+        client_secret: khong-dung-khi-bearer-only
+        discovery: http://keycloak:8080/auth/realms/dxos/.well-known/openid-configuration
+        bearer_only: true
+        use_jwks: true
+        set_userinfo_header: false
+        set_access_token_header: true
+        access_token_in_authorization_header: true
+
 routes:
   - id: keycloak
-    uri: /auth/*
+    uris: ["/auth", "/auth/*"]
+    upstream:
+      type: roundrobin
+      nodes:
+        "keycloak:8080": 1
+
+  - id: nen-tang-kiem-tra
+    uri: /nen-tang/kiem-tra
+    methods: ["GET"]
+    plugin_config_id: kiem-jwt
+    plugins:
+      proxy-rewrite:
+        uri: /auth/realms/dxos
     upstream:
       type: roundrobin
       nodes:
