@@ -11,4 +11,8 @@ Mỗi đặc tả phải có:
 4. **nguồn trích dẫn** cho mọi hệ số (bài báo, hướng dẫn IPCC, tài liệu chính thức);
 5. sai số và giới hạn đã biết.
 
-**Không đưa hệ số không có nguồn vào đặc tả.** Đặc tả v0.1 viết ở sprint 2 (`docs/roadmap.md`).
+**Không đưa hệ số không có nguồn vào đặc tả.** Tham số vận hành (ngưỡng phân loại…) phải ghi rõ là của đội và cần hiệu chỉnh.
+
+| Phiên bản | Đặc tả | Tham số |
+|---|---|---|
+| v0.1 | [Rừng ngập mặn, IPCC Tier 1](v0.1-rung-ngap-man-ipcc-tier1.md) | [`v0.1-rung-ngap-man-ipcc-tier1.yaml`](v0.1-rung-ngap-man-ipcc-tier1.yaml) |

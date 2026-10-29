@@ -37,4 +37,4 @@ Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn
 ## D. Cộng đồng
 - [ ] Demo công khai trên Internet, người dùng thật (cán bộ hợp tác xã, sinh viên) thử, phản hồi thành issue.
 - [ ] Bài giới thiệu (VFOSSA, diễn đàn); Discussions.
-- [ ] Công bố đặc tả phương pháp MRV (`methodology/`) cho cộng đồng dùng lại.
+- [ ] Công bố đặc tả phương pháp MRV cho cộng đồng dùng lại. Đã có v0.1 (`methodology/v0.1-rung-ngap-man-ipcc-tier1.md`, #24), chưa giới thiệu ra ngoài.
