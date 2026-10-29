@@ -250,6 +250,7 @@ services:
       DOLT_ROOT_HOST: localhost
       DOLT_DATABASE: so_cai
       DOLT_USER: so_cai
+      DOLT_USER_HOST: "%"   # dịch vụ khác trong mạng nội bộ ghi sổ (cổng 3306 không mở ra máy chủ)
     volumes:
       - dolt-du-lieu:/var/lib/dolt
       - ../platform/dolt/khoi-tao.sql:/docker-entrypoint-initdb.d/khoi-tao.sql:ro

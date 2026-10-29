@@ -34,9 +34,13 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 
 | Thành phần | Phiên bản | Giấy phép | Nguồn | Dùng ở |
 |---|---|---|---|---|
-| GDAL | 3.13 (conda-forge) | MIT/X (tệp LICENSE.TXT liệt kê giấy phép từng phần) | github.com/OSGeo/gdal | MRV engine |
-| rasterio | 1.5 | BSD-3-Clause | github.com/rasterio/rasterio | MRV engine |
-| pystac / pystac-client | 1.15 / mới nhất | Apache-2.0 | github.com/stac-utils | MRV engine |
+| rasterio (wheel kèm GDAL 3.12.2, PROJ 9.8.1, GEOS, libtiff, curl… – giấy phép MIT/X, BSD, zlib, curl; GEOS LGPL-2.1, tương thích GPL-3.0) | 1.5.2 | BSD-3-Clause | github.com/rasterio/rasterio | MRV engine (`domains/carbon/mrv`, image `carbonfarm/carbon-mrv` trên nền `prefecthq/prefect:3.9.0-python3.12`) |
+| numpy | 2.5.4 | BSD-3-Clause (kèm 0BSD, MIT, Zlib, CC0-1.0) | github.com/numpy/numpy | MRV engine |
+| psycopg (+ psycopg-binary) | 3.3.6 | LGPL-3.0-only (tương thích GPL-3.0) | github.com/psycopg/psycopg | MRV engine đọc/ghi PostgreSQL (vai `carbon_mrv`) |
+| PyMySQL | 1.2.3 | MIT | github.com/PyMySQL/PyMySQL | MRV engine ghi sổ cái Dolt |
+| boto3 / botocore | 1.43.121 | Apache-2.0 | github.com/boto/boto3 | MRV engine ghi COG lên S3 nền tảng |
+| httpx, PyYAML (có sẵn trong image Prefect) | 0.28.1 / 6.0.3 | BSD-3-Clause / MIT | github.com/encode/httpx, github.com/yaml/pyyaml | MRV engine gọi STAC, đọc tham số phương pháp |
+| GDAL (môi trường dev bằng pixi) | 3.13 (conda-forge) | MIT/X (tệp LICENSE.TXT liệt kê giấy phép từng phần) | github.com/OSGeo/gdal | Máy dev |
 | jose | 6.2.13 | MIT | github.com/panva/jose | PostGraphile kiểm lại JWT bằng JWKS |
 | pg | 8.23.1 | MIT | github.com/brianc/node-postgres | PostGraphile kết nối PostgreSQL |
 | Gói phụ thuộc gián tiếp của PostGraphile (186 gói, `platform/postgraphile/package-lock.json`) | — | MIT, Apache-2.0, ISC, BSD-2/3, 0BSD, PSF-2.0 (`argparse`) – đều OSI | npm | |
@@ -59,7 +63,7 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 
 | Dữ liệu | Giấy phép / điều khoản | Dùng cho |
 |---|---|---|
-| Sentinel-2 L2A (Copernicus Data Space Ecosystem, STAC) | Dữ liệu mở Copernicus, miễn phí, ghi nguồn | Ước lượng carbon |
+| Sentinel-2 L2A Collection 1 (danh mục STAC Earth Search `sentinel-2-c1-l2a`, COG công khai trên AWS Open Data) | Dữ liệu mở Copernicus Sentinel, miễn phí, ghi nguồn; sản phẩm NDVI của đội ghi "chứa dữ liệu Copernicus Sentinel đã qua xử lý" | Ước lượng carbon (ADR 0005) |
 | Nền bản đồ OpenStreetMap (tile.openstreetmap.org) | ODbL, ghi nguồn "© Những người đóng góp OpenStreetMap"; tuân thủ chính sách dùng tile của OSMF (chỉ máy dev/demo, sẽ thay bằng tile tự phục vụ khi triển khai) | Nền bản đồ web |
 | Dữ liệu hợp tác xã, xã viên, lô đất | Dữ liệu **giả** do đội tạo | Demo |
 

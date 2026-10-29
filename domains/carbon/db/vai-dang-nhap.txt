@@ -1,0 +1,4 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# <vai PostgreSQL> <tên bí mật OpenBao> – Tầng 1 (ap-migration.sh) đặt LOGIN PASSWORD sau khi áp migration.
+carbon_mrv carbon-mrv-db

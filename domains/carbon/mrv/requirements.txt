@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Thêm vào image prefecthq/prefect (đã có prefect, httpx, pydantic, pyyaml). Giấy phép: DEPENDENCIES.md.
+rasterio==1.5.2
+numpy==2.5.4
+psycopg[binary]==3.3.6
+PyMySQL==1.2.3
+boto3==1.43.121
