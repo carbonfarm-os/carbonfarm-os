@@ -40,8 +40,9 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | jose | 6.2.13 | MIT | github.com/panva/jose | PostGraphile kiểm lại JWT bằng JWKS |
 | pg | 8.23.1 | MIT | github.com/brianc/node-postgres | PostGraphile kết nối PostgreSQL |
 | Gói phụ thuộc gián tiếp của PostGraphile (186 gói, `platform/postgraphile/package-lock.json`) | — | MIT, Apache-2.0, ISC, BSD-2/3, 0BSD, PSF-2.0 (`argparse`) – đều OSI | npm | |
-| SvelteKit | 2.x | MIT | github.com/sveltejs/kit | Web Tầng 2 |
-| MapLibre GL JS | 6.16 | BSD-3-Clause | github.com/maplibre/maplibre-gl-js | Bản đồ |
+| SvelteKit (+ adapter-node, Svelte 5, Vite 8) | kit 3.1.0, svelte 5.57.3, vite 8.3.5, adapter-node 6.0.0 | MIT | github.com/sveltejs/kit | Web Tầng 2 (`domains/carbon/web`) |
+| MapLibre GL JS | 6.16.0 | BSD-3-Clause | github.com/maplibre/maplibre-gl-js | Bản đồ |
+| Gói gián tiếp của web (104 gói, `domains/carbon/web/package-lock.json`) | — | MIT, ISC, Apache-2.0, BSD-2/3, MPL-2.0 (`lightningcss`, chỉ lúc build; tương thích GPL-3.0), MIT OR Apache-2.0 – đều OSI | npm | |
 
 ## 3. Công cụ phát triển (không nằm trong sản phẩm)
 
@@ -59,6 +60,7 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | Dữ liệu | Giấy phép / điều khoản | Dùng cho |
 |---|---|---|
 | Sentinel-2 L2A (Copernicus Data Space Ecosystem, STAC) | Dữ liệu mở Copernicus, miễn phí, ghi nguồn | Ước lượng carbon |
+| Nền bản đồ OpenStreetMap (tile.openstreetmap.org) | ODbL, ghi nguồn "© Những người đóng góp OpenStreetMap"; tuân thủ chính sách dùng tile của OSMF (chỉ máy dev/demo, sẽ thay bằng tile tự phục vụ khi triển khai) | Nền bản đồ web |
 | Dữ liệu hợp tác xã, xã viên, lô đất | Dữ liệu **giả** do đội tạo | Demo |
 
 ## 5. Không dùng

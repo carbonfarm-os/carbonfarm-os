@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Route gateway của miền carbon (Tầng 2). APISIX ghép tệp này vào sau danh sách routes của Tầng 1
+# (platform/apisix/apisix.yaml) lúc khởi động; vì vậy tệp chỉ gồm các mục route, cùng mức thụt lề.
+  - id: carbon-web
+    uri: /*
+    priority: -10
+    methods: ["GET", "HEAD"]
+    upstream:
+      type: roundrobin
+      nodes:
+        "web:3000": 1

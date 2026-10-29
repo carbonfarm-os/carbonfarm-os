@@ -26,3 +26,20 @@ jobs:
         run: task check
       - name: task lint
         run: task lint
+
+  web:
+    # Web Tầng 2 (SvelteKit): cài theo lockfile, svelte-check, build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: domains/carbon/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: domains/carbon/web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: npm run build

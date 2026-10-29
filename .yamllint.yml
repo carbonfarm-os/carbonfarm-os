@@ -4,6 +4,8 @@ extends: default
 ignore: |
   .pixi/
   node_modules/
+  # đoạn route được ghép vào danh sách routes của APISIX, cố ý thụt lề 2
+  domains/*/gateway/routes.yaml
 rules:
   line-length: {max: 140}
   document-start: disable

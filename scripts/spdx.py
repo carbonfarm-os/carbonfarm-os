@@ -23,14 +23,14 @@ GIAY_PHEP = "SPDX-License-Identifier: GPL-3.0-or-later"
 # Đuôi tệp → (mở chú thích, đóng chú thích)
 KIEU_CHU_THICH: dict[str, tuple[str, str]] = {
     ".py": ("# ", ""), ".sh": ("# ", ""), ".yaml": ("# ", ""), ".yml": ("# ", ""),
-    ".toml": ("# ", ""), ".hurl": ("# ", ""), ".hcl": ("# ", ""), ".env": ("# ", ""), ".example": ("# ", ""),
+    ".toml": ("# ", ""), ".hurl": ("# ", ""), ".hcl": ("# ", ""), ".txt": ("# ", ""), ".env": ("# ", ""), ".example": ("# ", ""),
     ".sql": ("-- ", ""), ".ts": ("// ", ""), ".js": ("// ", ""), ".mjs": ("// ", ""),
     ".css": ("/* ", " */"), ".md": ("<!-- ", " -->"), ".svelte": ("<!-- ", " -->"),
     ".html": ("<!-- ", " -->"),
 }
 TEN_DAC_BIET: dict[str, tuple[str, str]] = {
     "Dockerfile": ("# ", ""), ".gitignore": ("# ", ""), ".dockerignore": ("# ", ""),
-    "CODEOWNERS": ("# ", ""), ".gitattributes": ("# ", ""),
+    "CODEOWNERS": ("# ", ""), ".gitattributes": ("# ", ""), ".npmrc": ("# ", ""),
 }
 BO_QUA_TEN = {"LICENSE", "NOTICE", "pixi.lock"}
 BO_QUA_DUOI = {".json", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".tif", ".tiff", ".lock", ".woff2"}

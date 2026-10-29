@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# allow crawling everything by default
+User-agent: *
+Disallow:

@@ -65,6 +65,7 @@ services:
         KC_BOOTSTRAP_ADMIN_PASSWORD="$$(cat /run/bimat/keycloak-admin)"
         KC_CLIENT_SECRET_KIEM_THU="$$(cat /run/bimat/kc-kiem-thu)"
         KC_CLIENT_SECRET_KIEM_THU_QUAN_TRI="$$(cat /run/bimat/kc-kiem-thu-quan-tri)"
+        KC_MAT_KHAU_NGUOI_DUNG_MAU="$$(cat /run/bimat/nguoi-dung-mau)"
         && exec /opt/keycloak/bin/kc.sh start-dev --import-realm
     environment:
       KC_DB: postgres
@@ -269,11 +270,20 @@ services:
 
   apisix:
     image: apache/apisix:${APISIX_TAG:-3.19.0-debian}
+    # Ghép route Tầng 1 (platform/apisix/apisix.yaml) với route của các miền (domains/*/gateway/routes.yaml).
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >-
+        cat /cau-hinh/nen-tang.yaml /cau-hinh/mien/*/gateway/routes.yaml > /usr/local/apisix/conf/apisix.yaml &&
+        echo '#END' >> /usr/local/apisix/conf/apisix.yaml &&
+        exec /docker-entrypoint.sh docker-start
     environment:
       APISIX_STAND_ALONE: "true"
     volumes:
       - ../platform/apisix/config.yaml:/usr/local/apisix/conf/config.yaml:ro
-      - ../platform/apisix/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
+      - ../platform/apisix/apisix.yaml:/cau-hinh/nen-tang.yaml:ro
+      - ../domains:/cau-hinh/mien:ro
     ports:
       - "127.0.0.1:${GATEWAY_PORT:-9080}:9080"
     depends_on:
@@ -286,6 +296,8 @@ services:
       tiles:
         condition: service_healthy
       prefect:
+        condition: service_healthy
+      web:
         condition: service_healthy
 
 volumes:
