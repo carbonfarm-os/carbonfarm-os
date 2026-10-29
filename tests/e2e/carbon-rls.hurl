@@ -3,7 +3,8 @@
 # Phân quyền dữ liệu miền carbon (#22) bằng RLS: mỗi người dùng mẫu đăng nhập thật (Authorization Code + PKCE,
 # đăng xuất OIDC trước khi đổi người) rồi đọc /graphql.
 #   xavien-mau-1 → chỉ lô của mình; xavien-mau-2 → chỉ lô của mình; canbo-htx-mau → cả 2 lô của hợp tác xã;
-#   nguoi-dung-mau (không thuộc hợp tác xã nào) → 0; quản trị → tất cả. Cột hình học và sub không lộ qua API.
+#   nguoi-dung-mau (không thuộc hợp tác xã nào) → 0; quản trị → tất cả. Chỉ đếm lô đang hoạt động (lô do
+#   carbon-dang-ky-lo.hurl tạo được chuyển "ngung" khi chạy xong). Cột hình học và sub không lộ qua API.
 # Cặp verifier/challenge là ví dụ của RFC 7636 (chỉ dùng trong kiểm thử).
 
 GET {{gateway}}/auth/realms/dxos/protocol/openid-connect/auth?client_id=web&response_type=code&scope=openid&state=xavien-mau-1&redirect_uri=http%3A%2F%2Flocalhost%3A9080%2Fdang-nhap%2Fxong&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256
@@ -37,7 +38,7 @@ HTTP 302
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk_xv1}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
+{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC, condition: {trangThai: \"hoat_dong\"}) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
@@ -79,7 +80,7 @@ HTTP 302
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk_xv2}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
+{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC, condition: {trangThai: \"hoat_dong\"}) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
@@ -117,7 +118,7 @@ HTTP 302
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk_cb}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
+{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC, condition: {trangThai: \"hoat_dong\"}) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
@@ -156,7 +157,7 @@ HTTP 302
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk_nd}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
+{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC, condition: {trangThai: \"hoat_dong\"}) { totalCount nodes { ten dienTichHa dienTichKhaiBaoHa ranhGioi } } allCarbonXaViens { totalCount } allCarbonHopTacXas { totalCount } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
@@ -176,7 +177,7 @@ jsonpath "$.data.updateCarbonLoDatByRowId.carbonLoDat" == null
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk_cb}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC) { nodes { ten } } }"}
+{"query":"{ allCarbonLoDats(orderBy: ROW_ID_ASC, condition: {trangThai: \"hoat_dong\"}) { nodes { ten } } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.data.allCarbonLoDats.nodes[1].ten" == "Lô Đất Mũi 2"
@@ -221,7 +222,7 @@ tk_qt: jsonpath "$.access_token"
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk_qt}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats { totalCount } allCarbonXaViens { totalCount } }"}
+{"query":"{ allCarbonLoDats(condition: {trangThai: \"hoat_dong\"}) { totalCount } allCarbonXaViens { totalCount } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists

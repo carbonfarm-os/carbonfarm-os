@@ -43,7 +43,7 @@ tasks:
       - >-
         docker run --rm --network carbonfarm_default
         -v "{{.ROOT_DIR}}/tests/e2e:/e2e:ro" -v "{{.ROOT_DIR}}/.data/smoke-bimat.env:/bimat.env:ro" {{.HURL}}
-        --test --variables-file /e2e/compose.env --variables-file /bimat.env
+        --test --jobs 1 --variables-file /e2e/compose.env --variables-file /bimat.env
         --connect-to localhost:9080:apisix:9080 --file-root /e2e --glob '/e2e/*.hurl'
       - python3 -m unittest discover -s tests/tich-hop -v
 

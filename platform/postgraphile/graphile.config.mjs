@@ -5,6 +5,8 @@
 // PostgreSQL và đặt jwt.claims.* để chính sách RLS trong CSDL quyết định ai thấy gì. Không có logic quyền ở đây.
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { makePgService } from "postgraphile/adaptors/pg";
+import { defaultMaskError } from "postgraphile/grafserv";
+import { GraphQLError } from "postgraphile/graphql";
 import { PostGraphileAmberPreset } from "postgraphile/presets/amber";
 
 const JWKS = createRemoteJWKSet(new URL(process.env.JWKS_URL));
@@ -17,10 +19,28 @@ function roleTuVai(vai) {
   return "vai_an_danh";
 }
 
+/**
+ * Quy ước lỗi nghiệp vụ: SQLSTATE bắt đầu bằng "U" (lớp PostgreSQL để dành cho ứng dụng) là lỗi người dùng cần thấy –
+ * trả nguyên thông báo, mã và gợi ý trong extensions. Mọi lỗi khác vẫn bị che (chỉ trả mã tra log) như mặc định.
+ */
+function maskError(error) {
+  const goc = error.originalError;
+  if (goc && typeof goc.code === "string" && goc.code.startsWith("U")) {
+    return new GraphQLError(goc.message, {
+      nodes: error.nodes,
+      positions: error.positions,
+      path: error.path,
+      originalError: goc,
+      extensions: { code: goc.code, ...(goc.hint ? { hint: goc.hint } : {}) },
+    });
+  }
+  return defaultMaskError(error);
+}
+
 export default {
   extends: [PostGraphileAmberPreset],
   pgServices: [makePgService({ connectionString: process.env.DATABASE_URL, schemas: SCHEMAS })],
-  grafserv: { port: 5678, host: "0.0.0.0", graphqlPath: "/graphql", graphiql: false, watch: false },
+  grafserv: { port: 5678, host: "0.0.0.0", graphqlPath: "/graphql", graphiql: false, watch: false, maskError },
   grafast: {
     async context(requestContext) {
       const auth = requestContext.node?.req?.headers?.authorization ?? "";
