@@ -155,7 +155,7 @@
 			<small>{vnd(l.donGiaVnd)}/tín chỉ · {vnd(l.thanhTienVnd)}{#if l.doToiTao} · do bạn tạo{/if}</small>
 			{#if l.lyDoLoi}<p class="loi">{l.lyDoLoi}</p>{/if}
 			{#if l.ghiChuDuyet}<p><small>Ghi chú duyệt: {l.ghiChuDuyet}</small></p>{/if}
-			{#if l.doltCommit}<p><small>Sổ cái: <code>{l.doltCommit}</code></small></p>{/if}
+			{#if l.doltCommit}<p><small>Sổ cái: <a href="/kiem-chung?q={l.doltCommit}"><code>{l.doltCommit}</code></a></small></p>{/if}
 			{#if laCanBo && l.trangThai === 'cho_duyet' && !l.doToiTao}
 				<textarea bind:value={lyDo[l.rowId]} rows="2" placeholder="Ghi chú (bắt buộc khi từ chối)"></textarea>
 				<div class="nut">

@@ -54,3 +54,20 @@ services:
         condition: service_healthy
       ket-noi-bank:
         condition: service_healthy
+
+  carbon-kiem-chung:
+    # API kiểm chứng công khai (chỉ đọc sổ cái bằng tài khoản so_cai_doc). Qua gateway /kiem-chung/api/* không cần JWT,
+    # có giới hạn tần suất (domains/carbon/gateway/routes.yaml). Dùng lại image MRV (đã có PyMySQL).
+    image: carbonfarm/carbon-mrv:0.0.0
+    command: ["python", "-m", "mrv.kiem_chung"]
+    volumes:
+      - bimat:/run/bimat:ro
+    depends_on:
+      carbon-mrv:
+        condition: service_started
+      dolt:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/suc-khoe')"]
+      interval: 3s
+      retries: 30

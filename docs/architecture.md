@@ -115,6 +115,12 @@ sequenceDiagram
   CN->>PG: trừ dải sê-ri khỏi ví → "hoan_tat"
 ```
 
+**Kiểm chứng công khai (#38):** `/kiem-chung` (web) và `/kiem-chung/api/*` (không JWT, chỉ GET, 60 yêu cầu/phút mỗi IP). Dịch vụ `carbon-kiem-chung` đọc Dolt bằng tài khoản **chỉ đọc** `so_cai_doc` (Tầng 1, `platform/dolt/tai-khoan-chi-doc.sh`):
+- tính lại SHA-256 từng bản ghi bằng cùng dạng JSON chuẩn lúc ghi (`mrv/json_chuan.py`);
+- báo bản ghi còn nguyên vẹn ở HEAD hay đã bị sửa sau;
+- tra theo sê-ri ra chuỗi MRV → cấp → bán;
+- ẩn trường `*_sub`.
+
 ## 3. Sổ cái có phiên bản (Dolt)
 - Bảng sổ cái (kết quả MRV, cấp tín chỉ, chuyển nhượng) nằm trong Dolt. Mỗi lần ghi là một commit có mã băm nội dung, giống git.
 - Người mua và Registry nhận mã băm commit. Họ kiểm lại bằng `dolt log` / `dolt diff` hoặc qua API đọc công khai.

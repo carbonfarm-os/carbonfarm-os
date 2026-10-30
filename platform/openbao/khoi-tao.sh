@@ -10,7 +10,7 @@
 set -eu
 export BAO_ADDR="${BAO_ADDR:-http://openbao:8200}"
 KHOA=/khoa/khoi-tao.txt
-BI_MAT="postgres keycloak-db keycloak-admin kc-kiem-thu kc-kiem-thu-quan-tri postgraphile-db stac-db s3-truy-cap s3-bi-mat prefect-db dolt-root dolt-so-cai valkey nguoi-dung-mau"
+BI_MAT="postgres keycloak-db keycloak-admin kc-kiem-thu kc-kiem-thu-quan-tri postgraphile-db stac-db s3-truy-cap s3-bi-mat prefect-db dolt-root dolt-so-cai dolt-so-cai-doc valkey nguoi-dung-mau"
 
 for _ in $(seq 1 60); do
   rc=0; bao status >/dev/null 2>&1 || rc=$?

@@ -7,7 +7,6 @@ Bí mật đọc từ /run/bimat (OpenBao sinh), không qua biến môi trườn
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 from pathlib import Path
 
@@ -19,6 +18,8 @@ import pymysql
 import rasterio
 from psycopg.rows import dict_row
 from rasterio.io import MemoryFile
+
+from mrv.json_chuan import json_chuan
 
 BIMAT = Path("/run/bimat")
 BUCKET = os.environ.get("MRV_BUCKET", "anh-ve-tinh")
@@ -70,11 +71,6 @@ def dang_ky_stac(item: dict) -> None:
         if r.status_code == 409:
             r = c.put(f"/collections/{BO_SUU_TAP}/items/{item['id']}", json=item)
         r.raise_for_status()
-
-
-def json_chuan(du_lieu: dict) -> str:
-    """JSON dạng chuẩn (khóa sắp xếp, không khoảng trắng) để băm ổn định."""
-    return json.dumps(du_lieu, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str)
 
 
 def ghi_so_cai(ma_doi_tuong: str, du_lieu: dict, thong_diep: str, loai: str = "ket_qua_mrv") -> tuple[str, str]:

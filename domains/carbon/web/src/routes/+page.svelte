@@ -287,6 +287,7 @@
 	{:else}
 		<button onclick={batDauDangNhap}>Đăng nhập</button>
 	{/if}
+	<a class="kiem-chung" href="/kiem-chung">Kiểm chứng</a>
 </header>
 
 <main>
@@ -392,6 +393,9 @@
 	}
 	header strong {
 		flex: 1;
+	}
+	.kiem-chung {
+		color: #d8f3dc;
 	}
 	main {
 		display: grid;

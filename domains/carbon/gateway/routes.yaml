@@ -2,6 +2,24 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Route gateway của miền carbon (Tầng 2). APISIX ghép tệp này vào sau danh sách routes của Tầng 1
 # (platform/apisix/apisix.yaml) lúc khởi động; vì vậy tệp chỉ gồm các mục route, cùng mức thụt lề.
+  - id: carbon-kiem-chung
+    # Công khai, KHÔNG kiểm JWT: ai cũng tra được sổ cái. Chỉ GET, giới hạn 60 yêu cầu/phút mỗi địa chỉ IP.
+    uris: ["/kiem-chung/api/*"]
+    methods: ["GET"]
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/kiem-chung/api/(.*)", "/api/$1"]
+      limit-count:
+        count: 60
+        time_window: 60
+        key_type: var
+        key: remote_addr
+        rejected_code: 429
+        rejected_msg: "Quá nhiều yêu cầu kiểm chứng, thử lại sau một phút"
+    upstream:
+      type: roundrobin
+      nodes:
+        "carbon-kiem-chung:8080": 1
   - id: carbon-web
     uri: /*
     priority: -10
