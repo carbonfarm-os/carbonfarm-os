@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.2.0...v0.3.0) (2026-10-30)
+
+
+### Tính năng mới
+
+* **carbon:** bán tín chỉ cho người mua mock – tạo và duyệt bởi hai người, tiền về Bank mock, ghi sổ cái ([#37](https://github.com/carbonfarm-os/carbonfarm-os/issues/37)) ([#46](https://github.com/carbonfarm-os/carbonfarm-os/issues/46)) ([d9486d6](https://github.com/carbonfarm-os/carbonfarm-os/commit/d9486d639ab53f57886fca5f2835302fd6fda1ab))
+* **carbon:** cấp tín chỉ vào ví hợp tác xã qua Registry mock, mỗi kết quả MRV một lần, ghi sổ cái ([#36](https://github.com/carbonfarm-os/carbonfarm-os/issues/36)) ([#45](https://github.com/carbonfarm-os/carbonfarm-os/issues/45)) ([a2c1307](https://github.com/carbonfarm-os/carbonfarm-os/commit/a2c13079b8333d7050a3904f127aeb1484263e3b))
+* **carbon:** dashboard hợp tác xã trên Metabase OSS, dựng tự động trên view báo cáo chỉ đọc ([#39](https://github.com/carbonfarm-os/carbonfarm-os/issues/39)) ([#48](https://github.com/carbonfarm-os/carbonfarm-os/issues/48)) ([0bb09fc](https://github.com/carbonfarm-os/carbonfarm-os/commit/0bb09fccc0cc24fa12e7df17c0934aad8f0747af))
+* **carbon:** trang kiểm chứng công khai theo mã băm commit hoặc số sê-ri tín chỉ ([#38](https://github.com/carbonfarm-os/carbonfarm-os/issues/38)) ([#47](https://github.com/carbonfarm-os/carbonfarm-os/issues/47)) ([b3c6c4d](https://github.com/carbonfarm-os/carbonfarm-os/commit/b3c6c4d130cecbae2aa2d545c87153ee49d9423a))
+* **connectors:** mock Registry theo TT 11/2026/TT-BNNMT, Buyer, Bank – hợp đồng OpenAPI ([#35](https://github.com/carbonfarm-os/carbonfarm-os/issues/35)) ([#42](https://github.com/carbonfarm-os/carbonfarm-os/issues/42)) ([b72886b](https://github.com/carbonfarm-os/carbonfarm-os/commit/b72886b127d1d444751d035ae83329e92ff0fe47))
+
+
+### Sửa lỗi
+
+* **carbon:** giới hạn thời gian đọc ảnh Sentinel-2 qua mạng để task MRV tự thử lại thay vì treo ([#44](https://github.com/carbonfarm-os/carbonfarm-os/issues/44)) ([a34ec62](https://github.com/carbonfarm-os/carbonfarm-os/commit/a34ec628fae476e2a320ad6abe165379c96b1ee7))
+
 ## [0.2.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.1.0...v0.2.0) (2026-10-29)
 
 
