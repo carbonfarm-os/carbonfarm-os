@@ -5,3 +5,6 @@ mk-canbo-htx-mau
 mk-xavien-mau-1
 mk-xavien-mau-2
 carbon-mrv-db
+ket-noi-registry
+ket-noi-buyer
+ket-noi-bank

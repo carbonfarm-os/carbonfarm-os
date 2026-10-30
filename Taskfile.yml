@@ -55,9 +55,15 @@ tasks:
       - 'echo "OK – compose hợp lệ"'
 
   test:
-    desc: "Kiểm thử đơn vị (không cần hệ thống chạy): công thức phương pháp MRV"
+    desc: "Kiểm thử không cần hệ thống chạy: công thức phương pháp MRV, hợp đồng OpenAPI của connector khớp mã"
     cmds:
       - python3 -m unittest discover -s domains/carbon/mrv/tests -v
+      - python3 -m connectors.xuat_openapi --kiem
+
+  openapi:
+    desc: Sinh lại hợp đồng OpenAPI connectors/<tên>/openapi.yaml từ mã (cần fastapi – connectors/requirements.txt)
+    cmds:
+      - python3 -m connectors.xuat_openapi
 
   lint:
     desc: Lint YAML, Python, shell (công cụ cài bằng pixi hoặc pip)

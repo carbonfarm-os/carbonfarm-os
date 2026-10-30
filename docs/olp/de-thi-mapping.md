@@ -37,4 +37,5 @@ Trạng thái: ☐ chưa làm · ◐ đang làm · ☑ xong (ghi đường dẫn
 ## D. Cộng đồng
 - [ ] Demo công khai trên Internet, người dùng thật (cán bộ hợp tác xã, sinh viên) thử, phản hồi thành issue.
 - [ ] Bài giới thiệu (VFOSSA, diễn đàn); Discussions.
+- [ ] Connector mock có hợp đồng OpenAPI để đối tác thật thay thế: Registry theo TT 11/2026/TT-BNNMT, Buyer, Bank (#35, `connectors/`, ADR 0006).
 - [ ] Công bố đặc tả phương pháp MRV cho cộng đồng dùng lại. Đã có v0.1 (`methodology/v0.1-rung-ngap-man-ipcc-tier1.md`, #24), chưa giới thiệu ra ngoài.

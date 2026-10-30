@@ -40,6 +40,12 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | PyMySQL | 1.2.3 | MIT | github.com/PyMySQL/PyMySQL | MRV engine ghi sổ cái Dolt |
 | boto3 / botocore | 1.43.121 | Apache-2.0 | github.com/boto/boto3 | MRV engine ghi COG lên S3 nền tảng |
 | httpx, PyYAML (có sẵn trong image Prefect) | 0.28.1 / 6.0.3 | BSD-3-Clause / MIT | github.com/encode/httpx, github.com/yaml/pyyaml | MRV engine gọi STAC, đọc tham số phương pháp |
+| FastAPI | 0.162.0 | MIT | github.com/fastapi/fastapi | Connector mock (`connectors/`, image `carbonfarm/ket-noi` trên nền `python:3.12.12-slim-bookworm`) |
+| Starlette (kèm FastAPI) | 1.10.0 | BSD-3-Clause | github.com/encode/starlette | Connector mock |
+| Gói gián tiếp của connector (pydantic-core, anyio, idna, click, h11, annotated-types, typing-extensions, typing-inspection, annotated-doc) | theo pip, đọc metadata 30/10/2026 | MIT, BSD-3-Clause, PSF-2.0 – đều OSI | PyPI | Connector mock |
+| uvicorn | 0.54.0 | BSD-3-Clause | github.com/encode/uvicorn | Connector mock |
+| pydantic | 2.14.2 | MIT | github.com/pydantic/pydantic | Connector mock (mô hình dữ liệu, sinh OpenAPI) |
+| Python (nền image connector) | 3.12.12 | PSF-2.0 | github.com/python/cpython | Connector mock |
 | GDAL (môi trường dev bằng pixi) | 3.13 (conda-forge) | MIT/X (tệp LICENSE.TXT liệt kê giấy phép từng phần) | github.com/OSGeo/gdal | Máy dev |
 | jose | 6.2.13 | MIT | github.com/panva/jose | PostGraphile kiểm lại JWT bằng JWKS |
 | pg | 8.23.1 | MIT | github.com/brianc/node-postgres | PostGraphile kết nối PostgreSQL |

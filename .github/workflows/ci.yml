@@ -21,7 +21,7 @@ jobs:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}  # tránh giới hạn API khi tải go-task
       - name: Công cụ lint
-        run: pip install yamllint ruff
+        run: pip install yamllint ruff -r connectors/requirements.txt
       - name: task check
         run: task check
       - name: task lint
