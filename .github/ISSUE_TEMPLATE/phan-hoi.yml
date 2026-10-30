@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Phản hồi dùng thử
+description: Bạn vừa thử CarbonFarm OS – kể lại điều chưa ổn hoặc điều muốn có (hướng dẫn ở docs/thu-nghiem.md)
+title: "[Dùng thử] "
+labels: ["phan-hoi"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cảm ơn bạn đã thử. Mỗi phản hồi một issue; viết tự nhiên, không cần thuật ngữ. **Đừng dán mật khẩu hay thông tin cá nhân thật.**
+  - type: dropdown
+    id: vai-tro
+    attributes:
+      label: Bạn thử với vai trò
+      options: ["Cán bộ hợp tác xã", "Xã viên", "Người mua tín chỉ / người tra cứu", "Sinh viên, người phát triển", "Khác"]
+    validations: {required: true}
+  - type: dropdown
+    id: nhiem-vu
+    attributes:
+      label: Đang làm nhiệm vụ nào (theo docs/thu-nghiem.md)
+      options:
+        - "1. Xem trang chủ, tra một tín chỉ"
+        - "2. Đăng nhập, tìm lô trên bản đồ"
+        - "3. Vẽ và đăng ký lô mới"
+        - "4. Yêu cầu đo, duyệt kết quả MRV"
+        - "5. Cấp tín chỉ, tạo và duyệt lệnh bán"
+        - "6. Xem dashboard hợp tác xã"
+        - "Khác"
+    validations: {required: true}
+  - type: dropdown
+    id: loai
+    attributes:
+      label: Loại phản hồi
+      options: ["Lỗi: hệ thống chạy sai", "Khó hiểu: không biết bấm gì hoặc chữ khó hiểu", "Góp ý: muốn có thêm", "Khen: phần này dùng tốt"]
+    validations: {required: true}
+  - type: textarea
+    id: dien-ra
+    attributes:
+      label: Chuyện gì đã xảy ra
+      description: Bạn bấm gì, mong thấy gì, thực tế thấy gì. Có ảnh chụp màn hình thì kéo thả vào đây.
+    validations: {required: true}
+  - type: dropdown
+    id: muc-do
+    attributes:
+      label: Mức độ ảnh hưởng
+      options: ["Không làm tiếp được", "Làm được nhưng mất công", "Nhỏ, chỉ khó chịu"]
+    validations: {required: true}
+  - type: input
+    id: thiet-bi
+    attributes:
+      label: Thiết bị và trình duyệt
+      placeholder: "Ví dụ: điện thoại Android, Chrome"
