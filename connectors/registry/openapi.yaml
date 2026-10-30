@@ -23,7 +23,7 @@ paths:
   /suc-khoe:
     get:
       tags:
-      - Hệ thống
+        - Hệ thống
       summary: Suc Khoe
       operationId: suc_khoe_suc_khoe_get
       responses:
@@ -38,7 +38,7 @@ paths:
   /tai-khoan:
     post:
       tags:
-      - Tài khoản đăng ký
+        - Tài khoản đăng ký
       summary: Tao Tai Khoan
       description: Cấp tài khoản đăng ký gắn mã số thuế; mỗi tổ chức chỉ một tài khoản (Điều 6 khoản 1, 2).
       operationId: tao_tai_khoan_tai_khoan_post
@@ -62,23 +62,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - khoaConnector: []
+        - khoaConnector: []
   /tai-khoan/{ma_so_thue}:
     get:
       tags:
-      - Tài khoản đăng ký
+        - Tài khoản đăng ký
       summary: Xem Tai Khoan
       description: Số dư và dải sê-ri theo từng tiểu khoản (Điều 7).
       operationId: xem_tai_khoan_tai_khoan__ma_so_thue__get
       security:
-      - khoaConnector: []
+        - khoaConnector: []
       parameters:
-      - name: ma_so_thue
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Ma So Thue
+        - name: ma_so_thue
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Ma So Thue
       responses:
         '200':
           description: Successful Response
@@ -95,7 +95,7 @@ paths:
   /tin-chi/dang-ky:
     post:
       tags:
-      - Tín chỉ
+        - Tín chỉ
       summary: Dang Ky
       description: Đăng ký tín chỉ vào tiểu khoản Đăng ký chung; cấp mã trong nước và dải số sê-ri liên tiếp (Điều 10, 11).
       operationId: dang_ky_tin_chi_dang_ky_post
@@ -119,11 +119,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - khoaConnector: []
+        - khoaConnector: []
   /tin-chi/chuyen-quyen:
     post:
       tags:
-      - Tín chỉ
+        - Tín chỉ
       summary: Chuyen Quyen
       description: 'Ghi nhận chủ sở hữu mới sau giao dịch bán (mock; thực tế qua sàn và lưu ký – Điều 14–17).
 
@@ -149,11 +149,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - khoaConnector: []
+        - khoaConnector: []
   /tin-chi/bu-tru:
     post:
       tags:
-      - Tín chỉ
+        - Tín chỉ
       summary: Bu Tru
       description: 'Dùng tín chỉ để bù trừ: chuyển từ Đăng ký chung sang Bù trừ; vượt số dư → từ chối (Điều 20 khoản 1).'
       operationId: bu_tru_tin_chi_bu_tru_post
@@ -177,23 +177,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - khoaConnector: []
+        - khoaConnector: []
   /tin-chi/seri/{so_seri}:
     get:
       tags:
-      - Tín chỉ
+        - Tín chỉ
       summary: Tra Seri
       description: 'Tra một số sê-ri: chủ sở hữu, tiểu khoản hiện tại, lịch sử nghiệp vụ (Điều 4 khoản 3).'
       operationId: tra_seri_tin_chi_seri__so_seri__get
       security:
-      - khoaConnector: []
+        - khoaConnector: []
       parameters:
-      - name: so_seri
-        in: path
-        required: true
-        schema:
-          type: string
-          title: So Seri
+        - name: so_seri
+          in: path
+          required: true
+          schema:
+            type: string
+            title: So Seri
       responses:
         '200':
           description: Successful Response
@@ -217,7 +217,7 @@ components:
           title: Ma So Thue
           description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
           examples:
-          - '0000000001'
+            - '0000000001'
         ma_trong_nuoc:
           type: string
           pattern: ^[A-Z0-9]{3}-[A-Z0-9]{4}-\d{2}$
@@ -232,10 +232,10 @@ components:
           title: Ma Tham Chieu
       type: object
       required:
-      - ma_so_thue
-      - ma_trong_nuoc
-      - so_luong
-      - ma_tham_chieu
+        - ma_so_thue
+        - ma_trong_nuoc
+        - so_luong
+        - ma_tham_chieu
       title: BuTru
     ChuyenQuyen:
       properties:
@@ -245,14 +245,14 @@ components:
           title: Tu Ma So Thue
           description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
           examples:
-          - '0000000001'
+            - '0000000001'
         den_ma_so_thue:
           type: string
           pattern: ^\d{10}(-\d{3})?$
           title: Den Ma So Thue
           description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
           examples:
-          - '0000000001'
+            - '0000000001'
         ma_trong_nuoc:
           type: string
           pattern: ^[A-Z0-9]{3}-[A-Z0-9]{4}-\d{2}$
@@ -267,11 +267,11 @@ components:
           title: Ma Tham Chieu
       type: object
       required:
-      - tu_ma_so_thue
-      - den_ma_so_thue
-      - ma_trong_nuoc
-      - so_luong
-      - ma_tham_chieu
+        - tu_ma_so_thue
+        - den_ma_so_thue
+        - ma_trong_nuoc
+        - so_luong
+        - ma_tham_chieu
       title: ChuyenQuyen
     DaiSeri:
       properties:
@@ -289,10 +289,10 @@ components:
           title: So Luong
       type: object
       required:
-      - ma_trong_nuoc
-      - seri_tu
-      - seri_den
-      - so_luong
+        - ma_trong_nuoc
+        - seri_tu
+        - seri_den
+        - so_luong
       title: DaiSeri
     DangKyTinChi:
       properties:
@@ -302,7 +302,7 @@ components:
           title: Ma So Thue
           description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
           examples:
-          - '0000000001'
+            - '0000000001'
         ten_du_an:
           type: string
           minLength: 3
@@ -337,14 +337,14 @@ components:
           description: Mã của bên gọi; gửi lại cùng mã → 409 (chống cấp hai lần)
       type: object
       required:
-      - ma_so_thue
-      - ten_du_an
-      - ma_du_an
-      - ten_co_che
-      - ma_co_che
-      - nam_xac_nhan
-      - so_luong
-      - ma_tham_chieu
+        - ma_so_thue
+        - ten_du_an
+        - ma_du_an
+        - ten_co_che
+        - ma_co_che
+        - nam_xac_nhan
+        - so_luong
+        - ma_tham_chieu
       title: DangKyTinChi
     DauMoi:
       properties:
@@ -363,10 +363,10 @@ components:
           title: Dien Thoai
       type: object
       required:
-      - ho_ten
-      - chuc_vu
-      - email
-      - dien_thoai
+        - ho_ten
+        - chuc_vu
+        - email
+        - dien_thoai
       title: DauMoi
     HTTPValidationError:
       properties:
@@ -395,10 +395,10 @@ components:
           title: Luc
       type: object
       required:
-      - ma_tham_chieu
-      - nghiep_vu
-      - dai_seri
-      - luc
+        - ma_tham_chieu
+        - nghiep_vu
+        - dai_seri
+        - luc
       title: KetQuaNghiepVu
     SuKien:
       properties:
@@ -410,30 +410,30 @@ components:
           title: Nghiep Vu
         tu_ma_so_thue:
           anyOf:
-          - type: string
-          - type: 'null'
+            - type: string
+            - type: 'null'
           title: Tu Ma So Thue
         den_ma_so_thue:
           anyOf:
-          - type: string
-          - type: 'null'
+            - type: string
+            - type: 'null'
           title: Den Ma So Thue
         tieu_khoan:
           type: string
           title: Tieu Khoan
         ma_tham_chieu:
           anyOf:
-          - type: string
-          - type: 'null'
+            - type: string
+            - type: 'null'
           title: Ma Tham Chieu
       type: object
       required:
-      - luc
-      - nghiep_vu
-      - tu_ma_so_thue
-      - den_ma_so_thue
-      - tieu_khoan
-      - ma_tham_chieu
+        - luc
+        - nghiep_vu
+        - tu_ma_so_thue
+        - den_ma_so_thue
+        - tieu_khoan
+        - ma_tham_chieu
       title: SuKien
     TaiKhoan:
       properties:
@@ -457,10 +457,10 @@ components:
           title: So Du
       type: object
       required:
-      - ma_so_thue
-      - ten_to_chuc
-      - tieu_khoan
-      - so_du
+        - ma_so_thue
+        - ten_to_chuc
+        - tieu_khoan
+        - so_du
       title: TaiKhoan
     TaoTaiKhoan:
       properties:
@@ -470,7 +470,7 @@ components:
           title: Ma So Thue
           description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
           examples:
-          - '0000000001'
+            - '0000000001'
         ten_to_chuc:
           type: string
           minLength: 3
@@ -484,9 +484,9 @@ components:
           description: Tối thiểu 02 cá nhân đầu mối (Điều 6 khoản 4)
       type: object
       required:
-      - ma_so_thue
-      - ten_to_chuc
-      - dau_moi
+        - ma_so_thue
+        - ten_to_chuc
+        - dau_moi
       title: TaoTaiKhoan
     TraSeri:
       properties:
@@ -512,20 +512,20 @@ components:
           title: Lich Su
       type: object
       required:
-      - so_seri
-      - ma_trong_nuoc
-      - ten_du_an
-      - chu_so_huu
-      - tieu_khoan
-      - lich_su
+        - so_seri
+        - ma_trong_nuoc
+        - ten_du_an
+        - chu_so_huu
+        - tieu_khoan
+        - lich_su
       title: TraSeri
     ValidationError:
       properties:
         loc:
           items:
             anyOf:
-            - type: string
-            - type: integer
+              - type: string
+              - type: integer
           type: array
           title: Location
         msg:
@@ -541,9 +541,9 @@ components:
           title: Context
       type: object
       required:
-      - loc
-      - msg
-      - type
+        - loc
+        - msg
+        - type
       title: ValidationError
   securitySchemes:
     khoaConnector:

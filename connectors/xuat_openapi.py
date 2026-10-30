@@ -18,9 +18,16 @@ DAU = "# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors\n# SPDX-License
       "# TỰ SINH bằng `python3 -m connectors.xuat_openapi` – không sửa tay.\n"
 
 
+class _ThutLe(yaml.SafeDumper):
+    """Thụt lề phần tử danh sách (yamllint của repo yêu cầu)."""
+
+    def increase_indent(self, flow: bool = False, indentless: bool = False):
+        return super().increase_indent(flow, False)
+
+
 def noi_dung(ten: str) -> str:
     app = importlib.import_module(f"connectors.{ten}.app").app
-    return DAU + yaml.safe_dump(app.openapi(), allow_unicode=True, sort_keys=False, width=120)
+    return DAU + yaml.dump(app.openapi(), Dumper=_ThutLe, allow_unicode=True, sort_keys=False, width=120)
 
 
 def main() -> int:

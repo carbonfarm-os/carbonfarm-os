@@ -16,7 +16,7 @@ paths:
   /suc-khoe:
     get:
       tags:
-      - Hệ thống
+        - Hệ thống
       summary: Suc Khoe
       operationId: suc_khoe_suc_khoe_get
       responses:
@@ -31,7 +31,7 @@ paths:
   /ghi-co:
     post:
       tags:
-      - Tài khoản
+        - Tài khoản
       summary: Ghi Co
       operationId: ghi_co_ghi_co_post
       requestBody:
@@ -54,22 +54,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - khoaConnector: []
+        - khoaConnector: []
   /tai-khoan/{so_tai_khoan}:
     get:
       tags:
-      - Tài khoản
+        - Tài khoản
       summary: Xem
       operationId: xem_tai_khoan__so_tai_khoan__get
       security:
-      - khoaConnector: []
+        - khoaConnector: []
       parameters:
-      - name: so_tai_khoan
-        in: path
-        required: true
-        schema:
-          type: string
-          title: So Tai Khoan
+        - name: so_tai_khoan
+          in: path
+          required: true
+          schema:
+            type: string
+            title: So Tai Khoan
       responses:
         '200':
           description: Successful Response
@@ -106,10 +106,10 @@ components:
           title: Ma Tham Chieu
       type: object
       required:
-      - so_tai_khoan
-      - so_tien_vnd
-      - noi_dung
-      - ma_tham_chieu
+        - so_tai_khoan
+        - so_tien_vnd
+        - noi_dung
+        - ma_tham_chieu
       title: GhiCo
     GiaoDich:
       properties:
@@ -130,11 +130,11 @@ components:
           title: Luc
       type: object
       required:
-      - ma_tham_chieu
-      - so_tai_khoan
-      - so_tien_vnd
-      - noi_dung
-      - luc
+        - ma_tham_chieu
+        - so_tai_khoan
+        - so_tien_vnd
+        - noi_dung
+        - luc
       title: GiaoDich
     HTTPValidationError:
       properties:
@@ -160,17 +160,17 @@ components:
           title: Giao Dich
       type: object
       required:
-      - so_tai_khoan
-      - so_du_vnd
-      - giao_dich
+        - so_tai_khoan
+        - so_du_vnd
+        - giao_dich
       title: TaiKhoan
     ValidationError:
       properties:
         loc:
           items:
             anyOf:
-            - type: string
-            - type: integer
+              - type: string
+              - type: integer
           type: array
           title: Location
         msg:
@@ -186,9 +186,9 @@ components:
           title: Context
       type: object
       required:
-      - loc
-      - msg
-      - type
+        - loc
+        - msg
+        - type
       title: ValidationError
   securitySchemes:
     khoaConnector:
