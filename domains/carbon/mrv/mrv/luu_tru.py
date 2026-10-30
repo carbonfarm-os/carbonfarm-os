@@ -59,14 +59,17 @@ def dang_ky_stac(item: dict) -> None:
     """Thêm item vào bộ sưu tập carbon-mrv (tạo bộ sưu tập nếu chưa có); chạy lại thì cập nhật."""
     with httpx.Client(base_url=STAC, timeout=30) as c:
         if c.get(f"/collections/{BO_SUU_TAP}").status_code == 404:
-            c.post("/collections", json={
+            tao = c.post("/collections", json={
                 "type": "Collection", "stac_version": "1.0.0", "id": BO_SUU_TAP,
                 "description": "Sản phẩm MRV của miền carbon: NDVI đã cắt theo lô, kèm phả hệ tới cảnh Sentinel-2 nguồn",
                 # Sản phẩm dẫn xuất từ dữ liệu Copernicus Sentinel (điều khoản dữ liệu mở của Copernicus, ghi nguồn)
                 "license": "other",
                 "extent": {"spatial": {"bbox": [[-180, -90, 180, 90]]}, "temporal": {"interval": [[None, None]]}},
                 "links": [],
-            }).raise_for_status()
+            })
+            # Hai lượt đo chạy song song trên hệ thống mới cùng thấy 404; lượt tạo sau nhận 409 – bộ sưu tập đã có là đủ.
+            if tao.status_code != 409:
+                tao.raise_for_status()
         r = c.post(f"/collections/{BO_SUU_TAP}/items", json=item)
         if r.status_code == 409:
             r = c.put(f"/collections/{BO_SUU_TAP}/items/{item['id']}", json=item)
