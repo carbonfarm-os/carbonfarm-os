@@ -245,6 +245,16 @@ def bu_tru(bt: BuTru) -> KetQuaNghiepVu:
         return _ghi(c, "bu_tru", bt.ma_trong_nuoc, dai, bt.ma_so_thue, bt.ma_so_thue, "bu_tru", bt.ma_tham_chieu)
 
 
+@ql.get("/nghiep-vu/{ma_tham_chieu}", tags=["Tín chỉ"], response_model=KetQuaNghiepVu)
+def xem_nghiep_vu(ma_tham_chieu: str) -> KetQuaNghiepVu:
+    """Kết quả nghiệp vụ đã xử lý theo mã tham chiếu – để bên gọi khôi phục khi mất phản hồi (gửi lại nhận 409)."""
+    with _db() as c:
+        r = c.execute("SELECT ket_qua FROM nghiep_vu WHERE ma_tham_chieu = ?", (ma_tham_chieu,)).fetchone()
+    if not r:
+        raise HTTPException(404, f"Chưa có nghiệp vụ mã tham chiếu {ma_tham_chieu}")
+    return KetQuaNghiepVu.model_validate_json(r["ket_qua"])
+
+
 @ql.get("/tin-chi/seri/{so_seri}", tags=["Tín chỉ"], response_model=TraSeri)
 def tra_seri(so_seri: str) -> TraSeri:
     """Tra một số sê-ri: chủ sở hữu, tiểu khoản hiện tại, lịch sử nghiệp vụ (Điều 4 khoản 3)."""

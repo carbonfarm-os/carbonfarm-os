@@ -102,7 +102,12 @@ sequenceDiagram
   CN->>PF: resume lượt chạy
   CN->>DOLT: được duyệt → ghi bản ghi + DOLT_COMMIT
   CN->>PG: mã băm commit, SHA-256 → "da_ghi_so"
-  Note over PG,REG: Sprint 3: đề nghị cấp tín chỉ (Registry mock), ví, bán cho người mua mock
+  HTX->>WEB: Đề nghị cấp tín chỉ (1 tín chỉ = 1 t CO₂e, làm tròn xuống)
+  WEB->>PG: carbonDeNghiCapTinChi – chỉ kết quả đã ghi sổ, mỗi kết quả một lần
+  CN->>REG: tài khoản gắn mã số thuế + đăng ký tín chỉ → mã trong nước, dải sê-ri (TT 11/2026)
+  CN->>DOLT: bản ghi cấp (trỏ về commit MRV gốc) → commit
+  CN->>PG: khối sê-ri vào ví hợp tác xã → "da_cap"
+  Note over PG,REG: Tiếp theo: bán cho người mua mock (tạo/duyệt hai người), Bank mock, trang kiểm chứng
 ```
 
 ## 3. Sổ cái có phiên bản (Dolt)

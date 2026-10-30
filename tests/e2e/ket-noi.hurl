@@ -60,6 +60,13 @@ Authorization: Bearer {{bm_ket_noi_registry}}
 {"ma_so_thue":"0000000001","ten_du_an":"Rừng ngập mặn Đất Mũi (giả)","ma_du_an":"CF01","ten_co_che":"Cơ chế mock","ma_co_che":"MCK","nam_xac_nhan":2026,"so_luong":10,"ma_tham_chieu":"{{ref_dk}}"}
 HTTP 409
 
+# Khôi phục kết quả theo mã tham chiếu (bên gọi mất phản hồi, gửi lại nhận 409)
+GET {{registry}}/nghiep-vu/{{ref_dk}}
+Authorization: Bearer {{bm_ket_noi_registry}}
+HTTP 200
+[Asserts]
+jsonpath "$.dai_seri[0].seri_tu" == "{{seri_dau}}"
+
 # Mã dự án sai định dạng (cần 4 ký tự)
 POST {{registry}}/tin-chi/dang-ky
 Authorization: Bearer {{bm_ket_noi_registry}}

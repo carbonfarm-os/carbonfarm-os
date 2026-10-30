@@ -178,6 +178,35 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - khoaConnector: []
+  /nghiep-vu/{ma_tham_chieu}:
+    get:
+      tags:
+        - Tín chỉ
+      summary: Xem Nghiep Vu
+      description: Kết quả nghiệp vụ đã xử lý theo mã tham chiếu – để bên gọi khôi phục khi mất phản hồi (gửi lại nhận 409).
+      operationId: xem_nghiep_vu_nghiep_vu__ma_tham_chieu__get
+      security:
+        - khoaConnector: []
+      parameters:
+        - name: ma_tham_chieu
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Ma Tham Chieu
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KetQuaNghiepVu'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /tin-chi/seri/{so_seri}:
     get:
       tags:

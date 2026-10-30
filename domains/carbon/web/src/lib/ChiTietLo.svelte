@@ -9,6 +9,15 @@
 	import type { Token } from './dang-nhap.ts';
 	import { goiGraphql, LoiNghiepVu } from './graphql.ts';
 
+	type CapTinChi = {
+		trangThai: string;
+		soLuong: number;
+		maTrongNuoc: string | null;
+		seriTu: string | null;
+		seriDen: string | null;
+		doltCommit: string | null;
+		lyDoLoi: string | null;
+	};
 	type KetQua = {
 		rowId: string;
 		kyTu: string;
@@ -30,6 +39,7 @@
 		duyetLuc: string | null;
 		doltCommit: string | null;
 		phaHe: Record<string, unknown> | null;
+		carbonDeNghiCapByKetQuaMrvId: CapTinChi | null;
 	};
 	type Lo = { rowId: string; ten: string; dienTichHa: string; namTrong: number | null };
 
@@ -39,6 +49,7 @@
 		laCanBo,
 		lopDangXem,
 		onXemLop,
+		onThayDoi,
 		onDong
 	}: {
 		token: Token;
@@ -46,6 +57,7 @@
 		laCanBo: boolean;
 		lopDangXem: string | null;
 		onXemLop: (cog: string | null) => void;
+		onThayDoi: () => void;
 		onDong: () => void;
 	} = $props();
 
@@ -67,7 +79,8 @@
 	const DANG_XU_LY = ['cho_chay', 'dang_chay', 'da_duyet'];
 	const TRUY_VAN = `query($lo: UUID!) { allCarbonKetQuaMrvs(condition: { loDatId: $lo }) { nodes {
 		rowId kyTu kyDen trangThai canhId ngayChup mayPhanTram soDiemAnhLo soDiemAnhHopLe soDiemAnhTan dienTichTanHa co2ETan
-		canhBao phuongPhap cogHref lyDoLoi ghiChuDuyet duyetLuc doltCommit phaHe } } }`;
+		canhBao phuongPhap cogHref lyDoLoi ghiChuDuyet duyetLuc doltCommit phaHe
+		carbonDeNghiCapByKetQuaMrvId { trangThai soLuong maTrongNuoc seriTu seriDen doltCommit lyDoLoi } } } }`;
 
 	// Kỳ mặc định: tháng trọn vẹn gần nhất
 	const nay = new Date();
@@ -83,6 +96,7 @@
 	let loi = $state<{ thongBao: string; goiY?: string } | null>(null);
 	let dangGui = $state(false);
 	let hen: ReturnType<typeof setTimeout> | undefined;
+	let daCoCho = false;
 
 	async function tai() {
 		clearTimeout(hen);
@@ -95,7 +109,11 @@
 			dangTai = false;
 		}
 		// Tự làm mới khi còn kết quả đang chạy trên máy chủ
-		if (ketQua.some((k) => DANG_XU_LY.includes(k.trangThai))) hen = setTimeout(tai, 4000);
+		const dangCap = ketQua.some((k) => k.carbonDeNghiCapByKetQuaMrvId?.trangThai === 'cho_dang_ky');
+		if (dangCap || ketQua.some((k) => DANG_XU_LY.includes(k.trangThai))) hen = setTimeout(tai, 4000);
+		// Vừa cấp xong → trang chính tải lại ví
+		if (daCoCho && !dangCap) onThayDoi();
+		daCoCho = dangCap;
 	}
 
 	async function goi(mutation: string, bien: Record<string, unknown>) {
@@ -118,6 +136,8 @@
 			{ lo: lo.rowId, tu: kyTu, den: kyDen }
 		);
 	};
+	const deNghiCap = (id: string) =>
+		goi('mutation($id: UUID) { carbonDeNghiCapTinChi(input: { ketQuaMrvId: $id }) { result } }', { id });
 	const duyet = (id: string, dongY: boolean) =>
 		goi(
 			'mutation($id: UUID, $dy: Boolean, $gc: String) { carbonDuyetKetQuaMrv(input: { ketQuaId: $id, dongY: $dy, ghiChu: $gc }) { result } }',
@@ -200,6 +220,26 @@
 						{/if}
 					{/if}
 				</div>
+				{@const cap = k.carbonDeNghiCapByKetQuaMrvId}
+				{#if cap}
+					<div class="cap" data-trang-thai={cap.trangThai}>
+						{#if cap.trangThai === 'da_cap'}
+							<b>Đã cấp {cap.soLuong} tín chỉ</b> vào ví hợp tác xã<br />
+							<small>{cap.seriTu} → {cap.seriDen}</small><br />
+							<small>Sổ cái: <code>{cap.doltCommit}</code></small>
+						{:else if cap.trangThai === 'cho_dang_ky'}
+							Đang đăng ký {cap.soLuong} tín chỉ với Registry…
+						{:else}
+							<span class="loi">Registry từ chối: {cap.lyDoLoi}</span>
+						{/if}
+					</div>
+				{:else if laCanBo && k.trangThai === 'da_ghi_so'}
+					<div class="nut">
+						<button type="button" disabled={dangGui || Number(k.co2ETan) < 1} onclick={() => deNghiCap(k.rowId)}>
+							Đề nghị cấp {Math.floor(Number(k.co2ETan))} tín chỉ
+						</button>
+					</div>
+				{/if}
 				{#if laCanBo && k.trangThai === 'cho_duyet'}
 					<div class="duyet">
 						<textarea bind:value={lyDo[k.rowId]} rows="2" placeholder="Ghi chú (bắt buộc khi từ chối)"></textarea>
@@ -322,6 +362,14 @@
 		margin: 0.2rem 0;
 		font-size: 0.85rem;
 		color: #8a4b00;
+	}
+	.cap {
+		margin-top: 0.5rem;
+		padding: 0.5rem 0.6rem;
+		border-radius: 6px;
+		background: #e8f3ec;
+		font-size: 0.85rem;
+		overflow-wrap: anywhere;
 	}
 	.duyet {
 		display: grid;

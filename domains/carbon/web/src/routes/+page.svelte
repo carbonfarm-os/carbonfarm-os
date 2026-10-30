@@ -20,6 +20,7 @@
 		carbonXaVienByXaVienId: { hoTen: string } | null;
 	};
 	type XaVien = { rowId: string; hoTen: string; maXaVien: string };
+	type KhoiTinChi = { rowId: string; soLuong: number; maTrongNuoc: string; seriTu: string; seriDen: string };
 
 	// Cùng truy vấn với tests/e2e/web.hurl (ca "truy vấn trang chính") – sửa ở đây thì sửa cả ở đó.
 	// orderBy chỉ có trên cột có index; tên lô sắp xếp phía trình duyệt.
@@ -29,6 +30,7 @@
 		}
 		allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } }
 		allCarbonCanBoHtxes { totalCount }
+		allCarbonKhoiTinChis { nodes { rowId soLuong maTrongNuoc seriTu seriDen } }
 	}`;
 	const DANG_KY = `mutation($xv: UUID, $ten: String, $r: JSON, $dt: BigFloat, $nam: Int) {
 		carbonDangKyLoDat(input: { xaVienId: $xv, ten: $ten, ranhGioi: $r, dienTichKhaiBaoHa: $dt, namTrong: $nam }) { result }
@@ -49,6 +51,7 @@
 	let thanhCong = $state('');
 	let dangGui = $state(false);
 	let laCanBo = $state(false);
+	let vi = $state<KhoiTinChi[]>([]);
 	let loChon = $state<Lo | null>(null);
 	let lopNdvi = $state<string | null>(null);
 
@@ -91,7 +94,9 @@
 				allCarbonLoDats: { nodes: Lo[] };
 				allCarbonXaViens: { nodes: XaVien[] };
 				allCarbonCanBoHtxes: { totalCount: number };
+				allCarbonKhoiTinChis: { nodes: KhoiTinChi[] };
 			}>(token, DU_LIEU);
+			vi = d.allCarbonKhoiTinChis.nodes.sort((a, b) => a.seriTu.localeCompare(b.seriTu));
 			lo = d.allCarbonLoDats.nodes.sort((a, b) => a.ten.localeCompare(b.ten, 'vi'));
 			xaVien = d.allCarbonXaViens.nodes;
 			// Nút yêu cầu đo / duyệt chỉ hiện cho cán bộ hợp tác xã và quản trị; CSDL vẫn kiểm lại (UC011)
@@ -285,7 +290,15 @@
 		{:else if loiTai}
 			<p role="alert" class="loi">{loiTai}</p>
 		{:else if loChon && token}
-			<ChiTietLo {token} lo={loChon} {laCanBo} lopDangXem={lopNdvi} onXemLop={xemLop} onDong={boChon} />
+			<ChiTietLo
+				{token}
+				lo={loChon}
+				{laCanBo}
+				lopDangXem={lopNdvi}
+				onXemLop={xemLop}
+				onThayDoi={taiDuLieu}
+				onDong={boChon}
+			/>
 		{:else if dangVe}
 			<h2>Đăng ký lô mới</h2>
 			<p class="huong-dan">Bấm lên bản đồ để đặt từng góc lô, theo một chiều quanh ranh giới. Cần ít nhất 3 điểm.</p>
@@ -326,6 +339,16 @@
 				</div>
 			</form>
 		{:else}
+			{#if vi.length}
+				<section class="vi" aria-label="Ví tín chỉ hợp tác xã">
+					<h2>Ví tín chỉ: {vi.reduce((t, k) => t + k.soLuong, 0)} tín chỉ</h2>
+					<ul>
+						{#each vi as k (k.rowId)}
+							<li><b>{k.soLuong}</b> · <small>{k.seriTu} → {k.seriDen}</small></li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
 			<h2>Lô đang hoạt động ({lo.length})</h2>
 			{#if thanhCong}<p class="ok">{thanhCong}</p>{/if}
 			<ul>
@@ -387,6 +410,18 @@
 	}
 	.ban-do.dang-ve :global(canvas) {
 		cursor: crosshair;
+	}
+	.vi {
+		margin-bottom: 1rem;
+		padding: 0.6rem 0.7rem;
+		border-radius: 8px;
+		background: #1b4332;
+		color: #fff;
+	}
+	.vi ul {
+		margin: 0;
+		font-size: 0.85rem;
+		overflow-wrap: anywhere;
 	}
 	aside h2 {
 		margin: 0 0 0.5rem;
