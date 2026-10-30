@@ -29,7 +29,7 @@ services:
 
   carbon-mrv:
     # MRV engine: phục vụ deployment Prefect mrv-lo-dat/carbon + cầu nối CSDL ↔ Prefect (domains/carbon/mrv).
-    # Cần Internet để đọc danh mục STAC Earth Search và ảnh Sentinel-2 (COG công khai).
+    # Cần Internet để đọc danh mục STAC Earth Search và ảnh Sentinel-2 (COG công khai). Cấp tín chỉ qua Registry mock.
     build: ../domains/carbon/mrv
     image: carbonfarm/carbon-mrv:0.0.0
     environment:
@@ -47,4 +47,6 @@ services:
       s3:
         condition: service_healthy
       dolt:
+        condition: service_healthy
+      ket-noi-registry:
         condition: service_healthy

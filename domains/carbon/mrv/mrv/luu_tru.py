@@ -77,16 +77,24 @@ def json_chuan(du_lieu: dict) -> str:
     return json.dumps(du_lieu, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str)
 
 
-def ghi_so_cai(ma_doi_tuong: str, du_lieu: dict, thong_diep: str) -> tuple[str, str]:
-    """Ghi một bản ghi vào sổ cái Dolt rồi DOLT_COMMIT. Trả (mã băm commit, sha256 dữ liệu)."""
+def ghi_so_cai(ma_doi_tuong: str, du_lieu: dict, thong_diep: str, loai: str = "ket_qua_mrv") -> tuple[str, str]:
+    """Ghi một bản ghi vào sổ cái Dolt rồi DOLT_COMMIT. Trả (mã băm commit, sha256 dữ liệu).
+
+    Đã có bản ghi cùng (loai, ma_doi_tuong) – lần trước ghi xong nhưng chưa kịp báo về – thì trả commit cũ, không ghi đôi.
+    """
     noi_dung = json_chuan(du_lieu)
     sha = hashlib.sha256(noi_dung.encode()).hexdigest()
     ket_noi = pymysql.connect(host="dolt", port=3306, user="so_cai", password=bi_mat("dolt-so-cai"), database="so_cai",
                               autocommit=True)
     try:
         with ket_noi.cursor() as cur:
+            cur.execute("SELECT d.to_commit, b.sha256 FROM ban_ghi b JOIN dolt_diff_ban_ghi d ON d.to_id = b.id "
+                        "AND d.diff_type = 'added' WHERE b.loai = %s AND b.ma_doi_tuong = %s LIMIT 1", (loai, ma_doi_tuong))
+            cu = cur.fetchone()
+            if cu:
+                return cu[0], cu[1]
             cur.execute("INSERT INTO ban_ghi (loai, ma_doi_tuong, du_lieu, sha256) VALUES (%s, %s, %s, %s)",
-                        ("ket_qua_mrv", ma_doi_tuong, noi_dung, sha))
+                        (loai, ma_doi_tuong, noi_dung, sha))
             cur.execute("CALL DOLT_COMMIT('-am', %s)", (thong_diep,))
             ma_bam = cur.fetchone()[0]
     finally:

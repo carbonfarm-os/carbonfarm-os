@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Tiến trình MRV: phục vụ deployment `mrv-lo-dat/carbon` và làm cầu nối CSDL ↔ Prefect.
+"""Tiến trình MRV: phục vụ deployment `mrv-lo-dat/carbon` và làm cầu nối CSDL ↔ Prefect / connector.
 
 Người dùng chỉ thao tác qua GraphQL (quyền bằng RLS): yêu cầu đo → dòng `cho_chay`; duyệt/từ chối → `da_duyet`/`tu_choi`.
-Vòng lặp này thấy dòng mới thì tạo lượt chạy Prefect, thấy quyết định thì resume lượt chạy đang PAUSED.
+Vòng lặp này thấy dòng mới thì tạo lượt chạy Prefect, thấy quyết định thì resume lượt chạy đang PAUSED,
+thấy đề nghị cấp tín chỉ thì gọi Registry mock và ghi sổ cái (mrv/tin_chi.py).
 Dùng thăm dò CSDL (vài giây) thay cho LISTEN/NOTIFY: không mất sự kiện khi tiến trình khởi động lại.
 """
 from __future__ import annotations
@@ -15,7 +16,7 @@ import time
 from prefect.client.orchestration import get_client
 from prefect.deployments import run_deployment
 
-from mrv import luu_tru
+from mrv import luu_tru, tin_chi
 from mrv.flow import mrv_lo_dat
 
 log = logging.getLogger("mrv.cau_noi")
@@ -48,11 +49,17 @@ def mot_vong() -> None:
                 log.info("quyết định cho %s → resume %s", dong["id"], dong["flow_run_id"])
 
 
+def vong_tin_chi() -> None:
+    with luu_tru.csdl() as c:
+        tin_chi.mot_vong(c)
+
+
 def vong_lap() -> None:
     time.sleep(5)  # chờ serve() đăng ký deployment
     while True:
         try:
             mot_vong()
+            vong_tin_chi()
         except Exception:  # lỗi tạm (mạng, CSDL khởi động lại) không được làm chết cầu nối
             log.exception("cầu nối: lỗi, thử lại")
         time.sleep(3)

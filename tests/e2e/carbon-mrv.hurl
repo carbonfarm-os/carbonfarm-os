@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Trọn luồng MRV (#25) trên dữ liệu Sentinel-2 THẬT (cần Internet: Earth Search + COG công khai):
 # cán bộ đăng ký lô rừng ngập mặn ở Mũi Cà Mau → yêu cầu đo tháng 4/2026 → flow Prefect chọn cảnh, tính NDVI/tán,
-# lưu COG + item STAC, ghi kết quả + phả hệ, dừng chờ duyệt → cán bộ duyệt → flow ghi sổ cái Dolt.
+# lưu COG + item STAC, ghi kết quả + phả hệ, dừng chờ duyệt → cán bộ duyệt → flow ghi sổ cái Dolt
+# → cán bộ đề nghị cấp tín chỉ → Registry mock cấp dải sê-ri → sổ cái → ví hợp tác xã (#36).
 # Lô tạo ở đây được chuyển "ngung" khi xong để chạy lại không vấp luật chồng lấn.
 
 GET {{gateway}}/auth/realms/dxos/protocol/openid-connect/auth?client_id=web&response_type=code&scope=openid&state=mrv&redirect_uri=http%3A%2F%2Flocalhost%3A9080%2Fdang-nhap%2Fxong&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256
@@ -118,6 +119,15 @@ HTTP 200
 [Asserts]
 jsonpath "$.dtype" == "float32"
 
+# UC020 – chưa duyệt, chưa ghi sổ thì chưa cấp tín chỉ
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+{"query":"mutation($id: UUID) { carbonDeNghiCapTinChi(input: {ketQuaMrvId: $id}) { result } }","variables":{"id":"{{kq}}"}}
+HTTP 200
+[Asserts]
+jsonpath "$.errors[0].extensions.code" == "UC020"
+
 # UC015 – từ chối phải có lý do
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk}}
@@ -157,6 +167,62 @@ HTTP 200
 jsonpath "$.data.carbonKetQuaMrvByRowId.trangThai" == "da_ghi_so"
 jsonpath "$.data.carbonKetQuaMrvByRowId.doltCommit" matches "^[0-9a-v]{32}$"
 jsonpath "$.data.carbonKetQuaMrvByRowId.soCaiSha256" matches "^[0-9a-f]{64}$"
+
+# ---------- Cấp tín chỉ (#36) ----------
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+{"query":"mutation($id: UUID) { carbonDeNghiCapTinChi(input: {ketQuaMrvId: $id}) { result } }","variables":{"id":"{{kq}}"}}
+HTTP 200
+[Captures]
+dn: jsonpath "$.data.carbonDeNghiCapTinChi.result"
+[Asserts]
+jsonpath "$.errors" not exists
+
+# UC021 – mỗi kết quả đo chỉ cấp một lần
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+{"query":"mutation($id: UUID) { carbonDeNghiCapTinChi(input: {ketQuaMrvId: $id}) { result } }","variables":{"id":"{{kq}}"}}
+HTTP 200
+[Asserts]
+jsonpath "$.errors[0].extensions.code" == "UC021"
+
+# Registry mock cấp mã trong nước + dải sê-ri, ghi sổ cái, vào ví
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+[Options]
+retry: 20
+retry-interval: 1500
+{"query":"query($id: UUID!) { carbonDeNghiCapByRowId(rowId: $id) { trangThai soLuong maTrongNuoc seriTu seriDen doltCommit lyDoLoi } }","variables":{"id":"{{dn}}"}}
+HTTP 200
+[Captures]
+seri_cap: jsonpath "$.data.carbonDeNghiCapByRowId.seriTu"
+so_tin_chi: jsonpath "$.data.carbonDeNghiCapByRowId.soLuong"
+[Asserts]
+jsonpath "$.data.carbonDeNghiCapByRowId.trangThai" == "da_cap"
+jsonpath "$.data.carbonDeNghiCapByRowId.soLuong" >= 10
+jsonpath "$.data.carbonDeNghiCapByRowId.maTrongNuoc" == "MCK-DM01-26"
+jsonpath "$.data.carbonDeNghiCapByRowId.seriTu" matches "^MCK-DM01-26-\\d{10}$"
+jsonpath "$.data.carbonDeNghiCapByRowId.doltCommit" matches "^[0-9a-v]{32}$"
+
+POST {{gateway}}/graphql
+Authorization: Bearer {{tk}}
+Content-Type: application/json
+{"query":"query($id: UUID!) { allCarbonKhoiTinChis(condition: {deNghiCapId: $id}) { nodes { soLuong seriTu seriDen } } }","variables":{"id":"{{dn}}"}}
+HTTP 200
+[Asserts]
+jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].soLuong" == {{so_tin_chi}}
+jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].seriTu" == "{{seri_cap}}"
+
+# Registry là nguồn sự thật: sê-ri thuộc mã số thuế của hợp tác xã, tiểu khoản Đăng ký chung
+GET {{registry}}/tin-chi/seri/{{seri_cap}}
+Authorization: Bearer {{bm_ket_noi_registry}}
+HTTP 200
+[Asserts]
+jsonpath "$.chu_so_huu" == "0000000001"
+jsonpath "$.tieu_khoan" == "dang_ky_chung"
 
 # Dọn: ngừng lô kiểm thử
 POST {{gateway}}/graphql

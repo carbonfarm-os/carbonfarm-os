@@ -72,7 +72,7 @@ jsonpath "$.data.allGhiChuMaus.totalCount" == 0
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(condition: { trangThai: \"hoat_dong\" }) { nodes { rowId ten dienTichHa dienTichKhaiBaoHa namTrong ranhGioi carbonXaVienByXaVienId { hoTen } } } allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } } allCarbonCanBoHtxes { totalCount } }"}
+{"query":"{ allCarbonLoDats(condition: { trangThai: \"hoat_dong\" }) { nodes { rowId ten dienTichHa dienTichKhaiBaoHa namTrong ranhGioi carbonXaVienByXaVienId { hoTen } } } allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } } allCarbonCanBoHtxes { totalCount } allCarbonKhoiTinChis { nodes { rowId soLuong maTrongNuoc seriTu seriDen } } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
@@ -82,7 +82,7 @@ jsonpath "$.data.allCarbonCanBoHtxes.totalCount" == 0
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk}}
 Content-Type: application/json
-{"query":"query($lo: UUID!) { allCarbonKetQuaMrvs(condition: { loDatId: $lo }) { nodes { rowId kyTu kyDen trangThai canhId ngayChup mayPhanTram soDiemAnhLo soDiemAnhHopLe soDiemAnhTan dienTichTanHa co2ETan canhBao phuongPhap cogHref lyDoLoi ghiChuDuyet duyetLuc doltCommit phaHe } } }","variables":{"lo":"00000000-0000-4000-8000-0000000d0001"}}
+{"query":"query($lo: UUID!) { allCarbonKetQuaMrvs(condition: { loDatId: $lo }) { nodes { rowId kyTu kyDen trangThai canhId ngayChup mayPhanTram soDiemAnhLo soDiemAnhHopLe soDiemAnhTan dienTichTanHa co2ETan canhBao phuongPhap cogHref lyDoLoi ghiChuDuyet duyetLuc doltCommit phaHe carbonDeNghiCapByKetQuaMrvId { trangThai soLuong maTrongNuoc seriTu seriDen doltCommit lyDoLoi } } } }","variables":{"lo":"00000000-0000-4000-8000-0000000d0001"}}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists
