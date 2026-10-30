@@ -28,7 +28,8 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | Prefect (server + tiến trình chạy flow) | `prefecthq/prefect:3.9.0-python3.12` | Apache-2.0 | github.com/PrefectHQ/prefect | Dịch vụ riêng: workflow engine, trạng thái trong PostgreSQL, API qua gateway `/workflow`; flow mẫu có bước chờ duyệt | 1 | ✔ |
 | Valkey | `valkey/valkey:9.1.3` | BSD-3-Clause | github.com/valkey-io/valkey | Dịch vụ riêng: event bus (Streams), có mật khẩu, chỉ nội bộ | 1 | ✔ |
 | Dolt | `dolthub/dolt-sql-server:2.6.1` | Apache-2.0 | github.com/dolthub/dolt | Dịch vụ riêng: sổ cái có phiên bản, mỗi lần ghi là commit có mã băm (ADR 0003), chỉ nội bộ | 1 | ✔ |
-| Metabase **OSS** | `metabase/metabase:v0.64.3` | AGPL-3.0 (bản OSS) | github.com/metabase/metabase | Dịch vụ riêng, image gốc; KHÔNG dùng `metabase-enterprise` | 2 | ☐ |
+| Metabase **OSS** | `metabase/metabase:v0.64.3` (amd64 + arm64) | AGPL-3.0 (bản OSS) | github.com/metabase/metabase | Dịch vụ riêng, image gốc, không sửa; KHÔNG dùng `metabase-enterprise`. CSDL nội bộ H2 trong volume riêng; đọc dữ liệu bằng vai chỉ đọc `carbon_bao_cao`; dashboard dựng qua API (ADR 0007) | 2 | ✔ |
+| Python (chạy script dựng dashboard) | `python:3.12.12-slim-bookworm` | PSF-2.0 | github.com/python/cpython | Container chạy một lần, chỉ thư viện chuẩn | 2 | ✔ |
 
 ## 2. Thư viện
 

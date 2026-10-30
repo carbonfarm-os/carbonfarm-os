@@ -9,3 +9,5 @@ ket-noi-registry
 ket-noi-buyer
 ket-noi-bank
 mk-canbo-htx-mau-2
+carbon-bao-cao-db
+metabase-admin

@@ -121,6 +121,8 @@ sequenceDiagram
 - tra theo sê-ri ra chuỗi MRV → cấp → bán;
 - ẩn trường `*_sub`.
 
+**Dashboard (#39, ADR 0007):** Metabase OSS đọc schema `carbon_bao_cao` gồm các view tổng hợp, không dữ liệu cá nhân. Vai `carbon_bao_cao` chỉ có quyền SELECT trên các view này, giao dịch mặc định chỉ đọc. Container `metabase-dung-dashboard` dựng dashboard qua API lúc khởi động. UI ở `http://127.0.0.1:3001`, tài khoản `quan-tri@carbonfarm.invalid`, mật khẩu trong OpenBao (`metabase-admin`).
+
 ## 3. Sổ cái có phiên bản (Dolt)
 - Bảng sổ cái (kết quả MRV, cấp tín chỉ, chuyển nhượng) nằm trong Dolt. Mỗi lần ghi là một commit có mã băm nội dung, giống git.
 - Người mua và Registry nhận mã băm commit. Họ kiểm lại bằng `dolt log` / `dolt diff` hoặc qua API đọc công khai.

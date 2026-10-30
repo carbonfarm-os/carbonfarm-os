@@ -2,3 +2,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # <vai PostgreSQL> <tên bí mật OpenBao> – Tầng 1 (ap-migration.sh) đặt LOGIN PASSWORD sau khi áp migration.
 carbon_mrv carbon-mrv-db
+carbon_bao_cao carbon-bao-cao-db
