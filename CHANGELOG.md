@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.4.0...v0.4.1) (2026-10-30)
+
+
+### Tài liệu
+
+* **roadmap:** ghi tiến độ sprint 4 và v0.4.0; README trỏ v0.4.0; task seed mô tả đúng cách nạp dữ liệu giả ([#62](https://github.com/carbonfarm-os/carbonfarm-os/issues/62)) ([d53abab](https://github.com/carbonfarm-os/carbonfarm-os/commit/d53abab48927db7b31fa798fd9ce9af13fbf316e))
+
 ## [0.4.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.3.0...v0.4.0) (2026-10-30)
 
 
