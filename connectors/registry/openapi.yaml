@@ -1,0 +1,551 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# TỰ SINH bằng `python3 -m connectors.xuat_openapi` – không sửa tay.
+openapi: 3.1.0
+info:
+  title: Registry mock – Hệ thống đăng ký quốc gia (TT 11/2026/TT-BNNMT)
+  description: 'Registry mock – mô phỏng Hệ thống đăng ký quốc gia theo Thông tư 11/2026/TT-BNNMT (đọc bản PDF chính thức).
+
+
+    Bám thông tư ở: tài khoản gắn mã số thuế, mỗi tổ chức một tài khoản, ≥ 2 đầu mối (Điều 6); tiểu khoản Đăng ký chung,
+
+    Bù trừ, Phong tỏa (Điều 7); thông tin đăng ký tín chỉ (Điều 10); mã trong nước 9 ký tự và số sê-ri 19 ký tự (Điều 11);
+
+    bù trừ từ Đăng ký chung, từ chối khi vượt số dư (Điều 20).
+
+    Đơn giản hóa (KHÔNG phải quy định): Bộ không duyệt tay; chuyển quyền sở hữu do bán được ghi thẳng ở đây thay vì qua
+
+    sàn giao dịch và Tổng công ty lưu ký (Điều 14–17); mã cơ chế là giá trị mock do bên gọi đưa.
+
+    '
+  version: 0.1.0
+paths:
+  /suc-khoe:
+    get:
+      tags:
+      - Hệ thống
+      summary: Suc Khoe
+      operationId: suc_khoe_suc_khoe_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Suc Khoe Suc Khoe Get
+  /tai-khoan:
+    post:
+      tags:
+      - Tài khoản đăng ký
+      summary: Tao Tai Khoan
+      description: Cấp tài khoản đăng ký gắn mã số thuế; mỗi tổ chức chỉ một tài khoản (Điều 6 khoản 1, 2).
+      operationId: tao_tai_khoan_tai_khoan_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaoTaiKhoan'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaiKhoan'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - khoaConnector: []
+  /tai-khoan/{ma_so_thue}:
+    get:
+      tags:
+      - Tài khoản đăng ký
+      summary: Xem Tai Khoan
+      description: Số dư và dải sê-ri theo từng tiểu khoản (Điều 7).
+      operationId: xem_tai_khoan_tai_khoan__ma_so_thue__get
+      security:
+      - khoaConnector: []
+      parameters:
+      - name: ma_so_thue
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Ma So Thue
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaiKhoan'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tin-chi/dang-ky:
+    post:
+      tags:
+      - Tín chỉ
+      summary: Dang Ky
+      description: Đăng ký tín chỉ vào tiểu khoản Đăng ký chung; cấp mã trong nước và dải số sê-ri liên tiếp (Điều 10, 11).
+      operationId: dang_ky_tin_chi_dang_ky_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DangKyTinChi'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KetQuaNghiepVu'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - khoaConnector: []
+  /tin-chi/chuyen-quyen:
+    post:
+      tags:
+      - Tín chỉ
+      summary: Chuyen Quyen
+      description: 'Ghi nhận chủ sở hữu mới sau giao dịch bán (mock; thực tế qua sàn và lưu ký – Điều 14–17).
+
+        Chỉ chuyển từ tiểu khoản Đăng ký chung; số sê-ri nhỏ trước.'
+      operationId: chuyen_quyen_tin_chi_chuyen_quyen_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChuyenQuyen'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KetQuaNghiepVu'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - khoaConnector: []
+  /tin-chi/bu-tru:
+    post:
+      tags:
+      - Tín chỉ
+      summary: Bu Tru
+      description: 'Dùng tín chỉ để bù trừ: chuyển từ Đăng ký chung sang Bù trừ; vượt số dư → từ chối (Điều 20 khoản 1).'
+      operationId: bu_tru_tin_chi_bu_tru_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuTru'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KetQuaNghiepVu'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - khoaConnector: []
+  /tin-chi/seri/{so_seri}:
+    get:
+      tags:
+      - Tín chỉ
+      summary: Tra Seri
+      description: 'Tra một số sê-ri: chủ sở hữu, tiểu khoản hiện tại, lịch sử nghiệp vụ (Điều 4 khoản 3).'
+      operationId: tra_seri_tin_chi_seri__so_seri__get
+      security:
+      - khoaConnector: []
+      parameters:
+      - name: so_seri
+        in: path
+        required: true
+        schema:
+          type: string
+          title: So Seri
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraSeri'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    BuTru:
+      properties:
+        ma_so_thue:
+          type: string
+          pattern: ^\d{10}(-\d{3})?$
+          title: Ma So Thue
+          description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
+          examples:
+          - '0000000001'
+        ma_trong_nuoc:
+          type: string
+          pattern: ^[A-Z0-9]{3}-[A-Z0-9]{4}-\d{2}$
+          title: Ma Trong Nuoc
+        so_luong:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: So Luong
+        ma_tham_chieu:
+          type: string
+          minLength: 8
+          title: Ma Tham Chieu
+      type: object
+      required:
+      - ma_so_thue
+      - ma_trong_nuoc
+      - so_luong
+      - ma_tham_chieu
+      title: BuTru
+    ChuyenQuyen:
+      properties:
+        tu_ma_so_thue:
+          type: string
+          pattern: ^\d{10}(-\d{3})?$
+          title: Tu Ma So Thue
+          description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
+          examples:
+          - '0000000001'
+        den_ma_so_thue:
+          type: string
+          pattern: ^\d{10}(-\d{3})?$
+          title: Den Ma So Thue
+          description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
+          examples:
+          - '0000000001'
+        ma_trong_nuoc:
+          type: string
+          pattern: ^[A-Z0-9]{3}-[A-Z0-9]{4}-\d{2}$
+          title: Ma Trong Nuoc
+        so_luong:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: So Luong
+        ma_tham_chieu:
+          type: string
+          minLength: 8
+          title: Ma Tham Chieu
+      type: object
+      required:
+      - tu_ma_so_thue
+      - den_ma_so_thue
+      - ma_trong_nuoc
+      - so_luong
+      - ma_tham_chieu
+      title: ChuyenQuyen
+    DaiSeri:
+      properties:
+        ma_trong_nuoc:
+          type: string
+          title: Ma Trong Nuoc
+        seri_tu:
+          type: string
+          title: Seri Tu
+        seri_den:
+          type: string
+          title: Seri Den
+        so_luong:
+          type: integer
+          title: So Luong
+      type: object
+      required:
+      - ma_trong_nuoc
+      - seri_tu
+      - seri_den
+      - so_luong
+      title: DaiSeri
+    DangKyTinChi:
+      properties:
+        ma_so_thue:
+          type: string
+          pattern: ^\d{10}(-\d{3})?$
+          title: Ma So Thue
+          description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
+          examples:
+          - '0000000001'
+        ten_du_an:
+          type: string
+          minLength: 3
+          title: Ten Du An
+        ma_du_an:
+          type: string
+          pattern: ^[A-Z0-9]{4}$
+          title: Ma Du An
+          description: Mã dự án, 4 ký tự chữ/số (Điều 11 khoản 4)
+        ten_co_che:
+          type: string
+          title: Ten Co Che
+        ma_co_che:
+          type: string
+          pattern: ^[A-Z0-9]{3}$
+          title: Ma Co Che
+          description: Mã cơ chế, 3 ký tự (mock – không phải mã thật)
+        nam_xac_nhan:
+          type: integer
+          maximum: 2100.0
+          minimum: 2020.0
+          title: Nam Xac Nhan
+          description: Năm lượng giảm/hấp thụ được xác nhận
+        so_luong:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: So Luong
+        ma_tham_chieu:
+          type: string
+          minLength: 8
+          title: Ma Tham Chieu
+          description: Mã của bên gọi; gửi lại cùng mã → 409 (chống cấp hai lần)
+      type: object
+      required:
+      - ma_so_thue
+      - ten_du_an
+      - ma_du_an
+      - ten_co_che
+      - ma_co_che
+      - nam_xac_nhan
+      - so_luong
+      - ma_tham_chieu
+      title: DangKyTinChi
+    DauMoi:
+      properties:
+        ho_ten:
+          type: string
+          minLength: 2
+          title: Ho Ten
+        chuc_vu:
+          type: string
+          title: Chuc Vu
+        email:
+          type: string
+          title: Email
+        dien_thoai:
+          type: string
+          title: Dien Thoai
+      type: object
+      required:
+      - ho_ten
+      - chuc_vu
+      - email
+      - dien_thoai
+      title: DauMoi
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    KetQuaNghiepVu:
+      properties:
+        ma_tham_chieu:
+          type: string
+          title: Ma Tham Chieu
+        nghiep_vu:
+          type: string
+          title: Nghiep Vu
+        dai_seri:
+          items:
+            $ref: '#/components/schemas/DaiSeri'
+          type: array
+          title: Dai Seri
+        luc:
+          type: string
+          title: Luc
+      type: object
+      required:
+      - ma_tham_chieu
+      - nghiep_vu
+      - dai_seri
+      - luc
+      title: KetQuaNghiepVu
+    SuKien:
+      properties:
+        luc:
+          type: string
+          title: Luc
+        nghiep_vu:
+          type: string
+          title: Nghiep Vu
+        tu_ma_so_thue:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tu Ma So Thue
+        den_ma_so_thue:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Den Ma So Thue
+        tieu_khoan:
+          type: string
+          title: Tieu Khoan
+        ma_tham_chieu:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ma Tham Chieu
+      type: object
+      required:
+      - luc
+      - nghiep_vu
+      - tu_ma_so_thue
+      - den_ma_so_thue
+      - tieu_khoan
+      - ma_tham_chieu
+      title: SuKien
+    TaiKhoan:
+      properties:
+        ma_so_thue:
+          type: string
+          title: Ma So Thue
+        ten_to_chuc:
+          type: string
+          title: Ten To Chuc
+        tieu_khoan:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/DaiSeri'
+            type: array
+          type: object
+          title: Tieu Khoan
+        so_du:
+          additionalProperties:
+            type: integer
+          type: object
+          title: So Du
+      type: object
+      required:
+      - ma_so_thue
+      - ten_to_chuc
+      - tieu_khoan
+      - so_du
+      title: TaiKhoan
+    TaoTaiKhoan:
+      properties:
+        ma_so_thue:
+          type: string
+          pattern: ^\d{10}(-\d{3})?$
+          title: Ma So Thue
+          description: Mã số thuế (10 số, hoặc 13 với mã chi nhánh)
+          examples:
+          - '0000000001'
+        ten_to_chuc:
+          type: string
+          minLength: 3
+          title: Ten To Chuc
+        dau_moi:
+          items:
+            $ref: '#/components/schemas/DauMoi'
+          type: array
+          minItems: 2
+          title: Dau Moi
+          description: Tối thiểu 02 cá nhân đầu mối (Điều 6 khoản 4)
+      type: object
+      required:
+      - ma_so_thue
+      - ten_to_chuc
+      - dau_moi
+      title: TaoTaiKhoan
+    TraSeri:
+      properties:
+        so_seri:
+          type: string
+          title: So Seri
+        ma_trong_nuoc:
+          type: string
+          title: Ma Trong Nuoc
+        ten_du_an:
+          type: string
+          title: Ten Du An
+        chu_so_huu:
+          type: string
+          title: Chu So Huu
+        tieu_khoan:
+          type: string
+          title: Tieu Khoan
+        lich_su:
+          items:
+            $ref: '#/components/schemas/SuKien'
+          type: array
+          title: Lich Su
+      type: object
+      required:
+      - so_seri
+      - ma_trong_nuoc
+      - ten_du_an
+      - chu_so_huu
+      - tieu_khoan
+      - lich_su
+      title: TraSeri
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    khoaConnector:
+      type: http
+      scheme: bearer

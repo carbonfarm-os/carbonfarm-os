@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Connector mock (connectors/): Registry theo TT 11/2026/TT-BNNMT, Buyer, Bank. Mỗi cái một hợp đồng OpenAPI
+# (connectors/<tên>/openapi.yaml); chỉ trong mạng nội bộ, khóa Bearer do OpenBao sinh (domains/carbon/bi-mat.txt).
+# Thay bằng bản thật: dịch vụ mới đúng hợp đồng, đổi image ở đây – không sửa Tầng 1 hay miền carbon.
+x-ket-noi: &ket-noi
+  build: ../connectors
+  image: carbonfarm/ket-noi:0.0.0
+  volumes:
+    - bimat:/run/bimat:ro
+    - ket-noi-du-lieu:/du-lieu
+  depends_on:
+    openbao-khoi-tao:
+      condition: service_completed_successfully
+  healthcheck:
+    test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/suc-khoe')"]
+    interval: 3s
+    retries: 30
+
+services:
+  ket-noi-registry:
+    <<: *ket-noi
+    environment:
+      KET_NOI: registry
+  ket-noi-buyer:
+    <<: *ket-noi
+    environment:
+      KET_NOI: buyer
+  ket-noi-bank:
+    <<: *ket-noi
+    environment:
+      KET_NOI: bank
+
+volumes:
+  ket-noi-du-lieu:

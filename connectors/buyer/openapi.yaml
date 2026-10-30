@@ -1,0 +1,232 @@
+# SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# TỰ SINH bằng `python3 -m connectors.xuat_openapi` – không sửa tay.
+openapi: 3.1.0
+info:
+  title: Buyer mock – người mua tín chỉ
+  description: 'Buyer mock – người mua tín chỉ (doanh nghiệp, quỹ) GIẢ. Nhận đơn mua khi đơn giá không vượt mức người mua
+    chấp nhận.
+
+
+    Tên, mã số thuế đều giả (mã số thuế dạng 99xxxxxxxx, không thuộc tổ chức thật). Không có tiền thật.
+
+    '
+  version: 0.1.0
+paths:
+  /suc-khoe:
+    get:
+      tags:
+      - Hệ thống
+      summary: Suc Khoe
+      operationId: suc_khoe_suc_khoe_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Suc Khoe Suc Khoe Get
+  /nguoi-mua:
+    get:
+      tags:
+      - Người mua
+      summary: Danh Sach
+      operationId: danh_sach_nguoi_mua_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NguoiMua'
+                type: array
+                title: Response Danh Sach Nguoi Mua Get
+      security:
+      - khoaConnector: []
+  /don-mua:
+    post:
+      tags:
+      - Đơn mua
+      summary: Dat Mua
+      description: Người mua chấp nhận nếu đơn giá ≤ mức tối đa; gửi lại cùng mã tham chiếu thì trả đơn đã có (idempotent).
+      operationId: dat_mua_don_mua_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatMua'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonMua'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - khoaConnector: []
+  /don-mua/{ma_tham_chieu}:
+    get:
+      tags:
+      - Đơn mua
+      summary: Xem Don
+      operationId: xem_don_don_mua__ma_tham_chieu__get
+      security:
+      - khoaConnector: []
+      parameters:
+      - name: ma_tham_chieu
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Ma Tham Chieu
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonMua'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    DatMua:
+      properties:
+        ma_nguoi_mua:
+          type: string
+          title: Ma Nguoi Mua
+        so_luong:
+          type: integer
+          maximum: 1000000.0
+          exclusiveMinimum: 0.0
+          title: So Luong
+        don_gia_vnd:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Don Gia Vnd
+        ma_tham_chieu:
+          type: string
+          minLength: 8
+          title: Ma Tham Chieu
+          description: Mã lệnh bán của bên gọi; gửi lại cùng mã trả đơn cũ
+      type: object
+      required:
+      - ma_nguoi_mua
+      - so_luong
+      - don_gia_vnd
+      - ma_tham_chieu
+      title: DatMua
+    DonMua:
+      properties:
+        ma_tham_chieu:
+          type: string
+          title: Ma Tham Chieu
+        ma_nguoi_mua:
+          type: string
+          title: Ma Nguoi Mua
+        so_luong:
+          type: integer
+          title: So Luong
+        don_gia_vnd:
+          type: integer
+          title: Don Gia Vnd
+        thanh_tien_vnd:
+          type: integer
+          title: Thanh Tien Vnd
+        trang_thai:
+          type: string
+          const: chap_nhan
+          title: Trang Thai
+        luc:
+          type: string
+          title: Luc
+      type: object
+      required:
+      - ma_tham_chieu
+      - ma_nguoi_mua
+      - so_luong
+      - don_gia_vnd
+      - thanh_tien_vnd
+      - trang_thai
+      - luc
+      title: DonMua
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NguoiMua:
+      properties:
+        ma:
+          type: string
+          title: Ma
+        ten:
+          type: string
+          title: Ten
+        ma_so_thue:
+          type: string
+          title: Ma So Thue
+          description: Mã số thuế GIẢ (dùng làm tài khoản đăng ký bên nhận ở Registry mock)
+        so_tai_khoan_ngan_hang:
+          type: string
+          title: So Tai Khoan Ngan Hang
+        don_gia_toi_da_vnd:
+          type: integer
+          title: Don Gia Toi Da Vnd
+          description: Đơn giá cao nhất người mua chấp nhận cho 1 tín chỉ (1 t CO₂e)
+      type: object
+      required:
+      - ma
+      - ten
+      - ma_so_thue
+      - so_tai_khoan_ngan_hang
+      - don_gia_toi_da_vnd
+      title: NguoiMua
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    khoaConnector:
+      type: http
+      scheme: bearer
