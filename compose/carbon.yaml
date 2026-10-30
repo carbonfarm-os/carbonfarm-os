@@ -50,3 +50,7 @@ services:
         condition: service_healthy
       ket-noi-registry:
         condition: service_healthy
+      ket-noi-buyer:
+        condition: service_healthy
+      ket-noi-bank:
+        condition: service_healthy

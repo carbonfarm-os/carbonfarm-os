@@ -8,7 +8,9 @@ INSERT INTO carbon.hop_tac_xa (id, ma, ten, tinh) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO carbon.can_bo_htx (sub, hop_tac_xa_id, ho_ten) VALUES
-  ('00000000-0000-4000-8000-0000000c0001', '00000000-0000-4000-8000-0000000f0001', 'Cán bộ Mẫu')
+  ('00000000-0000-4000-8000-0000000c0001', '00000000-0000-4000-8000-0000000f0001', 'Cán bộ Mẫu'),
+  -- Cán bộ thứ hai: giao dịch bán tín chỉ cần người tạo và người duyệt khác nhau (TT 11/2026/TT-BNNMT Điều 6 khoản 3)
+  ('00000000-0000-4000-8000-0000000c0002', '00000000-0000-4000-8000-0000000f0001', 'Kế toán Mẫu')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO carbon.xa_vien (id, hop_tac_xa_id, ma_xa_vien, ho_ten, sub) VALUES

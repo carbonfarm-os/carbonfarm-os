@@ -9,6 +9,7 @@ $KC config credentials --server http://keycloak:8080/auth --realm master --user 
   --password "$(cat /run/bimat/keycloak-admin)" >/dev/null
 TAM=$(mktemp)
 sed -e "s/__MK_CANBO__/$(cat /run/bimat/mk-canbo-htx-mau)/" \
+    -e "s/__MK_CANBO2__/$(cat /run/bimat/mk-canbo-htx-mau-2)/" \
     -e "s/__MK_XV1__/$(cat /run/bimat/mk-xavien-mau-1)/" \
     -e "s/__MK_XV2__/$(cat /run/bimat/mk-xavien-mau-2)/" /nguoi-dung-mau.json > "$TAM"
 $KC create partialImport -r dxos -f "$TAM" -o --fields added,skipped >/dev/null

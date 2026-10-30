@@ -4,7 +4,8 @@
 
 Người dùng chỉ thao tác qua GraphQL (quyền bằng RLS): yêu cầu đo → dòng `cho_chay`; duyệt/từ chối → `da_duyet`/`tu_choi`.
 Vòng lặp này thấy dòng mới thì tạo lượt chạy Prefect, thấy quyết định thì resume lượt chạy đang PAUSED,
-thấy đề nghị cấp tín chỉ thì gọi Registry mock và ghi sổ cái (mrv/tin_chi.py).
+thấy đề nghị cấp tín chỉ thì gọi Registry mock và ghi sổ cái (mrv/tin_chi.py), thấy lệnh bán đã duyệt thì gọi
+Buyer → Registry → Bank và ghi sổ cái (mrv/ban.py).
 Dùng thăm dò CSDL (vài giây) thay cho LISTEN/NOTIFY: không mất sự kiện khi tiến trình khởi động lại.
 """
 from __future__ import annotations
@@ -16,7 +17,7 @@ import time
 from prefect.client.orchestration import get_client
 from prefect.deployments import run_deployment
 
-from mrv import luu_tru, tin_chi
+from mrv import ban, luu_tru, tin_chi
 from mrv.flow import mrv_lo_dat
 
 log = logging.getLogger("mrv.cau_noi")
@@ -52,6 +53,7 @@ def mot_vong() -> None:
 def vong_tin_chi() -> None:
     with luu_tru.csdl() as c:
         tin_chi.mot_vong(c)
+        ban.mot_vong(c)
 
 
 def vong_lap() -> None:

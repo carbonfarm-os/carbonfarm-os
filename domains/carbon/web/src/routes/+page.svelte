@@ -8,6 +8,7 @@
 	import { goiGraphql, LoiNghiepVu } from '#lib/graphql.ts';
 	import { dienTichHa } from '#lib/dien-tich.ts';
 	import ChiTietLo from '#lib/ChiTietLo.svelte';
+	import ViTinChi from '#lib/ViTinChi.svelte';
 
 	type Polygon = { type: 'Polygon'; coordinates: [number, number][][] };
 	type Lo = {
@@ -20,7 +21,14 @@
 		carbonXaVienByXaVienId: { hoTen: string } | null;
 	};
 	type XaVien = { rowId: string; hoTen: string; maXaVien: string };
-	type KhoiTinChi = { rowId: string; soLuong: number; maTrongNuoc: string; seriTu: string; seriDen: string };
+	type KhoiTinChi = {
+		rowId: string;
+		soLuong: number;
+		maTrongNuoc: string;
+		seriTu: string;
+		seriDen: string;
+		hopTacXaId: string;
+	};
 
 	// Cùng truy vấn với tests/e2e/web.hurl (ca "truy vấn trang chính") – sửa ở đây thì sửa cả ở đó.
 	// orderBy chỉ có trên cột có index; tên lô sắp xếp phía trình duyệt.
@@ -30,7 +38,7 @@
 		}
 		allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } }
 		allCarbonCanBoHtxes { totalCount }
-		allCarbonKhoiTinChis { nodes { rowId soLuong maTrongNuoc seriTu seriDen } }
+		allCarbonKhoiTinChis { nodes { rowId soLuong maTrongNuoc seriTu seriDen hopTacXaId } }
 	}`;
 	const DANG_KY = `mutation($xv: UUID, $ten: String, $r: JSON, $dt: BigFloat, $nam: Int) {
 		carbonDangKyLoDat(input: { xaVienId: $xv, ten: $ten, ranhGioi: $r, dienTichKhaiBaoHa: $dt, namTrong: $nam }) { result }
@@ -339,15 +347,8 @@
 				</div>
 			</form>
 		{:else}
-			{#if vi.length}
-				<section class="vi" aria-label="Ví tín chỉ hợp tác xã">
-					<h2>Ví tín chỉ: {vi.reduce((t, k) => t + k.soLuong, 0)} tín chỉ</h2>
-					<ul>
-						{#each vi as k (k.rowId)}
-							<li><b>{k.soLuong}</b> · <small>{k.seriTu} → {k.seriDen}</small></li>
-						{/each}
-					</ul>
-				</section>
+			{#if vi.length && token}
+				<ViTinChi {token} {laCanBo} {vi} onThayDoi={taiDuLieu} />
 			{/if}
 			<h2>Lô đang hoạt động ({lo.length})</h2>
 			{#if thanhCong}<p class="ok">{thanhCong}</p>{/if}
@@ -410,18 +411,6 @@
 	}
 	.ban-do.dang-ve :global(canvas) {
 		cursor: crosshair;
-	}
-	.vi {
-		margin-bottom: 1rem;
-		padding: 0.6rem 0.7rem;
-		border-radius: 8px;
-		background: #1b4332;
-		color: #fff;
-	}
-	.vi ul {
-		margin: 0;
-		font-size: 0.85rem;
-		overflow-wrap: anywhere;
 	}
 	aside h2 {
 		margin: 0 0 0.5rem;

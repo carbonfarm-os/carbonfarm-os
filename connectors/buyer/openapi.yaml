@@ -130,6 +130,27 @@ components:
         - don_gia_vnd
         - ma_tham_chieu
       title: DatMua
+    DauMoi:
+      properties:
+        ho_ten:
+          type: string
+          title: Ho Ten
+        chuc_vu:
+          type: string
+          title: Chuc Vu
+        email:
+          type: string
+          title: Email
+        dien_thoai:
+          type: string
+          title: Dien Thoai
+      type: object
+      required:
+        - ho_ten
+        - chuc_vu
+        - email
+        - dien_thoai
+      title: DauMoi
     DonMua:
       properties:
         ma_tham_chieu:
@@ -192,6 +213,12 @@ components:
           type: integer
           title: Don Gia Toi Da Vnd
           description: Đơn giá cao nhất người mua chấp nhận cho 1 tín chỉ (1 t CO₂e)
+        dau_moi:
+          items:
+            $ref: '#/components/schemas/DauMoi'
+          type: array
+          title: Dau Moi
+          description: Đầu mối (giả) – để mở tài khoản đăng ký bên nhận ở Registry
       type: object
       required:
         - ma
@@ -199,6 +226,7 @@ components:
         - ma_so_thue
         - so_tai_khoan_ngan_hang
         - don_gia_toi_da_vnd
+        - dau_moi
       title: NguoiMua
     ValidationError:
       properties:

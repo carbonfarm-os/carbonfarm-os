@@ -107,7 +107,12 @@ sequenceDiagram
   CN->>REG: tài khoản gắn mã số thuế + đăng ký tín chỉ → mã trong nước, dải sê-ri (TT 11/2026)
   CN->>DOLT: bản ghi cấp (trỏ về commit MRV gốc) → commit
   CN->>PG: khối sê-ri vào ví hợp tác xã → "da_cap"
-  Note over PG,REG: Tiếp theo: bán cho người mua mock (tạo/duyệt hai người), Bank mock, trang kiểm chứng
+  HTX->>WEB: Cán bộ A tạo lệnh bán (người mua, số lượng, đơn giá)
+  WEB->>PG: carbonTaoLenhBan – không vượt số dư khả dụng
+  HTX->>WEB: Cán bộ B duyệt (TT 11/2026 Điều 6 khoản 3: người tạo không tự duyệt)
+  CN->>REG: Buyer mock chấp nhận → Registry chuyển quyền sở hữu sê-ri → Bank mock ghi có
+  CN->>DOLT: bản ghi bán (người tạo, người duyệt, dải sê-ri) → commit
+  CN->>PG: trừ dải sê-ri khỏi ví → "hoan_tat"
 ```
 
 ## 3. Sổ cái có phiên bản (Dolt)
