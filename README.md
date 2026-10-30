@@ -29,6 +29,8 @@ Bản MVP: một hệ sinh thái (rừng ngập mặn), một khu vực mẫu, *
 - **Tầng 2 – `domains/carbon/`:** miền tín chỉ carbon (H-P-D-I, trọng tâm [P] và [D]): hợp tác xã, lô đất, MRV engine, ví tín chỉ, web SvelteKit + MapLibre, dashboard Metabase.
 - **`connectors/`:** Registry, Buyer, Bank mô phỏng, mỗi connector có hợp đồng OpenAPI; thay bằng API thật mà không sửa lõi.
 
+![Sơ đồ kiến trúc hai tầng của CarbonFarm OS](docs/images/kien-truc.webp)
+
 Chi tiết và sơ đồ: [`docs/architecture.md`](docs/architecture.md). Các quyết định: [`docs/adr/`](docs/adr/).
 *Tier 1 is a generic headless platform; tier 2 holds the carbon domain; connectors are pluggable mocks. See `docs/architecture.md` and the ADRs.*
 
