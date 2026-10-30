@@ -69,6 +69,23 @@ class SoCaiDolt(unittest.TestCase):
                          "mọi lần sửa đều hiện trong lịch sử, giá trị cũ vẫn đọc lại được")
 
 
+class TaiKhoanChiDoc(unittest.TestCase):
+    """so_cai_doc (dịch vụ kiểm chứng công khai dùng) đọc được nhưng không ghi, không commit được."""
+
+    def _chay(self, sql: str) -> subprocess.CompletedProcess:
+        lenh = ('dolt --host 127.0.0.1 --port 3306 --no-tls -u so_cai_doc -p "$(cat /run/bimat/dolt-so-cai-doc)" '
+                f"--use-db so_cai sql -q {json.dumps(sql)}")
+        return subprocess.run([*COMPOSE, "exec", "-T", "dolt", "sh", "-c", lenh], capture_output=True, text=True, check=False)
+
+    def test_doc_duoc(self):
+        self.assertEqual(self._chay("SELECT COUNT(*) FROM ban_ghi").returncode, 0)
+
+    def test_khong_ghi_duoc(self):
+        ra = self._chay("INSERT INTO ban_ghi (loai, ma_doi_tuong, du_lieu, sha256) VALUES ('x', 'x', '{}', 'x')")
+        self.assertNotEqual(ra.returncode, 0, "tài khoản chỉ đọc không được thêm bản ghi")
+        self.assertRegex(ra.stdout + ra.stderr, r"(?i)denied|privilege|not allowed")
+
+
 class SuKienValkey(unittest.TestCase):
     def test_phat_va_doc_su_kien_qua_stream(self):
         luong = f"su-kien-kiem-thu-{uuid.uuid4()}"

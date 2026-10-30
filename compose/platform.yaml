@@ -256,6 +256,7 @@ services:
     volumes:
       - dolt-du-lieu:/var/lib/dolt
       - ../platform/dolt/khoi-tao.sql:/docker-entrypoint-initdb.d/khoi-tao.sql:ro
+      - ../platform/dolt/tai-khoan-chi-doc.sh:/docker-entrypoint-initdb.d/tai-khoan-chi-doc.sh:ro
       - bimat:/run/bimat:ro
     depends_on:
       openbao-khoi-tao:

@@ -203,7 +203,7 @@
 					<dd><small>{k.phuongPhap}</small></dd>
 					{#if k.doltCommit}
 						<dt>Sổ cái Dolt</dt>
-						<dd><code title="Mã băm commit">{k.doltCommit}</code></dd>
+						<dd><a href="/kiem-chung?q={k.doltCommit}"><code title="Mã băm commit – kiểm chứng công khai">{k.doltCommit}</code></a></dd>
 					{/if}
 					{#if k.ghiChuDuyet}
 						<dt>Ghi chú duyệt</dt>
@@ -226,7 +226,7 @@
 						{#if cap.trangThai === 'da_cap'}
 							<b>Đã cấp {cap.soLuong} tín chỉ</b> vào ví hợp tác xã<br />
 							<small>{cap.seriTu} → {cap.seriDen}</small><br />
-							<small>Sổ cái: <code>{cap.doltCommit}</code></small>
+							<small>Sổ cái: <a href="/kiem-chung?q={cap.seriTu}"><code>{cap.doltCommit}</code></a></small>
 						{:else if cap.trangThai === 'cho_dang_ky'}
 							Đang đăng ký {cap.soLuong} tín chỉ với Registry…
 						{:else}
