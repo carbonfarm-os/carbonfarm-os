@@ -4,6 +4,7 @@
 
   GET /api/commit/<mã băm>   các bản ghi do commit đó thêm, SHA-256 tính lại có khớp không, bản ghi có bị sửa sau không
   GET /api/seri/<số sê-ri>   chuỗi sự kiện của một tín chỉ: kết quả MRV → cấp → (các lần) bán, mỗi bước kèm commit
+  GET /api/tong-quan         số liệu tổng hợp từ sổ cái + kết quả đo mới nhất (trang chủ công khai hiển thị)
 
 Qua gateway: /kiem-chung/api/* (không cần đăng nhập, giới hạn tần suất). Trường định danh người dùng (*_sub) được ẩn
 khi trả ra; SHA-256 được tính trên dữ liệu đầy đủ trong sổ cái. Chỉ thư viện chuẩn + PyMySQL.
@@ -114,6 +115,48 @@ def theo_seri(so_seri: str) -> dict:
                                                                                   for s in su_kien), "su_kien": su_kien}
 
 
+def _so(x) -> float:
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def tong_quan() -> dict:
+    """Số liệu công khai đọc thẳng từ sổ cái: tổng CO2e đã ghi sổ, tín chỉ đã cấp / đã bán, các lô đã đo (ranh giới),
+    và kết quả đo mới nhất. Không có định danh người dùng."""
+    with _db() as c, c.cursor() as cur:
+        cur.execute(SQL_THEM + " AND d.to_loai IN ('ket_qua_mrv', 'cap_tin_chi', 'ban_tin_chi') ORDER BY d.to_commit_date", ())
+        rows = cur.fetchall()
+    mrv = [(r, json.loads(r["du_lieu"])) for r in rows if r["loai"] == "ket_qua_mrv"]
+    cap = [json.loads(r["du_lieu"]) for r in rows if r["loai"] == "cap_tin_chi"]
+    ban = [json.loads(r["du_lieu"]) for r in rows if r["loai"] == "ban_tin_chi"]
+    lo: dict[str, dict] = {}
+    for _, d in mrv:
+        ld = d["pha_he"]["lo_dat"]
+        lo[ld["id"]] = {"id": ld["id"], "ten": ld.get("ten"), "ranh_gioi": ld["ranh_gioi"]}
+    moi_nhat = None
+    if mrv:
+        r, d = mrv[-1]
+        ph = d["pha_he"]
+        moi_nhat = {
+            "lo_dat_id": ph["lo_dat"]["id"], "ten_lo": ph["lo_dat"].get("ten"), "ranh_gioi": ph["lo_dat"]["ranh_gioi"],
+            "dien_tich_tan_ha": d.get("dien_tich_tan_ha"), "co2e_tan": d.get("co2e_tan"), "ky": ph["ky"],
+            "ndvi_tb_tan": ph["diem_anh"].get("ndvi_tb_tan"), "canh_id": ph["canh_nguon"]["id"],
+            "ngay_chup": ph["canh_nguon"]["ngay_chup"], "may_toan_canh": ph["canh_nguon"].get("may_toan_canh"),
+            "phuong_phap": ph["phuong_phap"], "commit": r["commit"],
+        }
+    return {
+        "so_ket_qua_mrv": len(mrv),
+        "co2e_da_ghi_so_tan": round(sum(_so(d.get("co2e_tan")) for _, d in mrv), 3),
+        "tin_chi_da_cap": sum(int(d.get("so_luong_tin_chi", 0)) for d in cap),
+        "tin_chi_da_ban": sum(int(d.get("so_luong", 0)) for d in ban),
+        "lo_da_do": list(lo.values()),
+        "seri_moi_nhat": cap[-1]["registry"]["seri_tu"] if cap else None,
+        "ket_qua_moi_nhat": moi_nhat,
+    }
+
+
 class XuLy(BaseHTTPRequestHandler):
     server_version = "carbon-kiem-chung"
 
@@ -131,6 +174,8 @@ class XuLy(BaseHTTPRequestHandler):
         try:
             if duong == "/suc-khoe":
                 return self._tra(200, {"trang_thai": "ok"})
+            if duong == "/api/tong-quan":
+                return self._tra(200, tong_quan())
             if duong.startswith("/api/commit/"):
                 return self._tra(200, theo_commit(duong.removeprefix("/api/commit/")))
             if duong.startswith("/api/seri/"):

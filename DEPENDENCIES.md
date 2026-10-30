@@ -53,6 +53,8 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 | Gói phụ thuộc gián tiếp của PostGraphile (186 gói, `platform/postgraphile/package-lock.json`) | — | MIT, Apache-2.0, ISC, BSD-2/3, 0BSD, PSF-2.0 (`argparse`) – đều OSI | npm | |
 | SvelteKit (+ adapter-node, Svelte 5, Vite 8) | kit 3.1.0, svelte 5.57.3, vite 8.3.5, adapter-node 6.0.0 | MIT | github.com/sveltejs/kit | Web Tầng 2 (`domains/carbon/web`) |
 | MapLibre GL JS | 6.16.0 | BSD-3-Clause | github.com/maplibre/maplibre-gl-js | Bản đồ |
+| Source Serif 4 (`@fontsource-variable/source-serif-4`) | 5.3.1 | OFL-1.1 | github.com/adobe-fonts/source-serif · github.com/fontsource/font-files | Chữ tiêu đề web, có bộ ký tự tiếng Việt |
+| Inter (`@fontsource-variable/inter`) | 5.3.0 | OFL-1.1 | github.com/rsms/inter · github.com/fontsource/font-files | Chữ thân và điều khiển web, có bộ ký tự tiếng Việt |
 | Gói gián tiếp của web (104 gói, `domains/carbon/web/package-lock.json`) | — | MIT, ISC, Apache-2.0, BSD-2/3, MPL-2.0 (`lightningcss`, chỉ lúc build; tương thích GPL-3.0), MIT OR Apache-2.0 – đều OSI | npm | |
 
 ## 3. Công cụ phát triển (không nằm trong sản phẩm)
@@ -72,6 +74,7 @@ Trạng thái: ✔ đang chạy · ◐ đã chọn, đang dựng · ☐ dự ki�
 |---|---|---|
 | Sentinel-2 L2A Collection 1 (danh mục STAC Earth Search `sentinel-2-c1-l2a`, COG công khai trên AWS Open Data) | Dữ liệu mở Copernicus Sentinel, miễn phí, ghi nguồn; sản phẩm NDVI của đội ghi "chứa dữ liệu Copernicus Sentinel đã qua xử lý" | Ước lượng carbon (ADR 0005) |
 | Nền bản đồ OpenStreetMap (tile.openstreetmap.org) | ODbL, ghi nguồn "© Những người đóng góp OpenStreetMap"; tuân thủ chính sách dùng tile của OSMF (chỉ máy dev/demo, sẽ thay bằng tile tự phục vụ khi triển khai) | Nền bản đồ web |
+| Ảnh chụp trang chủ (`domains/carbon/web/static/anh/`): rễ đước Cà Mau (Nevillenguyen310), bãi bồi Đất Mũi (Alphama), Wikimedia Commons | CC BY-SA 4.0 / CC BY 4.0, ghi công ở chân trang và `static/anh/NGUON.md` | Minh hoạ trang chủ |
 | Dữ liệu hợp tác xã, xã viên, lô đất | Dữ liệu **giả** do đội tạo | Demo |
 
 ## 5. Không dùng

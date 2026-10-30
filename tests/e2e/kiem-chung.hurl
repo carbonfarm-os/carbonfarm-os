@@ -64,3 +64,16 @@ jsonpath "$.ban_ghi[0].con_nguyen_ven" == true
 # Định danh người dùng (sub Keycloak) không lộ ra ngoài
 jsonpath "$.ban_ghi[0].du_lieu.tao_duyet.nguoi_tao_sub" == "(đã ẩn)"
 jsonpath "$.ban_ghi[0].du_lieu.tao_duyet.nguoi_duyet_sub" == "(đã ẩn)"
+
+# Tổng quan công khai cho trang chủ: số liệu đọc từ sổ cái, không định danh người dùng
+GET {{gateway}}/kiem-chung/api/tong-quan
+HTTP 200
+[Asserts]
+jsonpath "$.so_ket_qua_mrv" >= 1
+jsonpath "$.tin_chi_da_cap" >= 1
+jsonpath "$.tin_chi_da_ban" >= 1
+jsonpath "$.co2e_da_ghi_so_tan" > 0
+jsonpath "$.ket_qua_moi_nhat.ranh_gioi.type" == "Polygon"
+jsonpath "$.ket_qua_moi_nhat.commit" matches "^[0-9a-v]{32}$"
+jsonpath "$.lo_da_do" count >= 1
+body not contains "_sub"

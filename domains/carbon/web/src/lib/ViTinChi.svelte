@@ -114,28 +114,32 @@
 	onDestroy(() => clearTimeout(hen));
 </script>
 
-<section class="vi" aria-label="Ví tín chỉ hợp tác xã">
-	<h2>Ví tín chỉ: {tong} tín chỉ</h2>
-	<ul class="khoi">
-		{#each vi as k (k.rowId)}
-			<li><b>{k.soLuong}</b> · <small>{k.seriTu} → {k.seriDen}</small></li>
-		{/each}
-	</ul>
+<section class="vi" aria-labelledby="vi-td">
+	<h2 id="vi-td">Ví tín chỉ</h2>
+	<p class="tong">{tong} <span>tín chỉ, mỗi tín chỉ là 1 t CO₂e</span></p>
+	{#if vi.length}
+		<ul class="khoi">
+			{#each vi as k (k.rowId)}
+				<li><span class="sl">{k.soLuong}</span> <a href="/kiem-chung?q={k.seriTu}"><code>{k.seriTu}</code></a> đến <code>{k.seriDen.slice(-10)}</code></li>
+			{/each}
+		</ul>
+	{/if}
 
 	{#if laCanBo && tong > 0}
 		<form onsubmit={taoLenh}>
-			<label>
+			<h3>Bán tín chỉ</h3>
+			<label class="o-nhap">
 				Người mua
 				<select bind:value={form.maNguoiMua} required>
-					{#each nguoiMua as n (n.ma)}<option value={n.ma}>{n.ten} (tối đa {vnd(n.donGiaToiDaVnd)})</option>{/each}
+					{#each nguoiMua as n (n.ma)}<option value={n.ma}>{n.ten}, tối đa {vnd(n.donGiaToiDaVnd)}</option>{/each}
 				</select>
 			</label>
 			<div class="hang">
-				<label>Số tín chỉ <input bind:value={form.soLuong} inputmode="numeric" required /></label>
-				<label>Đơn giá (đ) <input bind:value={form.donGia} inputmode="numeric" required placeholder="200000" /></label>
+				<label class="o-nhap">Số tín chỉ <input bind:value={form.soLuong} inputmode="numeric" required /></label>
+				<label class="o-nhap">Đơn giá (đ) <input bind:value={form.donGia} inputmode="numeric" required placeholder="200000" /></label>
 			</div>
-			<button type="submit" disabled={dangGui}>Tạo lệnh bán</button>
-			<small>Lệnh cần một cán bộ khác duyệt (TT 11/2026/TT-BNNMT Điều 6 khoản 3).</small>
+			<button class="nut rong" type="submit" disabled={dangGui}>Tạo lệnh bán</button>
+			<p class="phu">Lệnh cần một cán bộ khác duyệt, theo Thông tư 11/2026/TT-BNNMT, Điều 6 khoản 3.</p>
 		</form>
 	{/if}
 </section>
@@ -145,142 +149,132 @@
 {/if}
 
 {#if lenh.length}
-	<h2>Lệnh bán</h2>
-	{#each lenh as l (l.rowId)}
-		<article class="lenh" data-trang-thai={l.trangThai}>
-			<header>
-				<b>{l.soLuong} tín chỉ → {nguoiMua.find((n) => n.ma === l.maNguoiMua)?.ten ?? l.maNguoiMua}</b>
-				<span class="nhan">{TRANG_THAI[l.trangThai] ?? l.trangThai}</span>
-			</header>
-			<small>{vnd(l.donGiaVnd)}/tín chỉ · {vnd(l.thanhTienVnd)}{#if l.doToiTao} · do bạn tạo{/if}</small>
-			{#if l.lyDoLoi}<p class="loi">{l.lyDoLoi}</p>{/if}
-			{#if l.ghiChuDuyet}<p><small>Ghi chú duyệt: {l.ghiChuDuyet}</small></p>{/if}
-			{#if l.doltCommit}<p><small>Sổ cái: <a href="/kiem-chung?q={l.doltCommit}"><code>{l.doltCommit}</code></a></small></p>{/if}
-			{#if laCanBo && l.trangThai === 'cho_duyet' && !l.doToiTao}
-				<textarea bind:value={lyDo[l.rowId]} rows="2" placeholder="Ghi chú (bắt buộc khi từ chối)"></textarea>
-				<div class="nut">
-					<button type="button" disabled={dangGui} onclick={() => duyet(l.rowId, true)}>Duyệt bán</button>
-					<button type="button" class="tu-choi" disabled={dangGui} onclick={() => duyet(l.rowId, false)}>Từ chối</button>
-				</div>
-			{/if}
-		</article>
-	{/each}
+	<section class="ds-lenh" aria-labelledby="lenh-td">
+		<h2 id="lenh-td">Lệnh bán</h2>
+		{#each lenh as l (l.rowId)}
+			<article class="lenh" data-trang-thai={l.trangThai}>
+				<header>
+					<span>{l.soLuong} tín chỉ cho {nguoiMua.find((n) => n.ma === l.maNguoiMua)?.ten ?? l.maNguoiMua}</span>
+					<span class="nhan {({ cho_duyet: 'cho', hoan_tat: 'tot', tu_choi: 'xau', loi: 'xau' } as Record<string, string>)[l.trangThai] ?? ''}">{TRANG_THAI[l.trangThai] ?? l.trangThai}</span>
+				</header>
+				<p class="phu">{vnd(l.donGiaVnd)} mỗi tín chỉ · tổng {vnd(l.thanhTienVnd)}{#if l.doToiTao} · bạn tạo{/if}</p>
+				{#if l.lyDoLoi}<p class="loi">{l.lyDoLoi}</p>{/if}
+				{#if l.ghiChuDuyet}<p class="phu">Ghi chú duyệt: {l.ghiChuDuyet}</p>{/if}
+				{#if l.doltCommit}<p class="phu">Sổ cái <a href="/kiem-chung?q={l.doltCommit}"><code>{l.doltCommit.slice(0, 12)}…</code></a></p>{/if}
+				{#if laCanBo && l.trangThai === 'cho_duyet' && !l.doToiTao}
+					<label class="o-nhap">
+						Ghi chú, bắt buộc khi từ chối
+						<textarea bind:value={lyDo[l.rowId]} rows="2"></textarea>
+					</label>
+					<button type="button" class="nut rong" disabled={dangGui} onclick={() => duyet(l.rowId, true)}>Duyệt bán</button>
+					<button type="button" class="chu xau" disabled={dangGui} onclick={() => duyet(l.rowId, false)}>Từ chối</button>
+				{/if}
+			</article>
+		{/each}
+	</section>
 {/if}
 
 <style>
-	.vi {
-		margin-bottom: 1rem;
-		padding: 0.6rem 0.7rem;
-		border-radius: 8px;
-		background: #1b4332;
-		color: #fff;
+	.vi,
+	.ds-lenh {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding-top: 20px;
+		border-top: 1px solid var(--ke);
 	}
 	h2 {
-		margin: 0 0 0.5rem;
-		font-size: 1.1rem;
+		font-size: 1.25rem;
+	}
+	h3 {
+		font-size: 1.125rem;
+	}
+	.tong {
+		color: var(--muc);
+		font: 600 3.25rem/1 var(--serif);
+		letter-spacing: -0.03em;
+	}
+	.tong span {
+		color: var(--mo);
+		font: 400 0.9375rem var(--sans);
+		letter-spacing: 0;
 	}
 	.khoi {
-		margin: 0 0 0.5rem;
-		padding-left: 1rem;
-		font-size: 0.85rem;
+		display: grid;
+		margin: 0;
+		padding: 0;
+		list-style: none;
 		overflow-wrap: anywhere;
+	}
+	.khoi li {
+		padding: 10px 0;
+		border-bottom: 1px solid var(--ke);
+	}
+	.khoi a {
+		color: var(--teal);
+	}
+	.sl {
+		display: inline-grid;
+		place-items: center;
+		min-width: 36px;
+		height: 28px;
+		margin-right: 6px;
+		border-radius: 999px;
+		background: var(--teal-nhat);
+		color: var(--teal);
+		font-weight: 600;
+	}
+	code {
+		font-size: 0.85em;
 	}
 	form {
 		display: grid;
-		gap: 0.4rem;
+		gap: 12px;
+		padding: 18px;
+		border-radius: 18px;
+		background: var(--giay);
 	}
 	.hang {
-		display: flex;
-		gap: 0.5rem;
-	}
-	label {
 		display: grid;
-		gap: 0.2rem;
-		font-size: 0.85rem;
-		flex: 1;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
 	}
-	input,
-	select,
-	textarea {
-		font: inherit;
-		padding: 0.3rem 0.45rem;
-		border: 1px solid #b7c9b2;
-		border-radius: 6px;
-		background: #fff;
-		color: #1b2b22;
-		min-width: 0;
+	.phu {
+		color: var(--mo);
+		font-size: 0.875rem;
 	}
-	textarea {
-		width: 100%;
-		box-sizing: border-box;
-		margin-top: 0.4rem;
+	.phu a {
+		color: var(--teal);
 	}
 	.lenh {
-		margin-bottom: 0.6rem;
-		padding: 0.5rem 0.7rem;
-		border: 1px solid #cfdccb;
-		border-radius: 8px;
-		background: #fff;
+		display: grid;
+		gap: 10px;
+		padding: 16px 0;
+	}
+	.lenh + .lenh {
+		border-top: 1px solid var(--ke);
 	}
 	.lenh header {
 		display: flex;
 		justify-content: space-between;
-		gap: 0.5rem;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px 12px;
+		color: var(--muc);
+		font-weight: 500;
 	}
-	.lenh p {
-		margin: 0.3rem 0 0;
-		overflow-wrap: anywhere;
-	}
-	.nhan {
-		font-size: 0.75rem;
-		padding: 0.1rem 0.5rem;
-		border-radius: 999px;
-		background: #e3ebe0;
-		color: #1b4332;
-		white-space: nowrap;
-	}
-	[data-trang-thai='cho_duyet'] .nhan {
-		background: #fff1c2;
-		color: #6b4e00;
-	}
-	[data-trang-thai='hoan_tat'] .nhan {
-		background: #1b4332;
-		color: #fff;
-	}
-	[data-trang-thai='tu_choi'] .nhan,
-	[data-trang-thai='loi'] .nhan {
-		background: #fde2e1;
-		color: #7a1c17;
-	}
-	.loi {
-		padding: 0.5rem 0.7rem;
-		border-radius: 6px;
-		background: #fde2e1;
-		color: #7a1c17;
-	}
-	.nut {
-		display: flex;
-		gap: 0.5rem;
-		margin-top: 0.4rem;
-	}
-	button {
-		font: inherit;
-		padding: 0.35rem 0.9rem;
+	.chu {
+		justify-self: center;
+		min-height: 32px;
+		padding: 0;
 		border: 0;
-		border-radius: 6px;
-		background: #95d5b2;
-		color: #1b4332;
+		background: none;
+		font: 500 0.9375rem var(--sans);
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
 		cursor: pointer;
 	}
-	button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-	button.tu-choi {
-		background: #f6c9c6;
-		color: #7a1c17;
-	}
-	code {
-		font-size: 0.75rem;
+	.chu.xau {
+		color: var(--xau);
 	}
 </style>
