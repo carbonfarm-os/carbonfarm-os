@@ -20,19 +20,34 @@ CREATE TABLE IF NOT EXISTS don_mua (ma_tham_chieu TEXT PRIMARY KEY, ma_nguoi_mua
 """
 
 
+class DauMoi(BaseModel):
+    ho_ten: str
+    chuc_vu: str
+    email: str
+    dien_thoai: str
+
+
 class NguoiMua(BaseModel):
     ma: str
     ten: str
     ma_so_thue: str = Field(description="Mã số thuế GIẢ (dùng làm tài khoản đăng ký bên nhận ở Registry mock)")
     so_tai_khoan_ngan_hang: str
     don_gia_toi_da_vnd: int = Field(description="Đơn giá cao nhất người mua chấp nhận cho 1 tín chỉ (1 t CO₂e)")
+    dau_moi: list[DauMoi] = Field(description="Đầu mối (giả) – để mở tài khoản đăng ký bên nhận ở Registry")
+
+
+def _dau_moi(ten: str) -> list[DauMoi]:
+    return [DauMoi(ho_ten=f"Đầu mối {i} – {ten}", chuc_vu=cv, email=f"dau-moi-{i}@example.invalid", dien_thoai="0000000000")
+            for i, cv in ((1, "Giám đốc"), (2, "Kế toán"))]
 
 
 NGUOI_MUA = [
     NguoiMua(ma="NM-XANH", ten="Công ty Năng lượng Xanh Mẫu (giả)", ma_so_thue="9900000001",
-             so_tai_khoan_ngan_hang="9704000000000001", don_gia_toi_da_vnd=300_000),
+             so_tai_khoan_ngan_hang="9704000000000001", don_gia_toi_da_vnd=300_000,
+             dau_moi=_dau_moi("Năng lượng Xanh Mẫu")),
     NguoiMua(ma="NM-QUY", ten="Quỹ Khí hậu Cộng đồng Mẫu (giả)", ma_so_thue="9900000002",
-             so_tai_khoan_ngan_hang="9704000000000002", don_gia_toi_da_vnd=250_000),
+             so_tai_khoan_ngan_hang="9704000000000002", don_gia_toi_da_vnd=250_000,
+             dau_moi=_dau_moi("Quỹ Khí hậu Cộng đồng Mẫu")),
 ]
 
 app = FastAPI(title="Buyer mock – người mua tín chỉ", version="0.1.0", description=__doc__)

@@ -60,5 +60,20 @@ class MrvSoCai(unittest.TestCase):
         self.assertEqual(len(dolt(f"SELECT 1 AS co FROM dolt_log WHERE commit_hash = '{dn['dolt_commit']}'")), 1)
 
 
+    def test_lenh_ban_hoan_tat_nam_trong_so_cai_co_hai_nguoi(self):
+        l = dong_moi_nhat(
+            "SELECT json_build_object('id', id, 'dolt_commit', dolt_commit, 'sha', so_cai_sha256) FROM carbon.lenh_ban "
+            "WHERE trang_thai = 'hoan_tat' ORDER BY hoan_tat_luc DESC LIMIT 1")
+        if l is None:
+            self.skipTest("chưa có lệnh bán nào hoàn tất")
+        ban_ghi = dolt(f"SELECT sha256, JSON_UNQUOTE(JSON_EXTRACT(du_lieu, '$.tao_duyet.nguoi_tao_sub')) AS tao, "
+                       f"JSON_UNQUOTE(JSON_EXTRACT(du_lieu, '$.tao_duyet.nguoi_duyet_sub')) AS duyet FROM ban_ghi "
+                       f"WHERE loai = 'ban_tin_chi' AND ma_doi_tuong = '{l['id']}'")
+        self.assertEqual(len(ban_ghi), 1)
+        self.assertEqual(ban_ghi[0]["sha256"], l["sha"])
+        self.assertNotEqual(ban_ghi[0]["tao"], ban_ghi[0]["duyet"], "sổ cái ghi người tạo và người duyệt khác nhau")
+        self.assertEqual(len(dolt(f"SELECT 1 AS co FROM dolt_log WHERE commit_hash = '{l['dolt_commit']}'")), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

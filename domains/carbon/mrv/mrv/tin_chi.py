@@ -25,12 +25,12 @@ class LoiNghiepVu(Exception):
     """Registry từ chối (4xx khác 409): ghi lý do vào đề nghị, không thử lại."""
 
 
-def _registry() -> httpx.Client:
+def ket_noi_registry() -> httpx.Client:
     return httpx.Client(base_url=REGISTRY, timeout=20,
                         headers={"Authorization": f"Bearer {luu_tru.bi_mat('ket-noi-registry')}"})
 
 
-def _kiem(r: httpx.Response) -> dict:
+def kiem_phan_hoi(r: httpx.Response) -> dict:
     if 400 <= r.status_code < 500:
         raise LoiNghiepVu(f"Registry {r.status_code}: {r.json().get('detail', r.text)}"[:500])
     r.raise_for_status()  # 5xx → lỗi tạm, vòng sau thử lại
@@ -41,7 +41,7 @@ def dam_bao_tai_khoan(reg: httpx.Client, htx: dict) -> None:
     """Tài khoản đăng ký gắn mã số thuế của hợp tác xã (TT 11/2026 Điều 6); đã có (409) là được."""
     r = reg.post("/tai-khoan", json={"ma_so_thue": htx["ma_so_thue"], "ten_to_chuc": htx["ten"], "dau_moi": htx["dau_moi"]})
     if r.status_code != 409:
-        _kiem(r)
+        kiem_phan_hoi(r)
 
 
 def cap_mot(c, dn: dict) -> None:
@@ -50,14 +50,14 @@ def cap_mot(c, dn: dict) -> None:
     kq = c.execute("SELECT id::text, ky_tu, ky_den, co2e_tan, dolt_commit, so_cai_sha256 FROM carbon.ket_qua_mrv WHERE id = %s",
                    (dn["ket_qua_mrv_id"],)).fetchone()
     ma_tham_chieu = f"cap-{dn['id']}"
-    with _registry() as reg:
+    with ket_noi_registry() as reg:
         dam_bao_tai_khoan(reg, htx)
         r = reg.post("/tin-chi/dang-ky", json={
             "ma_so_thue": htx["ma_so_thue"], "ten_du_an": f"{htx['ten']} – rừng ngập mặn", "ma_du_an": htx["ma_du_an_tin_chi"],
             "ten_co_che": TEN_CO_CHE, "ma_co_che": MA_CO_CHE, "nam_xac_nhan": kq["ky_den"].year,
             "so_luong": dn["so_luong"], "ma_tham_chieu": ma_tham_chieu,
         })
-        dk = _kiem(reg.get(f"/nghiep-vu/{ma_tham_chieu}")) if r.status_code == 409 else _kiem(r)
+        dk = kiem_phan_hoi(reg.get(f"/nghiep-vu/{ma_tham_chieu}")) if r.status_code == 409 else kiem_phan_hoi(r)
     dai = dk["dai_seri"][0]
 
     ban_ghi = {
