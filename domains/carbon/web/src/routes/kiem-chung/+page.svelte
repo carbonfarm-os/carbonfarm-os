@@ -23,9 +23,9 @@
 		| { kieu: 'seri'; so_seri: string; chu_so_huu_theo_so_cai: { ten: string; ma_so_thue: string }; toan_ven: boolean; su_kien: BanGhi[] };
 
 	const LOAI: Record<string, string> = {
-		ket_qua_mrv: 'Kết quả đo MRV đã duyệt',
-		cap_tin_chi: 'Cấp tín chỉ (Registry)',
-		ban_tin_chi: 'Bán tín chỉ – chuyển quyền sở hữu'
+		ket_qua_mrv: 'Đo từ vệ tinh, cán bộ đã duyệt',
+		cap_tin_chi: 'Registry cấp tín chỉ',
+		ban_tin_chi: 'Bán, chuyển quyền sở hữu'
 	};
 
 	let q = $state('');
@@ -69,165 +69,252 @@
 	const dsBanGhi = $derived(kq ? (kq.kieu === 'seri' ? kq.su_kien : kq.ban_ghi) : []);
 </script>
 
-<svelte:head><title>Kiểm chứng sổ cái · CarbonFarm OS</title></svelte:head>
+<svelte:head><title>Kiểm chứng tín chỉ · CarbonFarm OS</title></svelte:head>
 
-<header>
-	<a href="/"><strong>CarbonFarm OS</strong></a>
-	<span>Kiểm chứng công khai</span>
-</header>
+<div class="trang">
+<section class="mo" aria-labelledby="td">
+	<header class="dau">
+		<a class="ten" href="/">CarbonFarm OS</a>
+		<nav aria-label="Trang chủ">
+			<a href="/#cach-lam">Cách làm</a>
+			<a href="/#phuong-phap">Phương pháp</a>
+		</nav>
+	</header>
+	<div class="mo-giua">
+		<div>
+			<h1 id="td">Tra một tín chỉ trên sổ cái</h1>
+			<p class="dan">
+				Hệ thống tính lại SHA-256 của từng bản ghi và cho biết bản ghi còn nguyên vẹn hay không. Không cần tài khoản.
+			</p>
+		</div>
+		<form onsubmit={tra}>
+			<label class="o-nhap">
+				Số sê-ri hoặc mã băm commit
+				<input bind:value={q} placeholder="MCK-DM01-26-0000000001" autocomplete="off" spellcheck="false" />
+			</label>
+			<button class="nut rong" type="submit" disabled={dangTra}>{dangTra ? 'Đang tra…' : 'Kiểm chứng'}</button>
+			{#if loi}<p role="alert" class="loi">{loi}</p>{/if}
+		</form>
+	</div>
+</section>
 
 <main>
-	<h1>Kiểm chứng tín chỉ trên sổ cái</h1>
-	<p>
-		Nhập <b>số sê-ri tín chỉ</b> (ví dụ <code>MCK-DM01-26-0000000001</code>) hoặc <b>mã băm commit</b> của sổ cái Dolt.
-		Hệ thống tính lại SHA-256 của từng bản ghi và cho biết bản ghi còn nguyên vẹn hay không. Không cần đăng nhập.
-	</p>
-	<form onsubmit={tra}>
-		<input bind:value={q} aria-label="Số sê-ri hoặc mã băm commit" placeholder="Số sê-ri hoặc mã băm commit" />
-		<button type="submit" disabled={dangTra}>{dangTra ? 'Đang tra…' : 'Kiểm chứng'}</button>
-	</form>
-
-	{#if loi}<p role="alert" class="loi">{loi}</p>{/if}
-
 	{#if kq}
-		{#if kq.kieu === 'seri'}
-			<section class="tong" class:hong={!kq.toan_ven}>
-				<b>{kq.toan_ven ? '✔ Toàn vẹn' : '✘ Có bản ghi không khớp'}</b> – tín chỉ {kq.so_seri}<br />
-				Chủ sở hữu theo sổ cái: <b>{kq.chu_so_huu_theo_so_cai.ten}</b> (MST {kq.chu_so_huu_theo_so_cai.ma_so_thue})
-			</section>
-		{:else}
-			<section class="tong">
-				Commit <code>{kq.commit}</code> · {kq.luc}<br />
-				<small>{kq.thong_diep}</small>
-			</section>
-		{/if}
-		<ol>
-			{#each dsBanGhi as b (b.commit + b.ma_doi_tuong)}
-				<li>
-					<div class="dau">
-						<b>{LOAI[b.loai] ?? b.loai}</b>
-						<span class="nhan" class:hong={!b.sha256_khop || !b.con_nguyen_ven}>
-							{b.sha256_khop && b.con_nguyen_ven ? 'SHA-256 khớp' : b.sha256_khop ? 'Đã bị sửa sau' : 'SHA-256 KHÔNG khớp'}
-						</span>
-					</div>
-					<p>{tom(b)}</p>
-					<small>Commit <a href="?q={b.commit}" onclick={(e) => { e.preventDefault(); q = b.commit; tra(); }}><code>{b.commit}</code></a> · {b.luc}</small>
-					<details>
-						<summary>Bản ghi gốc (định danh người dùng đã ẩn)</summary>
-						<p><small>SHA-256 sổ cái: <code>{b.sha256_so_cai}</code><br />SHA-256 tính lại: <code>{b.sha256_tinh_lai}</code></small></p>
-						<pre>{JSON.stringify(b.du_lieu, null, 2)}</pre>
-					</details>
-				</li>
-			{/each}
-		</ol>
+		<section class="ket-luan" class:hong={kq.kieu === 'seri' && !kq.toan_ven} aria-labelledby="kl">
+			{#if kq.kieu === 'seri'}
+				<h2 id="kl">{kq.toan_ven ? 'Toàn vẹn.' : 'Có bản ghi không khớp.'}</h2>
+				<p>
+					Tín chỉ <code>{kq.so_seri}</code> thuộc <b>{kq.chu_so_huu_theo_so_cai.ten}</b> (mã số thuế
+					{kq.chu_so_huu_theo_so_cai.ma_so_thue}), qua {kq.su_kien.length} bản ghi trên sổ cái.
+				</p>
+			{:else}
+				<h2 id="kl">Một commit trên sổ cái.</h2>
+				<p><code>{kq.commit}</code> · {kq.luc}<br />{kq.thong_diep}</p>
+			{/if}
+		</section>
+
+		<section class="chuoi" aria-labelledby="chuoi-td">
+			<h2 id="chuoi-td">Các bản ghi</h2>
+			<ol>
+				{#each dsBanGhi as b (b.commit + b.ma_doi_tuong)}
+					<li>
+						<div class="dong-dau">
+							<h3>{LOAI[b.loai] ?? b.loai}</h3>
+							<span class="nhan" class:tot={b.sha256_khop && b.con_nguyen_ven} class:xau={!b.sha256_khop || !b.con_nguyen_ven}>
+								{b.sha256_khop && b.con_nguyen_ven ? 'SHA-256 khớp' : b.sha256_khop ? 'Đã bị sửa sau' : 'SHA-256 không khớp'}
+							</span>
+						</div>
+						<p class="tom">{tom(b)}</p>
+						<p class="phu">
+							Commit <a href="?q={b.commit}" onclick={(e) => { e.preventDefault(); q = b.commit; tra(); }}><code>{b.commit}</code></a> · {b.luc}
+						</p>
+						<details>
+							<summary>Bản ghi gốc (định danh người dùng đã ẩn)</summary>
+							<p class="phu">SHA-256 sổ cái <code>{b.sha256_so_cai}</code><br />SHA-256 tính lại <code>{b.sha256_tinh_lai}</code></p>
+							<pre><code>{JSON.stringify(b.du_lieu, null, 2)}</code></pre>
+						</details>
+					</li>
+				{/each}
+			</ol>
+		</section>
 	{/if}
 </main>
+</div>
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: system-ui, sans-serif;
-		background: #f4f7f2;
-		color: #1b2b22;
+	.trang {
+		padding: 12px;
 	}
-	header {
-		display: flex;
-		gap: 1rem;
-		align-items: center;
-		padding: 0.75rem 1rem;
-		background: #1b4332;
-		color: #fff;
-	}
-	header a {
-		color: #fff;
-		text-decoration: none;
-		flex: 1;
-	}
-	main {
-		max-width: 52rem;
-		margin: 0 auto;
-		padding: 1rem;
-	}
-	h1 {
-		font-size: 1.4rem;
-	}
-	form {
-		display: flex;
-		gap: 0.5rem;
-		margin: 1rem 0;
-	}
-	input {
-		flex: 1;
-		min-width: 0;
-		font: inherit;
-		padding: 0.45rem 0.6rem;
-		border: 1px solid #b7c9b2;
-		border-radius: 6px;
-		background: #fff;
-		color: #1b2b22;
-	}
-	button {
-		font: inherit;
-		padding: 0.45rem 1rem;
-		border: 0;
-		border-radius: 6px;
-		background: #95d5b2;
-		color: #1b4332;
-		cursor: pointer;
-	}
-	.tong {
-		padding: 0.7rem 0.9rem;
-		border-radius: 8px;
-		background: #1b4332;
-		color: #fff;
-		overflow-wrap: anywhere;
-	}
-	.tong.hong {
-		background: #7a1c17;
-	}
-	ol {
-		padding-left: 1.2rem;
-	}
-	li {
-		margin: 0.8rem 0;
-		padding: 0.6rem 0.8rem;
-		border: 1px solid #cfdccb;
-		border-radius: 8px;
-		background: #fff;
-		overflow-wrap: anywhere;
+	.mo {
+		padding: 0 var(--le) clamp(48px, 6vw, 80px);
+		border-radius: 24px 24px 64px 64px;
+		background: var(--teal);
+		color: #e4efec;
 	}
 	.dau {
 		display: flex;
-		justify-content: space-between;
-		gap: 0.5rem;
+		align-items: center;
+		gap: 24px;
+		max-width: 1120px;
+		min-height: 80px;
+		margin: 0 auto;
 	}
-	.nhan {
-		font-size: 0.75rem;
-		padding: 0.1rem 0.5rem;
-		border-radius: 999px;
-		background: #d8f3dc;
-		color: #1b4332;
-		white-space: nowrap;
+	.ten {
+		color: #fff;
+		font: 600 1.375rem var(--serif);
+		letter-spacing: -0.02em;
+		text-decoration: none;
 	}
-	.nhan.hong {
-		background: #fde2e1;
-		color: #7a1c17;
+	.dau nav {
+		display: flex;
+		gap: 28px;
+		margin-left: auto;
 	}
-	.loi {
-		padding: 0.5rem 0.7rem;
-		border-radius: 6px;
-		background: #fde2e1;
-		color: #7a1c17;
+	.dau nav a {
+		color: #d3e4e0;
+		font-size: 0.9375rem;
+		text-decoration: none;
 	}
-	pre {
-		max-height: 18rem;
-		overflow: auto;
-		padding: 0.5rem;
-		background: #f4f7f2;
-		border-radius: 6px;
-		font-size: 0.72rem;
+	.dau nav a:hover {
+		color: #fff;
+	}
+	.mo-giua {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+		gap: clamp(32px, 5vw, 72px);
+		align-items: center;
+		max-width: 1120px;
+		margin: clamp(16px, 4vw, 48px) auto 0;
+	}
+	h1 {
+		color: #fff;
+		font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+		line-height: 1.06;
+	}
+	.dan {
+		max-width: 44ch;
+		margin-top: 20px;
+		font-size: 1.125rem;
+	}
+	form {
+		display: grid;
+		gap: 14px;
+		padding: 28px;
+		border-radius: 28px;
+		background: #fff;
+	}
+	main {
+		max-width: 1120px;
+		margin: 0 auto;
+		padding: clamp(40px, 6vw, 80px) var(--le) 120px;
 	}
 	code {
-		font-size: 0.8rem;
+		font-size: 0.85em;
+		overflow-wrap: anywhere;
+	}
+	.ket-luan {
+		display: grid;
+		gap: 14px;
+		padding: clamp(28px, 4vw, 48px);
+		border-radius: 32px;
+		background: var(--dao);
+		color: #d6d5cf;
+	}
+	.ket-luan.hong {
+		background: #5e1810;
+	}
+	.ket-luan h2 {
+		color: #fff;
+		font-size: clamp(2rem, 3.6vw, 3rem);
+	}
+	.ket-luan p {
+		max-width: 60ch;
+		font-size: 1.125rem;
+	}
+	.ket-luan b {
+		color: #fff;
+	}
+	.ket-luan code {
+		color: var(--amber);
+	}
+	.chuoi {
+		padding-top: clamp(48px, 6vw, 80px);
+	}
+	.chuoi > h2 {
+		margin-bottom: 20px;
+		font-size: 1.75rem;
+	}
+	ol {
+		display: grid;
+		gap: 12px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	li {
+		display: grid;
+		gap: 10px;
+		min-width: 0;
+		padding: clamp(20px, 2.4vw, 32px);
+		border-radius: 24px;
+		background: #fff;
+	}
+	.dong-dau {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px;
+	}
+	h3 {
+		font-size: 1.375rem;
+	}
+	.tom {
+		color: var(--muc);
+	}
+	.phu {
+		color: var(--mo);
+		font-size: 0.875rem;
+	}
+	.phu a {
+		color: var(--teal);
+	}
+	summary {
+		color: var(--muc);
+		font-size: 0.9375rem;
+		font-weight: 500;
+		cursor: pointer;
+	}
+	pre {
+		max-height: 20rem;
+		overflow: auto;
+		margin: 12px 0 0;
+		padding: 16px;
+		border-radius: 14px;
+		background: var(--giay);
+		font-size: 0.8125rem;
+	}
+	@media (max-width: 860px) {
+		.mo-giua {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (max-width: 640px) {
+		.trang {
+			padding: 8px;
+		}
+		.mo {
+			border-radius: 20px 20px 40px 40px;
+		}
+		.dau nav {
+			display: none;
+		}
+		form {
+			padding: 22px;
+		}
+		.dong-dau {
+			flex-direction: column;
+			align-items: start;
+			gap: 8px;
+		}
 	}
 </style>

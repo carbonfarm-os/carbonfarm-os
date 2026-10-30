@@ -24,6 +24,7 @@ Thư viện:
 - MRV engine (image carbonfarm/carbon-mrv): rasterio (BSD-3-Clause) kèm GDAL (MIT/X), PROJ (MIT), GEOS (LGPL-2.1);
   numpy (BSD-3-Clause), psycopg (LGPL-3.0), PyMySQL (MIT), boto3 (Apache-2.0), httpx (BSD-3-Clause), PyYAML (MIT)
 - SvelteKit (MIT), MapLibre GL JS (BSD-3-Clause)
+- Phông chữ Source Serif 4 (Adobe) và Inter (Rasmus Andersson), SIL Open Font License 1.1 (gói Fontsource)
 - Connector mock (image carbonfarm/ket-noi): FastAPI (MIT), Starlette (BSD-3-Clause), uvicorn (BSD-3-Clause), pydantic (MIT),
   PyYAML (MIT), Python (PSF-2.0)
 
@@ -32,3 +33,8 @@ Dữ liệu: ảnh Sentinel-2 L2A Collection 1 (danh mục STAC Earth Search, AW
 
 Hình ảnh nhận diện (docs/images/banner.png, docs/images/logo.png) do nhóm tạo bằng công cụ sinh ảnh
 (Codex imagegen) ngày 29/10/2026, phát hành cùng giấy phép của dự án.
+
+Ảnh chụp trên trang chủ (Wikimedia Commons, giữ giấy phép riêng):
+- "Intricate prop root system of mangrove tree in Ca Mau Vietnam", Nevillenguyen310, CC BY-SA 4.0
+- "Mudflats in Dat Mui", Alphama, CC BY 4.0
+Đã cắt, thu nhỏ, đổi sang WebP; chi tiết ở domains/carbon/web/static/anh/NGUON.md.

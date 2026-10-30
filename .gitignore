@@ -16,3 +16,8 @@ site/
 
 # Ảnh COG nhỏ dùng cho kiểm thử đầu-cuối (dữ liệu giả, tự sinh)
 !tests/e2e/du-lieu/*.tif
+
+# Ảnh mẫu, trạng thái công cụ thiết kế (không phát hành)
+.impeccable/
+.taste-skill/
+PRODUCT.md

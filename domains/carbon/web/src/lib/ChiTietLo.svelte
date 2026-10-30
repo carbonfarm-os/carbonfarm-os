@@ -76,6 +76,7 @@
 		cham_tran_sinh_khoi: 'Đã chạm trần sinh khối – chỉ tính phần tới trần',
 		thieu_diem_anh_hop_le: 'Một phần lô bị mây/bóng mây che'
 	};
+	const NHAN: Record<string, string> = { cho_duyet: 'cho', da_ghi_so: 'tot', tu_choi: 'xau', loi: 'xau' };
 	const DANG_XU_LY = ['cho_chay', 'dang_chay', 'da_duyet'];
 	const TRUY_VAN = `query($lo: UUID!) { allCarbonKetQuaMrvs(condition: { loDatId: $lo }) { nodes {
 		rowId kyTu kyDen trangThai canhId ngayChup mayPhanTram soDiemAnhLo soDiemAnhHopLe soDiemAnhTan dienTichTanHa co2ETan
@@ -156,18 +157,21 @@
 	const so = (v: string | null, n = 2) => (v === null ? '–' : Number(v).toLocaleString('vi-VN', { maximumFractionDigits: n }));
 </script>
 
-<section>
-	<div class="tieu-de">
-		<h2>{lo.ten}</h2>
-		<button type="button" class="phu" onclick={onDong} aria-label="Đóng chi tiết lô">✕</button>
+<div class="chi-tiet">
+	<div class="vet">
+		<button type="button" class="chu" onclick={onDong}>Lô đất</button><span>/</span>
 	</div>
-	<p class="phu-de">{so(lo.dienTichHa)} ha{#if lo.namTrong} · trồng {lo.namTrong}{:else} · chưa khai năm trồng{/if}</p>
+	<div class="tieu-de">
+		<h1>{lo.ten}</h1>
+		<span class="chip">rừng ngập mặn</span>
+	</div>
+	<p class="phu">{so(lo.dienTichHa)} ha theo ranh giới · {lo.namTrong ? `trồng năm ${lo.namTrong}` : 'chưa khai năm trồng'}</p>
 
 	{#if laCanBo}
 		<form class="yeu-cau" onsubmit={yeuCau}>
-			<label>Từ <input type="date" bind:value={kyTu} required /></label>
-			<label>Đến <input type="date" bind:value={kyDen} required /></label>
-			<button type="submit" disabled={dangGui}>Yêu cầu đo carbon</button>
+			<label class="o-nhap">Đo từ ngày <input type="date" bind:value={kyTu} required /></label>
+			<label class="o-nhap">Đến ngày <input type="date" bind:value={kyDen} required /></label>
+			<button class="nut nhat nho" type="submit" disabled={dangGui}>Yêu cầu đo</button>
 		</form>
 	{/if}
 
@@ -175,242 +179,251 @@
 		<div role="alert" class="loi"><b>{loi.thongBao}</b>{#if loi.goiY}<br />{loi.goiY}{/if}</div>
 	{/if}
 
-	<h3>Kết quả đo (MRV)</h3>
+	<h2>Kết quả đo</h2>
 	{#if dangTai}
-		<p>Đang tải…</p>
+		<p class="phu">Đang tải…</p>
 	{:else if !ketQua.length}
-		<p>Chưa có kết quả đo cho lô này.</p>
+		<p class="phu">Chưa có kết quả đo cho lô này.{#if laCanBo} Chọn kỳ rồi bấm Yêu cầu đo.{/if}</p>
 	{/if}
 	{#each ketQua as k (k.rowId)}
 		<article class="kq" data-trang-thai={k.trangThai}>
 			<header>
-				<b>{k.kyTu} → {k.kyDen}</b>
-				<span class="nhan">{TRANG_THAI[k.trangThai] ?? k.trangThai}</span>
+				<span>{k.kyTu.split('-').reverse().join('/')} – {k.kyDen.split('-').reverse().join('/')}</span>
+				<span class="nhan {NHAN[k.trangThai] ?? ''}">{TRANG_THAI[k.trangThai] ?? k.trangThai}</span>
 			</header>
 			{#if k.trangThai === 'loi'}
 				<p class="loi">{k.lyDoLoi}</p>
-			{:else if k.canhId}
+			{:else if !k.canhId}
+				<p class="phu">Đang tìm cảnh ảnh vệ tinh ít mây và tính toán.</p>
+			{:else}
+				<p class="co2e">{so(k.co2ETan, 2)} <span>t CO₂e</span></p>
+				<p class="co2e-giai">ước tính hấp thụ trong kỳ, phương pháp cận dưới</p>
 				<dl>
-					<dt>Hấp thụ ước lượng</dt>
-					<dd><b>{so(k.co2ETan, 1)} t CO₂e</b></dd>
-					<dt>Diện tích tán tính</dt>
-					<dd>{so(k.dienTichTanHa)} ha</dd>
-					<dt>Điểm ảnh tán / hợp lệ / trong lô</dt>
-					<dd>{k.soDiemAnhTan} / {k.soDiemAnhHopLe} / {k.soDiemAnhLo}</dd>
-					<dt>Cảnh Sentinel-2</dt>
-					<dd>{k.ngayChup} · mây {so(k.mayPhanTram, 1)} %<br /><small>{k.canhId}</small></dd>
-					<dt>Phương pháp</dt>
-					<dd><small>{k.phuongPhap}</small></dd>
+					<div><dt>Diện tích tán</dt><dd>{so(k.dienTichTanHa)} ha</dd></div>
+					<div><dt>Điểm ảnh tán / hợp lệ / trong lô</dt><dd>{k.soDiemAnhTan} / {k.soDiemAnhHopLe} / {k.soDiemAnhLo}</dd></div>
+					<div><dt>Cảnh Sentinel-2</dt><dd>{k.ngayChup?.split('-').reverse().join('/')} · mây {so(k.mayPhanTram, 1)} %</dd></div>
+					<div><dt>Phương pháp</dt><dd>{k.phuongPhap}</dd></div>
 					{#if k.doltCommit}
-						<dt>Sổ cái Dolt</dt>
-						<dd><a href="/kiem-chung?q={k.doltCommit}"><code title="Mã băm commit – kiểm chứng công khai">{k.doltCommit}</code></a></dd>
+						<div><dt>Sổ cái</dt><dd><a href="/kiem-chung?q={k.doltCommit}"><code>{k.doltCommit.slice(0, 12)}…</code></a></dd></div>
 					{/if}
-					{#if k.ghiChuDuyet}
-						<dt>Ghi chú duyệt</dt>
-						<dd>{k.ghiChuDuyet}</dd>
-					{/if}
+					{#if k.ghiChuDuyet}<div><dt>Ghi chú duyệt</dt><dd>{k.ghiChuDuyet}</dd></div>{/if}
 				</dl>
-				{#each k.canhBao as cb (cb)}<p class="canh-bao">⚠ {CANH_BAO[cb] ?? cb}</p>{/each}
-				<div class="nut">
-					{#if k.cogHref}
-						{#if lopDangXem === k.cogHref}
-							<button type="button" class="phu" onclick={() => onXemLop(null)}>Ẩn lớp NDVI</button>
-						{:else}
-							<button type="button" class="phu" onclick={() => onXemLop(k.cogHref)}>Xem lớp NDVI</button>
-						{/if}
-					{/if}
-				</div>
+				{#each k.canhBao as cb (cb)}<p class="canh-bao">{CANH_BAO[cb] ?? cb}</p>{/each}
+				{#if k.cogHref}
+					<button type="button" class="chu" onclick={() => onXemLop(lopDangXem === k.cogHref ? null : k.cogHref)}>
+						{lopDangXem === k.cogHref ? 'Ẩn lớp NDVI trên bản đồ' : 'Xem lớp NDVI trên bản đồ'}
+					</button>
+				{/if}
+
 				{@const cap = k.carbonDeNghiCapByKetQuaMrvId}
 				{#if cap}
-					<div class="cap" data-trang-thai={cap.trangThai}>
+					<p class="cap">
 						{#if cap.trangThai === 'da_cap'}
-							<b>Đã cấp {cap.soLuong} tín chỉ</b> vào ví hợp tác xã<br />
-							<small>{cap.seriTu} → {cap.seriDen}</small><br />
-							<small>Sổ cái: <a href="/kiem-chung?q={cap.seriTu}"><code>{cap.doltCommit}</code></a></small>
+							Đã cấp <b>{cap.soLuong} tín chỉ</b>, sê-ri <a href="/kiem-chung?q={cap.seriTu}"><code>{cap.seriTu}</code></a> đến <code>{cap.seriDen?.slice(-10)}</code>.
 						{:else if cap.trangThai === 'cho_dang_ky'}
-							Đang đăng ký {cap.soLuong} tín chỉ với Registry…
+							Đang đăng ký {cap.soLuong} tín chỉ với Registry.
 						{:else}
-							<span class="loi">Registry từ chối: {cap.lyDoLoi}</span>
+							<span class="xau">Registry từ chối: {cap.lyDoLoi}</span>
 						{/if}
-					</div>
+					</p>
 				{:else if laCanBo && k.trangThai === 'da_ghi_so'}
-					<div class="nut">
-						<button type="button" disabled={dangGui || Number(k.co2ETan) < 1} onclick={() => deNghiCap(k.rowId)}>
-							Đề nghị cấp {Math.floor(Number(k.co2ETan))} tín chỉ
-						</button>
-					</div>
+					<button type="button" class="nut rong" disabled={dangGui || Number(k.co2ETan) < 1} onclick={() => deNghiCap(k.rowId)}>
+						Đề nghị cấp {Math.floor(Number(k.co2ETan))} tín chỉ
+					</button>
 				{/if}
+
 				{#if laCanBo && k.trangThai === 'cho_duyet'}
 					<div class="duyet">
-						<textarea bind:value={lyDo[k.rowId]} rows="2" placeholder="Ghi chú (bắt buộc khi từ chối)"></textarea>
-						<div class="nut">
-							<button type="button" disabled={dangGui} onclick={() => duyet(k.rowId, true)}>Duyệt và ghi sổ</button>
-							<button type="button" class="tu-choi" disabled={dangGui} onclick={() => duyet(k.rowId, false)}>Từ chối</button>
-						</div>
+						<label class="o-nhap">
+							Ghi chú duyệt, bắt buộc khi từ chối
+							<textarea bind:value={lyDo[k.rowId]} rows="2"></textarea>
+						</label>
+						<button type="button" class="nut rong" disabled={dangGui} onclick={() => duyet(k.rowId, true)}>Duyệt và ghi sổ</button>
+						<button type="button" class="chu xau giua" disabled={dangGui} onclick={() => duyet(k.rowId, false)}>Từ chối</button>
 					</div>
 				{/if}
 				<details>
 					<summary>Phả hệ dữ liệu</summary>
-					<pre>{JSON.stringify(k.phaHe, null, 2)}</pre>
+					<pre><code>{JSON.stringify(k.phaHe, null, 2)}</code></pre>
 				</details>
 			{/if}
 		</article>
 	{/each}
-</section>
+</div>
 
 <style>
+	.chi-tiet {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.vet {
+		display: flex;
+		gap: 6px;
+		color: var(--mo);
+	}
+	.chu {
+		align-self: start;
+		min-height: 32px;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: var(--teal);
+		font: 500 0.9375rem var(--sans);
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+		cursor: pointer;
+	}
+	.chu:hover {
+		color: var(--teal-dam);
+	}
+	.chu.xau {
+		color: var(--xau);
+	}
+	.chu.giua {
+		align-self: center;
+		justify-self: center;
+	}
 	.tieu-de {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
+		flex-wrap: wrap;
+		gap: 10px 12px;
 	}
-	h2 {
-		margin: 0;
-		font-size: 1.1rem;
+	h1 {
+		font-size: 1.875rem;
 	}
-	h3 {
-		margin: 1rem 0 0.5rem;
-		font-size: 1rem;
+	.chip {
+		padding: 4px 12px;
+		border-radius: 999px;
+		background: var(--teal-nhat);
+		color: var(--teal);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		white-space: nowrap;
 	}
-	.phu-de {
-		margin: 0.2rem 0 0.8rem;
-		color: #40594a;
-		font-size: 0.9rem;
+	.phu {
+		color: var(--mo);
 	}
 	.yeu-cau {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		align-items: end;
-	}
-	label {
 		display: grid;
-		gap: 0.2rem;
-		font-size: 0.85rem;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+		align-items: end;
+		padding: 16px;
+		border-radius: 18px;
+		background: var(--giay);
 	}
-	input,
-	textarea {
-		font: inherit;
-		padding: 0.3rem 0.45rem;
-		border: 1px solid #b7c9b2;
-		border-radius: 6px;
-		background: #fff;
-		color: #1b2b22;
+	.yeu-cau .nut {
+		grid-column: 1 / -1;
 	}
-	textarea {
-		width: 100%;
-		box-sizing: border-box;
+	h2 {
+		margin-top: 8px;
+		font-size: 1.25rem;
 	}
 	.kq {
-		margin-bottom: 0.7rem;
-		padding: 0.6rem 0.7rem;
-		border: 1px solid #cfdccb;
-		border-radius: 8px;
-		background: #fff;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding-top: 20px;
+		border-top: 1px solid var(--ke);
+	}
+	.kq + .kq {
+		margin-top: 12px;
 	}
 	.kq header {
 		display: flex;
 		justify-content: space-between;
-		gap: 0.5rem;
 		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px 12px;
+		color: var(--muc);
+		font-weight: 500;
 	}
-	.nhan {
-		font-size: 0.75rem;
-		padding: 0.1rem 0.5rem;
-		border-radius: 999px;
-		background: #e3ebe0;
-		color: #1b4332;
-		white-space: nowrap;
+	.co2e {
+		margin-top: 4px;
+		color: var(--muc);
+		font: 600 3.25rem/1 var(--serif);
+		letter-spacing: -0.03em;
 	}
-	[data-trang-thai='cho_duyet'] .nhan {
-		background: #fff1c2;
-		color: #6b4e00;
+	.co2e span {
+		color: var(--mo);
+		font: 500 1.125rem var(--sans);
+		letter-spacing: 0;
 	}
-	[data-trang-thai='da_ghi_so'] .nhan {
-		background: #1b4332;
-		color: #fff;
-	}
-	[data-trang-thai='tu_choi'] .nhan,
-	[data-trang-thai='loi'] .nhan {
-		background: #fde2e1;
-		color: #7a1c17;
+	.co2e-giai {
+		margin-top: -6px;
+		color: var(--mo);
+		font-size: 0.875rem;
 	}
 	dl {
 		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: 0.2rem 0.7rem;
-		margin: 0.5rem 0;
-		font-size: 0.85rem;
+		margin: 0;
+	}
+	dl div {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--ke);
 	}
 	dt {
-		color: #40594a;
+		color: var(--mo);
 	}
 	dd {
 		margin: 0;
+		color: var(--muc);
+		font-weight: 500;
+		text-align: right;
 		overflow-wrap: anywhere;
 	}
-	code {
-		font-size: 0.75rem;
-	}
-	.loi {
-		padding: 0.5rem 0.7rem;
-		border-radius: 6px;
-		background: #fde2e1;
-		color: #7a1c17;
+	dd a {
+		color: var(--teal);
 	}
 	.canh-bao {
-		margin: 0.2rem 0;
-		font-size: 0.85rem;
-		color: #8a4b00;
+		padding: 10px 14px;
+		border-radius: 12px;
+		background: var(--amber-nhat);
+		color: var(--amber-chu);
+		font-size: 0.875rem;
 	}
 	.cap {
-		margin-top: 0.5rem;
-		padding: 0.5rem 0.6rem;
-		border-radius: 6px;
-		background: #e8f3ec;
-		font-size: 0.85rem;
+		padding: 14px 16px;
+		border-radius: 14px;
+		background: var(--teal-nhat);
+		color: var(--teal-dam);
 		overflow-wrap: anywhere;
+	}
+	.cap a {
+		color: inherit;
+	}
+	.xau {
+		color: var(--xau);
 	}
 	.duyet {
 		display: grid;
-		gap: 0.4rem;
-		margin-top: 0.5rem;
+		gap: 12px;
+		margin-top: 4px;
 	}
-	.nut {
-		display: flex;
-		gap: 0.5rem;
-		margin-top: 0.4rem;
+	code {
+		font-size: 0.85em;
 	}
 	details {
-		margin-top: 0.5rem;
-		font-size: 0.8rem;
+		padding-top: 4px;
+	}
+	summary {
+		color: var(--muc);
+		font-weight: 500;
+		cursor: pointer;
 	}
 	pre {
 		max-height: 16rem;
 		overflow: auto;
-		padding: 0.5rem;
-		background: #f4f7f2;
-		border-radius: 6px;
-		font-size: 0.72rem;
-	}
-	button {
-		font: inherit;
-		padding: 0.35rem 0.9rem;
-		border: 0;
-		border-radius: 6px;
-		background: #95d5b2;
-		color: #1b4332;
-		cursor: pointer;
-	}
-	button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-	button.phu {
-		background: #e3ebe0;
-	}
-	button.tu-choi {
-		background: #f6c9c6;
-		color: #7a1c17;
+		margin: 8px 0 0;
+		padding: 14px;
+		border-radius: 14px;
+		background: var(--giay);
+		font-size: 0.75rem;
 	}
 </style>

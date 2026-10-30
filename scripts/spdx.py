@@ -34,7 +34,7 @@ TEN_DAC_BIET: dict[str, tuple[str, str]] = {
 }
 # CHANGELOG.md do release-please sinh và ghi đè mỗi lần phát hành
 BO_QUA_TEN = {"LICENSE", "NOTICE", "pixi.lock", "CHANGELOG.md"}
-BO_QUA_DUOI = {".json", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".tif", ".tiff", ".lock", ".woff2"}
+BO_QUA_DUOI = {".json", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".ico", ".tif", ".tiff", ".lock", ".woff2"}
 
 
 def danh_sach_tep() -> list[Path]:

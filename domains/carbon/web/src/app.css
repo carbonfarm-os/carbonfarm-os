@@ -1,0 +1,261 @@
+/* SPDX-FileCopyrightText: 2026 CarbonFarm OS contributors */
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/*
+ * Hệ giao diện: nền giấy xám, tấm trắng không viền bo 16px, mảng mòng két đậm cho đầu trang và lựa chọn, hổ phách nhạt
+ * cho hành động chính. Tiêu đề chữ có chân (Source Serif 4), chữ thân và điều khiển Inter. Không gradient, không bóng
+ * khi đứng yên.
+ */
+:root {
+	color-scheme: light;
+	--giay: #f5f5f5;
+	--tam: #ffffff;
+	--teal: #024f46;
+	--teal-dam: #013a34;
+	--teal-nhat: #dcebe8;
+	--teal-sang: #7fe0d2;
+	--amber: #ecba82;
+	--amber-dam: #e3a862;
+	--amber-nhat: #fbecd6;
+	--amber-chu: #7a4a12;
+	--muc: #2e2e2e;
+	--than: #4f4e46;
+	--mo: #6f6e66;
+	--dao: #1a1a1a;
+	--ke: #e9e6e6;
+	--tot: #1f6b44;
+	--xau: #a3261a;
+	--xau-nen: #f8e1dd;
+
+	--serif: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
+	--sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
+	--bo: 16px;
+	--de: cubic-bezier(0.22, 1, 0.36, 1);
+	--le: clamp(20px, 3vw, 48px);
+	--rong: 1280px;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--giay);
+	color: var(--than);
+	font-family: var(--sans);
+	font-size: 16px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+	margin: 0;
+	color: var(--muc);
+	font-family: var(--serif);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.12;
+	text-wrap: balance;
+	font-optical-sizing: auto;
+}
+
+p {
+	margin: 0;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}
+
+a {
+	color: inherit;
+	text-underline-offset: 0.2em;
+}
+
+::selection {
+	background: var(--teal);
+	color: #fff;
+}
+
+:focus-visible {
+	outline: 3px solid var(--amber-dam);
+	outline-offset: 3px;
+	border-radius: 6px;
+}
+
+.an {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+/* Nút: hổ phách cho hành động chính, viền sáng trên nền mòng két, tông nhạt trên nền giấy */
+.nut {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5em;
+	min-height: 52px;
+	padding: 0 28px;
+	border: 2px solid var(--amber-dam);
+	border-radius: var(--bo);
+	background: var(--amber);
+	color: #2b1d0b;
+	font: 500 1rem/1 var(--sans);
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color 0.2s var(--de),
+		transform 0.2s var(--de);
+}
+.nut:hover:not(:disabled) {
+	background: var(--amber-dam);
+}
+.nut:active:not(:disabled) {
+	transform: translateY(1px);
+}
+.nut:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+.nut.vien {
+	border-color: rgb(255 255 255 / 0.85);
+	background: transparent;
+	color: #fff;
+}
+.nut.vien:hover:not(:disabled) {
+	background: rgb(255 255 255 / 0.1);
+}
+.nut.nhat {
+	border-color: #e2e8e6;
+	background: var(--teal-nhat);
+	color: var(--teal);
+}
+.nut.nhat:hover:not(:disabled) {
+	background: #cde2de;
+}
+.nut.nho {
+	min-height: 40px;
+	padding: 0 18px;
+	font-size: 0.9375rem;
+	border-radius: 12px;
+}
+.nut.rong {
+	width: 100%;
+}
+
+.lien-ket {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--teal);
+	font: 500 0.9375rem var(--sans);
+	text-decoration: underline;
+	text-underline-offset: 0.25em;
+	cursor: pointer;
+}
+.lien-ket:hover {
+	color: var(--teal-dam);
+}
+.lien-ket.xau {
+	color: var(--xau);
+}
+
+/* Ô nhập */
+.o-nhap {
+	display: grid;
+	gap: 6px;
+	color: var(--muc);
+	font-size: 0.875rem;
+	font-weight: 500;
+}
+.o-nhap input,
+.o-nhap select,
+.o-nhap textarea {
+	width: 100%;
+	min-height: 48px;
+	padding: 10px 14px;
+	border: 2px solid #e4e2e0;
+	border-radius: 12px;
+	background: #fff;
+	color: var(--muc);
+	font: 400 1rem var(--sans);
+}
+.o-nhap input:focus,
+.o-nhap select:focus,
+.o-nhap textarea:focus {
+	outline: none;
+	border-color: var(--teal);
+}
+
+.loi {
+	padding: 12px 16px;
+	border-radius: 12px;
+	background: var(--xau-nen);
+	color: #6d150c;
+	font-size: 0.9375rem;
+}
+
+.nhan {
+	display: inline-flex;
+	align-items: center;
+	min-height: 32px;
+	padding: 0 14px;
+	border-radius: 999px;
+	background: #efefed;
+	color: var(--than);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	white-space: nowrap;
+}
+.nhan.cho {
+	background: var(--amber-nhat);
+	color: var(--amber-chu);
+}
+.nhan.tot {
+	background: #dff0e6;
+	color: var(--tot);
+}
+.nhan.xau {
+	background: var(--xau-nen);
+	color: var(--xau);
+}
+
+code {
+	font-size: 0.85em;
+	overflow-wrap: anywhere;
+}
+
+* {
+	scrollbar-color: #c9c7c3 transparent;
+	scrollbar-width: thin;
+}
+
+.maplibregl-ctrl-group {
+	border-radius: 12px !important;
+	overflow: hidden;
+}
+.maplibregl-ctrl-attrib {
+	font: 0.75rem var(--sans) !important;
+}
+.maplibregl-ctrl-scale {
+	font: 0.75rem var(--sans) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

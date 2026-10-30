@@ -93,7 +93,7 @@ def mrv_lo_dat(ket_qua_id: str) -> dict:
 
         pha_he = {
             "phuong_phap": PHIEN_BAN, "tham_so_sha256": sha_ts,
-            "lo_dat": {"id": yc["lo_dat_id"], "ranh_gioi": yc["ranh_gioi"], "ranh_gioi_sha256": yc["sha_ranh_gioi"],
+            "lo_dat": {"id": yc["lo_dat_id"], "ten": yc["ten"], "ranh_gioi": yc["ranh_gioi"], "ranh_gioi_sha256": yc["sha_ranh_gioi"],
                        "nam_trong": yc["nam_trong"]},
             "ky": {"tu": yc["ky_tu"].isoformat(), "den": yc["ky_den"].isoformat()},
             "canh_nguon": {"id": kq.canh_id, "ngay_chup": kq.ngay_chup, "may_toan_canh": kq.may_toan_canh,

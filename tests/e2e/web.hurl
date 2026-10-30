@@ -72,7 +72,7 @@ jsonpath "$.data.allGhiChuMaus.totalCount" == 0
 POST {{gateway}}/graphql
 Authorization: Bearer {{tk}}
 Content-Type: application/json
-{"query":"{ allCarbonLoDats(condition: { trangThai: \"hoat_dong\" }) { nodes { rowId ten dienTichHa dienTichKhaiBaoHa namTrong ranhGioi carbonXaVienByXaVienId { hoTen } } } allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } } allCarbonCanBoHtxes { totalCount } allCarbonKhoiTinChis { nodes { rowId soLuong maTrongNuoc seriTu seriDen hopTacXaId } } }"}
+{"query":"{ allCarbonLoDats(condition: { trangThai: \"hoat_dong\" }) { nodes { rowId ten dienTichHa dienTichKhaiBaoHa namTrong ranhGioi carbonXaVienByXaVienId { hoTen } } } allCarbonXaViens(orderBy: MA_XA_VIEN_ASC) { nodes { rowId hoTen maXaVien } } allCarbonCanBoHtxes { totalCount } allCarbonKhoiTinChis { nodes { rowId soLuong maTrongNuoc seriTu seriDen hopTacXaId } } allCarbonHopTacXas { nodes { ten } } }"}
 HTTP 200
 [Asserts]
 jsonpath "$.errors" not exists

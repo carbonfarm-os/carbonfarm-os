@@ -10,8 +10,21 @@
 		.catch((e: Error) => (loi = e.message));
 </script>
 
-{#if loi}
-	<p role="alert">{loi} <a href="/">Về trang chủ</a></p>
-{:else}
-	<p role="status">Đang hoàn tất đăng nhập…</p>
-{/if}
+<main>
+	{#if loi}
+		<p role="alert" class="loi">{loi} <a href="/">Về trang chủ</a></p>
+	{:else}
+		<p role="status">Đang đăng nhập…</p>
+	{/if}
+</main>
+
+<style>
+	main {
+		display: grid;
+		place-items: center;
+		min-height: 100svh;
+		padding: var(--le);
+		color: var(--muc);
+		font: 500 1.25rem var(--serif);
+	}
+</style>
