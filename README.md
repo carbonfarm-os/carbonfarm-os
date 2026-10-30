@@ -35,7 +35,7 @@ Chi tiết và sơ đồ: [`docs/architecture.md`](docs/architecture.md). Các q
 *Tier 1 is a generic headless platform; tier 2 holds the carbon domain; connectors are pluggable mocks. See `docs/architecture.md` and the ADRs.*
 
 ## Bắt đầu · Getting started
-Bản mới nhất **v0.3.0** chạy đủ luồng chính trên một máy: Tầng 1 (OpenBao, PostgreSQL + PostGIS + pgSTAC, Keycloak, APISIX, PostGraphile, Versity S3 + STAC + TiTiler, Prefect, Valkey, Dolt) và Tầng 2 (MRV engine, web, connector mô phỏng, Metabase).
+Bản mới nhất **v0.4.0** chạy đủ luồng chính trên một máy: Tầng 1 (OpenBao, PostgreSQL + PostGIS + pgSTAC, Keycloak, APISIX, PostGraphile, Versity S3 + STAC + TiTiler, Prefect, Valkey, Dolt) và Tầng 2 (MRV engine, web, connector mô phỏng, Metabase).
 
 | Địa chỉ | Nội dung |
 |---|---|
@@ -44,7 +44,7 @@ Bản mới nhất **v0.3.0** chạy đủ luồng chính trên một máy: Tầ
 | http://127.0.0.1:3001/ | Dashboard hợp tác xã (Metabase OSS) |
 
 Người dùng mẫu (`canbo-htx-mau`, `canbo-htx-mau-2`, `xavien-mau-1`…) có mật khẩu do OpenBao sinh khi dựng: `docker compose exec keycloak cat /run/bimat/<tên>`. Lần chạy đầu OpenBao ghi khóa mở vào `.data/openbao/` (ngoài git) – **giữ kín, mất là không mở được dữ liệu OpenBao**. Dùng thử theo kịch bản: [`docs/thu-nghiem.md`](docs/thu-nghiem.md).
-*v0.3.0 runs the full flow locally; sample users get generated passwords; see `docs/thu-nghiem.md` for a guided trial.*
+*v0.4.0 runs the full flow locally; sample users get generated passwords; see `docs/thu-nghiem.md` for a guided trial.*
 
 ```bash
 cp .env.example .env      # cấu hình máy dev · dev configuration
