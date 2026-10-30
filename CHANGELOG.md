@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.4.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.3.0...v0.4.0) (2026-10-30)
+
+
+### Tính năng mới
+
+* **web:** làm lại giao diện trang chủ, màn hình cán bộ và trang kiểm chứng ([#51](https://github.com/carbonfarm-os/carbonfarm-os/issues/51)) ([#52](https://github.com/carbonfarm-os/carbonfarm-os/issues/52)) ([6046859](https://github.com/carbonfarm-os/carbonfarm-os/commit/6046859ff6971c2824c275d77a0db60ffafc9fe8))
+
+
+### Sửa lỗi
+
+* **mrv:** hai lượt đo song song trên hệ thống mới không còn lỗi 409 khi tạo bộ sưu tập STAC ([#60](https://github.com/carbonfarm-os/carbonfarm-os/issues/60)) ([#61](https://github.com/carbonfarm-os/carbonfarm-os/issues/61)) ([1ad58d1](https://github.com/carbonfarm-os/carbonfarm-os/commit/1ad58d134312fd01feeca371ab0fdac23dce979e))
+
+
+### Tài liệu
+
+* **demo:** kịch bản trình bày chung kết 15 phút và phân vai ([#56](https://github.com/carbonfarm-os/carbonfarm-os/issues/56)) ([#58](https://github.com/carbonfarm-os/carbonfarm-os/issues/58)) ([e41811e](https://github.com/carbonfarm-os/carbonfarm-os/commit/e41811e3d5017b77a3ead07e066c736e2f2d417d))
+* **kien-truc:** thêm ảnh sơ đồ kiến trúc hai tầng ([#59](https://github.com/carbonfarm-os/carbonfarm-os/issues/59)) ([ddc5ce6](https://github.com/carbonfarm-os/carbonfarm-os/commit/ddc5ce6bc97aa205715237f41c6c1560495a8a10))
+* **roadmap:** đánh dấu sprint 1–3 đã xong, ghi tiến độ 30/10 ([#49](https://github.com/carbonfarm-os/carbonfarm-os/issues/49)) ([72e17cc](https://github.com/carbonfarm-os/carbonfarm-os/commit/72e17cce4fde2c24d3dd0b47b4f46b437341d332))
+* **thu-nghiem:** mẫu phản hồi dùng thử, hướng dẫn 6 nhiệm vụ, cập nhật README ([#55](https://github.com/carbonfarm-os/carbonfarm-os/issues/55)) ([#57](https://github.com/carbonfarm-os/carbonfarm-os/issues/57)) ([b417c61](https://github.com/carbonfarm-os/carbonfarm-os/commit/b417c617988684989986961297903e7e19da8be4))
+
 ## [0.3.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.2.0...v0.3.0) (2026-10-30)
 
 
