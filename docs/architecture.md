@@ -6,6 +6,10 @@
 
 ## 1. Ba tầng
 
+![Sơ đồ kiến trúc CarbonFarm OS: người dùng, Tầng 2 miền carbon, connector mô phỏng, API Gateway APISIX, Tầng 1 nền tảng headless](images/kien-truc.webp)
+
+Ảnh trên là bản tóm tắt để trình bày; sơ đồ dưới đây là bản chi tiết, có đủ các mũi tên phụ thuộc.
+
 ```mermaid
 flowchart TB
   subgraph T3["Ứng dụng · người dùng"]
