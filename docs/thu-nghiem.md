@@ -10,7 +10,7 @@ Mọi hợp tác xã, xã viên, lô đất, người mua trong bản thử là 
 1. Chạy hệ thống trên volume trống (hoặc dùng bản demo công khai khi #40 xong):
    ```bash
    cp .env.example .env
-   task up && task seed
+   task up             # .env.example bật NAP_DU_LIEU_MAU=true: nạp sẵn hợp tác xã, xã viên, lô đất giả
    task smoke          # kiểm hệ thống chạy đúng trước khi mời người thử
    ```
    Người thử tự tạo dữ liệu qua nhiệm vụ 3–5; muốn nhiệm vụ 1 có sẵn tín chỉ để tra thì thành viên làm trước một lượt nhiệm vụ 3–5.

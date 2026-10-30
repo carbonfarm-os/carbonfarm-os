@@ -29,7 +29,7 @@ tasks:
   seed:
     desc: Nạp dữ liệu GIẢ (hợp tác xã, xã viên, lô đất mẫu ở khu rừng ngập mặn mẫu)
     cmds:
-      - echo "Chưa có dữ liệu mẫu — làm ở issue tuần 2 (domains/carbon/seed/)"
+      - echo "Dữ liệu giả nạp tự động khi task up nếu .env có NAP_DU_LIEU_MAU=true (domains/*/db/seed/*.sql)"
 
   smoke:
     desc: "Kiểm thử đầu-cuối – Hurl (trong Docker, cùng mạng compose; localhost:9080 trỏ tới apisix) + kiểm thử tích hợp Python"

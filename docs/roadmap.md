@@ -9,7 +9,7 @@ Mỗi dòng `- [ ]` là **một issue** (mẫu "Việc cần làm"), đưa vào 
 
 Hạn nộp 17:00 06/12/2026; PoF chấm theo kho lúc gửi bài. **Đóng băng tính năng 29/11.**
 
-**Tiến độ 30/10/2026:** xong sprint 1–3 sớm (v0.1.0, v0.2.0, v0.3.0), còn demo công khai trên VPS (#40, chờ máy chủ và tên miền). Phần lớn mã do trưởng nhóm viết; các sprint sau ưu tiên **mỗi thành viên commit phần mình** và duyệt chéo.
+**Tiến độ 30/10/2026:** xong sprint 1–3 sớm (v0.1.0, v0.2.0, v0.3.0) và phần chuẩn bị của sprint 4 (v0.4.0: giao diện mới, hướng dẫn dùng thử, kịch bản demo, sơ đồ kiến trúc); còn demo công khai trên VPS (#40, chờ máy chủ và tên miền), người dùng thử thật (#54), trang tài liệu (#53). Phần lớn mã do trưởng nhóm viết; các sprint sau ưu tiên **mỗi thành viên commit phần mình** và duyệt chéo.
 
 ## Sprint 1 · 30/10–08/11 · Chốt stack, lõi Tầng 1 chạy được → v0.1.0
 - [x] V1 · Dựng repo trên GitHub: bảo vệ `main`, bật Issues, Projects (Iteration 1 tuần), Discussions (#5)
@@ -39,10 +39,11 @@ Hạn nộp 17:00 06/12/2026; PoF chấm theo kho lúc gửi bài. **Đóng băn
 - [x] V1 · Ra **v0.3.0** (#41)
 
 ## Sprint 4 · 23–29/11 · Người dùng thử, sửa lỗi, tài liệu · đóng băng 29/11
-- [ ] Mọi người · Mời 3–5 người dùng thử (cán bộ hợp tác xã, sinh viên), mỗi phản hồi một issue
+- [ ] Mọi người · Mời 3–5 người dùng thử (cán bộ hợp tác xã, sinh viên), mỗi phản hồi một issue (#54)
 - [ ] Mọi người · Sửa lỗi theo phản hồi
-- [ ] V3 · Trang tài liệu Starlight (README, kiến trúc, ADR, phương pháp MRV)
-- [ ] V1 · Kịch bản demo 15 phút, phân vai trình bày
+- [ ] V3 · Trang tài liệu Starlight (README, kiến trúc, ADR, phương pháp MRV) (#53)
+- [x] V1 · Kịch bản demo 15 phút, phân vai trình bày (#56)
+- [x] V1 · Mẫu phản hồi và hướng dẫn dùng thử (#55); giao diện mới (#51); sửa lỗi MRV song song (#60); ra **v0.4.0**
 
 ## Sprint 5 · 30/11–06/12 · Nộp bài
 - [ ] V1 · `/pof-check`, sửa thiếu sót, **v1.0.0**, gửi email trước 17:00 06/12
