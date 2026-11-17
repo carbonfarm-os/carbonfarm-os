@@ -14,7 +14,7 @@ from pathlib import Path
 GOC = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(GOC / "domains/carbon/mrv"))
 
-from mrv.phuong_phap import doc_tham_so, uoc_luong
+from mrv.phuong_phap import doc_tham_so, mo_ta_khong_du_anh, uoc_luong
 
 PB = "v0.1-rung-ngap-man-ipcc-tier1"
 
@@ -118,6 +118,17 @@ class PhuongPhapV01(unittest.TestCase):
         self.assertEqual(kq["so_ngay"], 365)
         self.assertAlmostEqual(kq["co2e_tan"], 192.9, delta=0.05)
         self.assertEqual(kq["canh_bao"], [], "47 t/ha < 187 t/ha → chưa chạm trần")
+
+    def test_mo_ta_khong_du_anh_khong_do_json_tho(self):
+        tb_rong = mo_ta_khong_du_anh(0.8, [])
+        self.assertIn("80%", tb_rong)
+        self.assertNotIn("[{", tb_rong)
+
+        tb_may = mo_ta_khong_du_anh(0.8, [{"canh_id": "S2C_T48PVQ_20261021T033144_L2A", "ti_le_hop_le": 0.3652}])
+        self.assertIn("36,5%", tb_may)
+        self.assertIn("80%", tb_may)
+        self.assertNotIn("canh_id", tb_may)
+        self.assertNotIn("ti_le_hop_le", tb_may)
 
 
 if __name__ == "__main__":

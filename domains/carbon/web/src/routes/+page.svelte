@@ -70,6 +70,14 @@
 	let daTai = $state(false);
 	let timLo = $state('');
 	let oTim = $state<HTMLInputElement>();
+	let tabBang = $state<'vi' | 'xa-vien' | 'bao-cao'>('vi');
+	let tqSoCai = $state<{
+		so_ket_qua_mrv: number;
+		co2e_da_ghi_so_tan: number;
+		tin_chi_da_cap: number;
+		tin_chi_da_ban: number;
+		seri_moi_nhat: string | null;
+	} | null>(null);
 	/** Cmd+K (macOS) hoặc Ctrl+K: đưa con trỏ vào ô tìm lô. */
 	const laMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 	function phimTat(e: KeyboardEvent) {
@@ -82,6 +90,14 @@
 	const loLoc = $derived(lo.filter((l) => l.ten.toLocaleLowerCase('vi').includes(timLo.trim().toLocaleLowerCase('vi'))));
 	const tongHa = $derived(lo.reduce((t, l) => t + Number(l.dienTichHa), 0));
 	const tongVi = $derived(vi.reduce((t, k) => t + k.soLuong, 0));
+	const thongKeXaVien = $derived(
+		xaVien.map((x) => {
+			const dsLo = lo.filter((l) => l.carbonXaVienByXaVienId?.hoTen === x.hoTen);
+			const ha = dsLo.reduce((t, l) => t + Number(l.dienTichHa), 0);
+			const tyLe = tongHa > 0 ? ha / tongHa : 0;
+			return { ...x, dsLo, ha, tyLe, tinChiPhanBo: Math.round(tyLe * tongVi) };
+		})
+	);
 
 	const dienTichVe = $derived(dienTichHa(dinh));
 	const lechKhaiBao = $derived.by(() => {
@@ -150,6 +166,12 @@
 			loiTai = '';
 			daTai = true;
 			veLai();
+			fetch('/kiem-chung/api/tong-quan')
+				.then((r) => (r.ok ? r.json() : null))
+				.then((j) => {
+					if (j && typeof j.so_ket_qua_mrv === 'number') tqSoCai = j;
+				})
+				.catch(() => {});
 		} catch (e) {
 			loiTai = (e as Error).message;
 		}
@@ -349,7 +371,7 @@
 					<p class="nhom">Danh mục lô rừng</p>
 					<p class="htx">{lo.length} lô đang hoạt động</p>
 				</div>
-				{#if xaVien.length && !dangVe}
+				{#if laCanBo && xaVien.length && !dangVe}
 					<button class="nut nhat nho" onclick={batDauVe}>+ Lô mới</button>
 				{/if}
 			</div>
@@ -378,7 +400,7 @@
 				{/each}
 			</ul>
 
-			{#if xaVien.length && !dangVe}
+			{#if laCanBo && xaVien.length && !dangVe}
 				<button class="nut nhat nho them" onclick={batDauVe}>+ Đăng ký lô rừng mới trên bản đồ</button>
 			{/if}
 
@@ -394,7 +416,7 @@
 					<span class="so-lon">{tongVi}</span>
 					<span class="don-vi">tín chỉ khả dụng</span>
 				</div>
-				<span class="xem">Quản lý ví & duyệt lệnh bán →</span>
+				<span class="xem">{laCanBo ? 'Quản lý ví, xã viên & báo cáo →' : 'Tra cứu ví & phân bổ xã viên →'}</span>
 			</button>
 		</nav>
 
@@ -531,10 +553,142 @@
 						</div>
 					</dl>
 
+					<div class="thanh-tab" role="tablist" aria-label="Phân khu bàn làm việc">
+						<button
+							type="button"
+							role="tab"
+							aria-selected={tabBang === 'vi'}
+							class="nut-tab"
+							class:chon={tabBang === 'vi'}
+							onclick={() => (tabBang = 'vi')}
+						>
+							Ví & Giao dịch
+						</button>
+						<button
+							type="button"
+							role="tab"
+							aria-selected={tabBang === 'xa-vien'}
+							class="nut-tab"
+							class:chon={tabBang === 'xa-vien'}
+							onclick={() => (tabBang = 'xa-vien')}
+						>
+							Xã viên & Phân bổ ({xaVien.length})
+						</button>
+						<button
+							type="button"
+							role="tab"
+							aria-selected={tabBang === 'bao-cao'}
+							class="nut-tab"
+							class:chon={tabBang === 'bao-cao'}
+							onclick={() => (tabBang = 'bao-cao')}
+						>
+							Báo cáo & Sổ cái
+						</button>
+					</div>
+
+					{#if !laCanBo}
+						<p class="ghi-chu-vai">
+							Đang xem với vai trò <b>Xã viên HTX</b> (quyền đọc theo RLS). Các thao tác đăng ký lô mới, yêu cầu đo MRV và duyệt lệnh bán dành cho Cán bộ HTX.
+						</p>
+					{/if}
+
 					{#if thanhCong}<p class="thanh-cong">{thanhCong}</p>{/if}
 
-					{#if token}
-						<ViTinChi {token} {laCanBo} {vi} onThayDoi={taiDuLieu} />
+					{#if tabBang === 'vi'}
+						{#if token}
+							<ViTinChi {token} {laCanBo} {vi} onThayDoi={taiDuLieu} />
+						{/if}
+					{:else if tabBang === 'xa-vien'}
+						<section class="khung-tab" aria-label="Danh sách xã viên và phân bổ tín chỉ">
+							<div class="dau-tab-con">
+								<h2>Hộ xã viên & tỷ lệ phân bổ</h2>
+								<span class="nhan">Theo tỷ trọng diện tích rừng</span>
+							</div>
+							<p class="phu-tab">
+								Tín chỉ khả dụng trong ví HTX ({tongVi} tín chỉ) được hạch toán minh bạch theo tỷ lệ diện tích rừng ngập mặn đang canh tác của từng xã viên.
+							</p>
+							<ul class="ds-xa-vien">
+								{#each thongKeXaVien as xv (xv.rowId)}
+									<li class="the-xa-vien">
+										<div class="xv-dau">
+											<div>
+												<strong>{xv.hoTen}</strong>
+												<span class="ma-xv">{xv.maXaVien}</span>
+											</div>
+											<span class="nhan tot">≈ {xv.tinChiPhanBo} tín chỉ</span>
+										</div>
+										<div class="xv-so">
+											<span><b>{xv.dsLo.length}</b> lô rừng</span>
+											<span>·</span>
+											<span><b>{xv.ha.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} ha</b> ({(xv.tyLe * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%)</span>
+										</div>
+										{#if xv.dsLo.length}
+											<div class="xv-lo">
+												{#each xv.dsLo as l (l.rowId)}
+													<button type="button" class="chip-lo-xv" onclick={() => chonLo(l)}>
+														{l.ten} ({Number(l.dienTichHa).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} ha) →
+													</button>
+												{/each}
+											</div>
+										{/if}
+									</li>
+								{/each}
+							</ul>
+						</section>
+					{:else}
+						<section class="khung-tab" aria-label="Báo cáo tổng hợp sổ cái và tuân thủ">
+							<div class="dau-tab-con">
+								<h2>Báo cáo MRV & Sổ cái Dolt</h2>
+								<span class="nhan tot">TT 11/2026/TT-BNNMT</span>
+							</div>
+							{#if tqSoCai}
+								{@const daCap = tqSoCai.tin_chi_da_cap || 0}
+								{@const daBan = tqSoCai.tin_chi_da_ban || 0}
+								{@const tyLeBan = daCap > 0 ? Math.min(100, Math.round((daBan / daCap) * 100)) : 0}
+								<div class="luoi-bao-cao">
+									<div class="o-bc">
+										<span>Kỳ MRV đã ghi sổ</span>
+										<strong>{tqSoCai.so_ket_qua_mrv.toLocaleString('vi-VN')}</strong>
+									</div>
+									<div class="o-bc">
+										<span>Tổng hấp thụ CO₂e</span>
+										<strong>{Number(tqSoCai.co2e_da_ghi_so_tan).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} t</strong>
+									</div>
+									<div class="o-bc">
+										<span>Tín chỉ đã cấp sê-ri</span>
+										<strong>{daCap.toLocaleString('vi-VN')}</strong>
+									</div>
+									<div class="o-bc">
+										<span>Tín chỉ đã chuyển nhượng</span>
+										<strong>{daBan.toLocaleString('vi-VN')} ({tyLeBan}%)</strong>
+									</div>
+								</div>
+								<div class="thanh-ty-le-khung">
+									<div class="thanh-ty-le-nhan">
+										<span>Đang nắm giữ trong ví: <b>{tongVi}</b></span>
+										<span>Đã bán chuyển nhượng: <b>{daBan}</b></span>
+									</div>
+									<div class="thanh-ty-le" role="img" aria-label="Tỷ lệ tín chỉ đã bán trên tổng phát hành">
+										<div class="phan-ban" style="width: {tyLeBan}%"></div>
+									</div>
+								</div>
+							{/if}
+							<dl class="bang-tuan-thu">
+								<div>
+									<dt>Phương pháp luận áp dụng</dt>
+									<dd>IPCC 2013 Wetlands Supplement · Chương 4 Tier 1 (cận dưới KTC 95%: 21,74 t CO₂e/ha/năm)</dd>
+								</div>
+								<div>
+									<dt>Nguồn ảnh viễn thám</dt>
+									<dd>ESA Copernicus Sentinel-2 L2A (10 m, lọc mây SCL + ngưỡng tán NDVI ≥ 0,40)</dd>
+								</div>
+								<div>
+									<dt>Cơ chế kiểm soát nội bộ</dt>
+									<dd>Poka-yoke hình học PostGIS (UC001–UC008) + Duyệt chéo 2 cán bộ HTX (UC032)</dd>
+								</div>
+							</dl>
+							<a class="nut nhat rong" href="/kiem-chung">Mở Cổng kiểm chứng sổ cái công khai →</a>
+						</section>
 					{/if}
 				{/if}
 			</section>
@@ -1122,6 +1276,188 @@
 		color: var(--tot);
 		font-size: 0.875rem;
 		font-weight: 600;
+	}
+
+	.thanh-tab {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px;
+		padding: 4px;
+		border: 1px solid var(--ke);
+		border-radius: 14px;
+		background: var(--giay);
+	}
+	.nut-tab {
+		min-height: 36px;
+		padding: 0 8px;
+		border: 0;
+		border-radius: 10px;
+		background: transparent;
+		color: var(--mo);
+		font: 600 0.78rem var(--sans);
+		cursor: pointer;
+		transition: all 0.15s var(--de);
+	}
+	.nut-tab:hover {
+		color: var(--muc);
+	}
+	.nut-tab.chon {
+		background: #ffffff;
+		color: var(--teal-dam);
+		box-shadow: 0 1px 3px rgba(10, 31, 25, 0.08);
+	}
+	.ghi-chu-vai {
+		padding: 10px 12px;
+		border: 1px solid var(--teal-vien);
+		border-radius: 12px;
+		background: var(--teal-nhat);
+		color: var(--teal-dam);
+		font-size: 0.8125rem;
+		line-height: 1.45;
+	}
+	.khung-tab {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding-top: 8px;
+	}
+	.dau-tab-con {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.dau-tab-con h2 {
+		font: 700 1.0625rem var(--sans);
+	}
+	.phu-tab {
+		color: var(--mo);
+		font-size: 0.8125rem;
+		line-height: 1.45;
+	}
+	.ds-xa-vien {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.the-xa-vien {
+		display: grid;
+		gap: 8px;
+		padding: 14px;
+		border: 1px solid var(--ke);
+		border-radius: 14px;
+		background: #ffffff;
+	}
+	.xv-dau {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 8px;
+	}
+	.xv-dau strong {
+		font-size: 0.9375rem;
+	}
+	.ma-xv {
+		margin-left: 6px;
+		padding: 2px 6px;
+		border-radius: 6px;
+		background: var(--giay);
+		color: var(--mo);
+		font: 600 0.72rem var(--mono);
+	}
+	.xv-so {
+		display: flex;
+		gap: 6px;
+		color: var(--mo);
+		font-size: 0.8125rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.xv-lo {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.chip-lo-xv {
+		padding: 4px 10px;
+		border: 1px solid var(--teal-vien);
+		border-radius: 999px;
+		background: var(--teal-nhat);
+		color: var(--teal-dam);
+		font: 600 0.75rem var(--sans);
+		cursor: pointer;
+	}
+	.luoi-bao-cao {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
+	.o-bc {
+		display: grid;
+		gap: 4px;
+		padding: 12px 14px;
+		border: 1px solid var(--ke);
+		border-radius: 12px;
+		background: var(--nen-mem);
+	}
+	.o-bc span {
+		color: var(--mo);
+		font-size: 0.75rem;
+	}
+	.o-bc strong {
+		color: var(--muc);
+		font: 700 1.125rem var(--sans);
+		font-variant-numeric: tabular-nums;
+	}
+	.thanh-ty-le-khung {
+		display: grid;
+		gap: 6px;
+		padding: 12px 14px;
+		border: 1px solid var(--ke);
+		border-radius: 12px;
+		background: #ffffff;
+	}
+	.thanh-ty-le-nhan {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.78rem;
+		color: var(--mo);
+	}
+	.thanh-ty-le {
+		height: 10px;
+		overflow: hidden;
+		border-radius: 999px;
+		background: var(--teal-nhat);
+	}
+	.phan-ban {
+		height: 100%;
+		background: var(--teal);
+	}
+	.bang-tuan-thu {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		padding: 12px 14px;
+		border: 1px solid var(--ke);
+		border-radius: 14px;
+		background: #ffffff;
+	}
+	.bang-tuan-thu div {
+		display: grid;
+		gap: 2px;
+	}
+	.bang-tuan-thu dt {
+		color: var(--mo);
+		font-size: 0.75rem;
+	}
+	.bang-tuan-thu dd {
+		margin: 0;
+		color: var(--muc);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		line-height: 1.4;
 	}
 
 	@media (max-width: 1200px) {

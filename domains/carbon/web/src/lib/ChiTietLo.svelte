@@ -83,21 +83,44 @@
 		canhBao phuongPhap cogHref lyDoLoi ghiChuDuyet duyetLuc doltCommit phaHe
 		carbonDeNghiCapByKetQuaMrvId { trangThai soLuong maTrongNuoc seriTu seriDen doltCommit lyDoLoi } } } }`;
 
-	// Kỳ mặc định: tháng trọn vẹn gần nhất
-	const nay = new Date();
-	const dauThangTruoc = new Date(Date.UTC(nay.getUTCFullYear(), nay.getUTCMonth() - 1, 1));
-	const cuoiThangTruoc = new Date(Date.UTC(nay.getUTCFullYear(), nay.getUTCMonth(), 0));
-	const iso = (d: Date) => d.toISOString().slice(0, 10);
+	// Kỳ mặc định: ưu tiên kỳ mẫu mùa khô ít mây ở Mũi Cà Mau (tháng 04/2026) để người dùng thử đo vệ tinh thật ngay
+	const GOI_Y_KY = [
+		{ nhan: 'Tháng 04/2026 (mùa khô, ít mây)', tu: '2026-04-01', den: '2026-04-30' },
+		{ nhan: 'Tháng 03/2026', tu: '2026-03-01', den: '2026-03-31' },
+		{ nhan: 'Quý I/2026', tu: '2026-01-01', den: '2026-03-31' }
+	] as const;
 
 	let ketQua = $state<KetQua[]>([]);
 	let dangTai = $state(true);
-	let kyTu = $state(iso(dauThangTruoc));
-	let kyDen = $state(iso(cuoiThangTruoc));
+	let kyTu = $state('2026-04-01');
+	let kyDen = $state('2026-04-30');
 	let lyDo = $state<Record<string, string>>({});
 	let loi = $state<{ thongBao: string; goiY?: string } | null>(null);
 	let dangGui = $state(false);
 	let hen: ReturnType<typeof setTimeout> | undefined;
 	let daCoCho = false;
+
+	const TEN_PHUONG_PHAP: Record<string, string> = {
+		'v0.1-rung-ngap-man-ipcc-tier1': 'IPCC 2013 Wetlands Tier 1 (v0.1)'
+	};
+
+	function dinhDangLoiMrv(s: string | null): string {
+		if (!s) return 'Không hoàn tất được phép đo vệ tinh cho kỳ này.';
+		if (s.includes('đã thử [') || s.includes('ti_le_hop_le')) {
+			const m = [...s.matchAll(/ti_le_hop_le['"]:\s*([0-9.]+)/g)].map((x) => Number(x[1]));
+			if (m.length) {
+				const maxTl = (Math.max(...m) * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+				return `Ảnh vệ tinh trong kỳ bị mây che phủ, chỉ đạt tối đa ${maxTl}% diện tích lô rõ nét qua ${m.length} cảnh kiểm tra (yêu cầu tối thiểu 80%). Vui lòng chọn kỳ mùa khô ít mây hơn (ví dụ: 01/04/2026 – 30/04/2026).`;
+			}
+			return 'Không tìm thấy cảnh ảnh vệ tinh Sentinel-2 nào đủ 80% diện tích lô rõ nét trong kỳ giám sát đã chọn. Vui lòng chọn kỳ mùa khô ít mây (ví dụ: 01/04/2026 – 30/04/2026).';
+		}
+		return s;
+	}
+
+	function chonKyNhanh(tu: string, den: string) {
+		kyTu = tu;
+		kyDen = den;
+	}
 
 	async function tai() {
 		clearTimeout(hen);
@@ -172,11 +195,26 @@
 	</div>
 
 	{#if laCanBo}
-		<form class="yeu-cau" onsubmit={yeuCau}>
-			<label class="o-nhap">Đo từ ngày <input type="date" bind:value={kyTu} required /></label>
-			<label class="o-nhap">Đến ngày <input type="date" bind:value={kyDen} required /></label>
-			<button class="nut nhat nho" type="submit" disabled={dangGui}>Yêu cầu đo</button>
-		</form>
+		<div class="khung-yeu-cau">
+			<div class="goi-y-ky">
+				<span>Chọn nhanh kỳ giám sát:</span>
+				{#each GOI_Y_KY as g (g.tu + g.den)}
+					<button
+						type="button"
+						class="chip-ky"
+						class:chon={kyTu === g.tu && kyDen === g.den}
+						onclick={() => chonKyNhanh(g.tu, g.den)}
+					>
+						{g.nhan}
+					</button>
+				{/each}
+			</div>
+			<form class="yeu-cau" onsubmit={yeuCau}>
+				<label class="o-nhap">Đo từ ngày <input type="date" bind:value={kyTu} required /></label>
+				<label class="o-nhap">Đến ngày <input type="date" bind:value={kyDen} required /></label>
+				<button class="nut nhat nho" type="submit" disabled={dangGui}>Yêu cầu đo</button>
+			</form>
+		</div>
 	{/if}
 
 	{#if loi}
@@ -204,7 +242,7 @@
 			</header>
 
 			{#if k.trangThai === 'loi'}
-				<p class="loi">{k.lyDoLoi}</p>
+				<p class="loi">{dinhDangLoiMrv(k.lyDoLoi)}</p>
 			{:else if !k.canhId}
 				<p class="phu">Đang tìm cảnh ảnh vệ tinh ít mây và tính toán.</p>
 			{:else}
@@ -233,7 +271,7 @@
 					</div>
 					<div>
 						<dt>Điểm ảnh tán / hợp lệ</dt>
-						<dd>{k.soDiemAnhTan} / {k.soDiemAnhHopLe} ({k.soDiemAnhLo} tổng)</dd>
+						<dd>{k.soDiemAnhTan?.toLocaleString('vi-VN')} / {k.soDiemAnhHopLe?.toLocaleString('vi-VN')} ({k.soDiemAnhLo?.toLocaleString('vi-VN')} tổng)</dd>
 					</div>
 					<div>
 						<dt>Cảnh Sentinel-2</dt>
@@ -241,7 +279,7 @@
 					</div>
 					<div>
 						<dt>Phương pháp</dt>
-						<dd><code>{k.phuongPhap}</code></dd>
+						<dd>{TEN_PHUONG_PHAP[k.phuongPhap ?? ''] ?? k.phuongPhap}</dd>
 					</div>
 					{#if k.doltCommit}
 						<div class="toan-hang">
@@ -303,10 +341,38 @@
 					</div>
 				{/if}
 
-				<details>
-					<summary>Phả hệ dữ liệu (JSON gốc)</summary>
-					<pre><code>{JSON.stringify(k.phaHe, null, 2)}</code></pre>
-				</details>
+				{#if k.phaHe}
+					{@const ph = k.phaHe as Record<string, any>}
+					<div class="khung-pha-he">
+						<span class="nhan-nho">Đối chứng phả hệ vệ tinh & tham số IPCC</span>
+						<dl class="luoi-pha-he">
+							<div>
+								<dt>Mã cảnh nguồn</dt>
+								<dd><code>{ph.canh_nguon?.id ?? k.canhId}</code></dd>
+							</div>
+							<div>
+								<dt>Bộ sưu tập STAC</dt>
+								<dd><code>{ph.canh_nguon?.collection ?? 'sentinel-2-c1-l2a'}</code></dd>
+							</div>
+							{#if ph.lo_dat?.ranh_gioi_sha256}
+								<div>
+									<dt>SHA-256 ranh giới lô</dt>
+									<dd><code>{String(ph.lo_dat.ranh_gioi_sha256).slice(0, 16)}…</code></dd>
+								</div>
+							{/if}
+							{#if ph.tham_so_sha256}
+								<div>
+									<dt>SHA-256 bộ tham số</dt>
+									<dd><code>{String(ph.tham_so_sha256).slice(0, 16)}…</code></dd>
+								</div>
+							{/if}
+						</dl>
+						<details>
+							<summary>Xem bản ghi phả hệ gốc (JSON kiểm toán)</summary>
+							<pre><code>{JSON.stringify(k.phaHe, null, 2)}</code></pre>
+						</details>
+					</div>
+				{/if}
 			{/if}
 		</article>
 	{/each}
@@ -373,14 +439,43 @@
 		font-variant-numeric: tabular-nums;
 	}
 
+	.khung-yeu-cau {
+		display: grid;
+		gap: 8px;
+		padding: 12px 0;
+		border-top: 1px solid var(--ke);
+		border-bottom: 1px solid var(--ke);
+	}
+	.goi-y-ky {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px;
+		color: var(--mo);
+		font-size: 0.75rem;
+	}
+	.chip-ky {
+		padding: 4px 10px;
+		border: 1px solid var(--ke-dam);
+		border-radius: 999px;
+		background: #fff;
+		color: var(--muc);
+		font: 500 0.75rem var(--sans);
+		cursor: pointer;
+		transition: border-color 0.15s var(--de), background-color 0.15s var(--de);
+	}
+	.chip-ky:hover,
+	.chip-ky.chon {
+		border-color: var(--teal);
+		background: var(--teal-nhat);
+		color: var(--teal-dam);
+		font-weight: 600;
+	}
 	.yeu-cau {
 		display: grid;
 		grid-template-columns: 1fr 1fr auto;
 		align-items: end;
 		gap: 8px;
-		padding: 10px 0;
-		border-top: 1px solid var(--ke);
-		border-bottom: 1px solid var(--ke);
 	}
 	.yeu-cau label,
 	.yeu-cau input {
@@ -393,6 +488,25 @@
 	.yeu-cau .nut {
 		height: 44px;
 		padding: 0 14px;
+	}
+
+	.khung-pha-he {
+		display: grid;
+		gap: 8px;
+		padding: 12px 14px;
+		border: 1px solid var(--ke);
+		border-radius: 14px;
+		background: var(--nen-mem);
+	}
+	.luoi-pha-he {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px 12px;
+		margin: 0;
+	}
+	.luoi-pha-he div {
+		display: grid;
+		gap: 2px;
 	}
 
 	.muc-kq {
