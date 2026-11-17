@@ -15,7 +15,7 @@ from prefect import flow, get_run_logger, pause_flow_run, task
 from prefect.runtime import flow_run
 
 from mrv import anh, luu_tru
-from mrv.phuong_phap import doc_tham_so, uoc_luong
+from mrv.phuong_phap import doc_tham_so, mo_ta_khong_du_anh, uoc_luong
 
 PHIEN_BAN = "v0.1-rung-ngap-man-ipcc-tier1"
 EARTH_SEARCH_ITEM = "{goc}/collections/{bo}/items/{id}"
@@ -71,6 +71,36 @@ def luu_san_pham(yc: dict, kq: anh.KetQuaAnh, ts: dict) -> tuple[str, str]:
     return yc["id"], href
 
 
+def ghi_so_cai_mrv(ket_qua_id: str) -> dict:
+    """Ghi kết quả MRV đã được cán bộ duyệt vào sổ cái Dolt (an toàn khi gọi lại sau khi container restart)."""
+    with luu_tru.csdl() as c:
+        d = c.execute(
+            """SELECT k.trang_thai, k.duyet_luc, k.ghi_chu_duyet, k.nguoi_duyet_sub, k.pha_he, k.co2e_tan,
+                      k.dien_tich_tan_ha, k.dolt_commit, k.ky_tu, k.ky_den, l.ten
+                 FROM carbon.ket_qua_mrv k JOIN carbon.lo_dat l ON l.id = k.lo_dat_id WHERE k.id = %s""",
+            (ket_qua_id,),
+        ).fetchone()
+    if d is None:
+        raise ValueError(f"không có kết quả MRV {ket_qua_id}")
+    if d["trang_thai"] == "da_ghi_so" and d["dolt_commit"]:
+        return {"trang_thai": "da_ghi_so", "dolt_commit": d["dolt_commit"]}
+    if d["trang_thai"] != "da_duyet":
+        return {"trang_thai": d["trang_thai"]}
+
+    ban_ghi = {
+        "ket_qua_mrv_id": ket_qua_id, "pha_he": d["pha_he"], "co2e_tan": d["co2e_tan"],
+        "dien_tich_tan_ha": d["dien_tich_tan_ha"],
+        "duyet": {
+            "nguoi_duyet_sub": d["nguoi_duyet_sub"],
+            "luc": d["duyet_luc"].isoformat(),
+            "ghi_chu": d["ghi_chu_duyet"],
+        },
+    }
+    ma_bam, sha = luu_tru.ghi_so_cai(ket_qua_id, ban_ghi, f"MRV {d['ten']} {d['ky_tu']}..{d['ky_den']} ({ket_qua_id})")
+    _cap_nhat(ket_qua_id, trang_thai="da_ghi_so", dolt_commit=ma_bam, so_cai_sha256=sha, ghi_so_luc=datetime.now(UTC))
+    return {"trang_thai": "da_ghi_so", "dolt_commit": ma_bam}
+
+
 @flow(name="mrv-lo-dat", log_prints=True)
 def mrv_lo_dat(ket_qua_id: str) -> dict:
     log = get_run_logger()
@@ -79,9 +109,9 @@ def mrv_lo_dat(ket_qua_id: str) -> dict:
         yc = doc_yeu_cau(ket_qua_id)
         kq, da_thu = do_dac(yc, ts)
         if kq is None:
-            ly_do = f"Không có cảnh nào đủ {ts['anh']['ti_le_diem_anh_hop_le_toi_thieu']:.0%} điểm ảnh hợp lệ trong lô (đã thử {da_thu})"
+            ly_do = mo_ta_khong_du_anh(ts["anh"]["ti_le_diem_anh_hop_le_toi_thieu"], da_thu)
             _cap_nhat(ket_qua_id, trang_thai="loi", ly_do_loi=ly_do)
-            log.warning(ly_do)
+            log.warning("%s (đã thử %s)", ly_do, da_thu)
             return {"trang_thai": "loi"}
 
         dien_tich_tan = kq.so_tan * (ts["anh"]["do_phan_giai_m"] ** 2) / 10000
@@ -113,24 +143,21 @@ def mrv_lo_dat(ket_qua_id: str) -> dict:
             pha_he=json.dumps(pha_he, ensure_ascii=False, default=str),
         )
         log.info("Lô %s: tán %.2f ha, %s t CO2e – chờ cán bộ duyệt", yc["ten"], uoc["dien_tich_tinh_ha"], uoc["co2e_tan"])
-    except Exception as e:
-        _cap_nhat(ket_qua_id, trang_thai="loi", ly_do_loi=f"{type(e).__name__}: {e}"[:500])
+    except Exception:
+        log.exception("Lỗi xử lý yêu cầu MRV %s", ket_qua_id)
+        _cap_nhat(
+            ket_qua_id,
+            trang_thai="loi",
+            ly_do_loi="Không đọc được dữ liệu ảnh vệ tinh hoặc dịch vụ lưu trữ lúc này. Vui lòng thử lại sau ít phút.",
+        )
         raise
 
     # Human-in-the-loop: cầu nối resume khi cán bộ ghi quyết định qua GraphQL. Quyết định đọc lại từ CSDL (nguồn sự thật).
     pause_flow_run(timeout=24 * 3600, poll_interval=3, key="cho-can-bo-duyet")
 
-    with luu_tru.csdl() as c:
-        d = c.execute("SELECT trang_thai, duyet_luc, ghi_chu_duyet, nguoi_duyet_sub, pha_he, co2e_tan, dien_tich_tan_ha "
-                      "FROM carbon.ket_qua_mrv WHERE id = %s", (ket_qua_id,)).fetchone()
-    if d["trang_thai"] != "da_duyet":
-        log.info("Kết quả %s: %s – không ghi sổ cái", ket_qua_id, d["trang_thai"])
-        return {"trang_thai": d["trang_thai"]}
-
-    ban_ghi = {"ket_qua_mrv_id": ket_qua_id, "pha_he": d["pha_he"], "co2e_tan": d["co2e_tan"],
-               "dien_tich_tan_ha": d["dien_tich_tan_ha"], "duyet": {"nguoi_duyet_sub": d["nguoi_duyet_sub"],
-               "luc": d["duyet_luc"].isoformat(), "ghi_chu": d["ghi_chu_duyet"]}}
-    ma_bam, sha = luu_tru.ghi_so_cai(ket_qua_id, ban_ghi, f"MRV {yc['ten']} {yc['ky_tu']}..{yc['ky_den']} ({ket_qua_id})")
-    _cap_nhat(ket_qua_id, trang_thai="da_ghi_so", dolt_commit=ma_bam, so_cai_sha256=sha, ghi_so_luc=datetime.now(UTC))
-    log.info("Đã ghi sổ cái: commit %s", ma_bam)
-    return {"trang_thai": "da_ghi_so", "dolt_commit": ma_bam}
+    kq_ghi = ghi_so_cai_mrv(ket_qua_id)
+    if kq_ghi["trang_thai"] == "da_ghi_so":
+        log.info("Đã ghi sổ cái: commit %s", kq_ghi["dolt_commit"])
+    else:
+        log.info("Kết quả %s: %s – không ghi sổ cái", ket_qua_id, kq_ghi["trang_thai"])
+    return kq_ghi

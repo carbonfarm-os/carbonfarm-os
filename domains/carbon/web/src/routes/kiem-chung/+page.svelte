@@ -93,11 +93,22 @@
 			.catch(() => {});
 	});
 
+	const soVi = (v: unknown, n = 2) =>
+		v === null || v === undefined || v === '' ? '–' : Number(v).toLocaleString('vi-VN', { maximumFractionDigits: n });
+	const dinhDangLuc = (s: string) => {
+		const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}:\d{2}:\d{2})/);
+		return m ? `${m[3]}/${m[2]}/${m[1]} · ${m[4]} UTC` : s;
+	};
+	const TEN_PP: Record<string, string> = {
+		'v0.1-rung-ngap-man-ipcc-tier1': 'IPCC 2013 Wetlands Tier 1 (v0.1)'
+	};
+
 	const tom = (b: BanGhi) => {
 		const d = b.du_lieu as Record<string, any>;
-		if (b.loai === 'ket_qua_mrv') return `${d.co2e_tan} t CO₂e · tán ${d.dien_tich_tan_ha} ha · phương pháp ${d.pha_he?.phuong_phap}`;
-		if (b.loai === 'cap_tin_chi') return `${d.so_luong_tin_chi} tín chỉ ${d.registry?.seri_tu} → ${d.registry?.seri_den} cho ${d.chu_so_huu?.ten}`;
-		if (b.loai === 'ban_tin_chi') return `${d.so_luong} tín chỉ: ${d.ben_ban?.ten} → ${d.ben_mua?.ten}`;
+		const pp = d.pha_he?.phuong_phap ? (TEN_PP[d.pha_he.phuong_phap] ?? d.pha_he.phuong_phap) : '–';
+		if (b.loai === 'ket_qua_mrv') return `${soVi(d.co2e_tan)} t CO₂e · diện tích tán ${soVi(d.dien_tich_tan_ha)} ha · phương pháp ${pp}`;
+		if (b.loai === 'cap_tin_chi') return `${soVi(d.so_luong_tin_chi, 0)} tín chỉ (${d.registry?.seri_tu} → ${d.registry?.seri_den}) cấp cho ${d.chu_so_huu?.ten}`;
+		if (b.loai === 'ban_tin_chi') return `${soVi(d.so_luong, 0)} tín chỉ chuyển nhượng: ${d.ben_ban?.ten} → ${d.ben_mua?.ten}`;
 		return b.ma_doi_tuong;
 	};
 	const dsBanGhi = $derived(kq ? (kq.kieu === 'seri' ? kq.su_kien : kq.ban_ghi) : []);
@@ -190,7 +201,7 @@
 					</p>
 				{:else}
 					<h2 id="kl">Một commit trên sổ cái.</h2>
-					<p>Commit <code>{kq.commit}</code> · ghi lúc <b>{kq.luc}</b><br />{kq.thong_diep}</p>
+					<p>Commit <code>{kq.commit}</code> · ghi lúc <b>{dinhDangLuc(kq.luc)}</b><br />{kq.thong_diep}</p>
 				{/if}
 			</section>
 
@@ -224,7 +235,7 @@
 									</div>
 									<div>
 										<span>Thời điểm ghi sổ</span>
-										<strong>{b.luc}</strong>
+										<strong>{dinhDangLuc(b.luc)}</strong>
 									</div>
 								</div>
 

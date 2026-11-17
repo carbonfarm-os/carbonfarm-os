@@ -71,3 +71,19 @@ def uoc_luong(
         "he_so": {"g_w": g, "r": r, "cf": cf, "b_max": b_max, "co2_tren_c": h["co2_tren_c"]},
         "canh_bao": canh_bao,
     }
+
+
+def mo_ta_khong_du_anh(nguong: float, da_thu: list[dict]) -> str:
+    """Thông báo tiếng Việt thân thiện cho người dùng khi kỳ giám sát bị mây che phủ (không đổ dict/JSON thô)."""
+    if not da_thu:
+        return (
+            f"Không tìm thấy cảnh ảnh vệ tinh Sentinel-2 nào phù hợp trong kỳ giám sát đã chọn "
+            f"(yêu cầu tối thiểu {nguong:.0%} diện tích lô rõ nét). "
+            "Vui lòng chọn kỳ mùa khô ít mây (ví dụ: 01/04/2026 – 30/04/2026)."
+        )
+    tot_nhat = max((float(d.get("ti_le_hop_le", 0.0)) for d in da_thu), default=0.0)
+    return (
+        f"Ảnh vệ tinh trong kỳ bị mây che phủ, chỉ đạt tối đa {tot_nhat * 100:.1f}".replace(".", ",")
+        + f"% diện tích lô rõ nét qua {len(da_thu)} cảnh kiểm tra (yêu cầu tối thiểu {nguong:.0%}). "
+        "Vui lòng chọn kỳ giám sát ít mây hơn (ví dụ: 01/04/2026 – 30/04/2026)."
+    )
