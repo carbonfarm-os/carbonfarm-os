@@ -23,6 +23,7 @@ export default defineConfig({
 				{ label: 'Giới thiệu', link: '/' },
 				{ label: 'Dùng thử', link: '/dung-thu/' },
 				{ label: 'Hướng dẫn chạy demo', link: '/huong-dan-demo/' },
+				{ label: 'Hướng dẫn vận hành HTX', link: '/huong-dan-htx/' },
 				{ label: 'Triển khai demo', link: '/trien-khai/' },
 				{ label: 'Kiến trúc', link: '/kien-truc/' },
 				{ label: 'Viết miền mới (cắm–rút)', link: '/viet-mien/' },

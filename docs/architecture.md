@@ -4,45 +4,67 @@
 
 > Bản khung tuần 30/10/2026. Mỗi thay đổi lớn ghi thành ADR trong `docs/adr/`.
 
-## 1. Ba tầng
+## 1. Mô hình kiến trúc hai tầng (DX-OS Open-Core)
+
+Hệ thống tuân thủ chặt chẽ đề bài OLP PMNM 2026 về kiến trúc DX-OS Open-Core:
+- **Tầng 1 – Nền tảng Dịch vụ Lõi số (`platform/`):** Chạy ở chế độ Headless (không có giao diện người dùng cuối, chỉ có API và UI quản trị kỹ thuật), độc lập hoàn toàn với nghiệp vụ carbon. Cung cấp đầy đủ 4 năng lực cốt lõi bắt buộc: Định danh SSO/MFA, API Gateway, Dữ liệu cấu trúc/phi cấu trúc, và Workflow Engine; kết hợp Quản lý bí mật, Event bus và Sổ cái phiên bản.
+- **Tầng 2 – Không gian Năng lực số (`domains/carbon/`):** Ứng dụng minh họa hoàn chỉnh theo chuẩn **H-P-D-I**:
+  - **[H] Con người:** Web SvelteKit, App di động Flutter, Cổng kiểm chứng độc lập `/kiem-chung`.
+  - **[P] Quy trình:** Tự động hóa đo lường MRV qua Prefect, luân chuyển phê duyệt hai cấp theo Thông tư 11/2026/TT-BNNMT, rào chắn Poka-yoke chặn sai từ CSDL.
+  - **[D] Dữ liệu:** Bản đồ WebGIS MapLibre, phả hệ viễn thám, Sổ cái Dolt bất biến, Dashboard Metabase OSS.
+  - **[I] Trí tuệ số:** Ước lượng sinh khối carbon và tán rừng từ dữ liệu vệ tinh Sentinel-2 theo phương pháp luận IPCC Tier 1.
+- **Kết nối mở rộng Tầng 3 (Hệ sinh thái cắm–rút):** Thư mục `connectors/` (mô phỏng Registry quốc gia, Sàn giao dịch Buyer, Ngân hàng thanh toán qua hợp đồng OpenAPI) và quy chế cắm–rút miền nghiệp vụ (`domains/`) sẵn sàng kết nối sang Tầng 3 (Kinh doanh số ngành dọc) mà không sửa đổi Tầng 1.
 
 ![Sơ đồ kiến trúc CarbonFarm OS: người dùng, Tầng 2 miền carbon, connector mô phỏng, API Gateway APISIX, Tầng 1 nền tảng headless](images/kien-truc.webp)
 
-Ảnh trên là bản tóm tắt để trình bày; sơ đồ dưới đây là bản chi tiết, có đủ các mũi tên phụ thuộc.
+Sơ đồ chi tiết các thành phần dịch vụ và luồng phụ thuộc:
 
 ```mermaid
 flowchart TB
-  subgraph T3["Ứng dụng · người dùng"]
+  subgraph USERS["Người dùng cuối"]
     ND["Nông dân / cộng đồng ven biển"]
     HTX["Cán bộ hợp tác xã"]
-    QL["Cơ quan quản lý (xem)"]
+    QL["Đơn vị thẩm định / Khách mua (kiểm chứng)"]
   end
-  subgraph T2["Tầng 2 · domains/carbon (H-P-D-I)"]
-    WEB["Web SvelteKit + MapLibre"]
-    MRV["MRV engine (Python: pystac, rasterio, GDAL)"]
-    DOM["Hợp tác xã, xã viên, lô đất, ví tín chỉ (schema carbon)"]
-    MB["Dashboard Metabase OSS"]
+
+  subgraph T2["Tầng 2 · Không gian năng lực số domains/carbon (H-P-D-I)"]
+    subgraph H["[H] Con người & Giao diện"]
+      WEB["Web SvelteKit + MapLibre"]
+      APP["App di động Flutter"]
+      KC_UI["Cổng kiểm chứng công khai"]
+    end
+    subgraph P["[P] Quy trình & Động cơ MRV"]
+      MRV["MRV Engine (GDAL, pystac, rasterio)"]
+      POKA["Ràng buộc Poka-yoke (UC0xx)"]
+    end
+    subgraph D["[D] Dữ liệu & Báo cáo"]
+      DOM["Schema CSDL carbon (PostGIS)"]
+      MB["Dashboard Metabase OSS"]
+    end
   end
-  subgraph CN["connectors/ (mock, OpenAPI)"]
+
+  subgraph CN["connectors/ · Kết nối mở rộng Tầng 3 (Mock, OpenAPI)"]
     REG["Registry (TT 11/2026/TT-BNNMT)"]
-    BUY["Buyer"]
-    BANK["Bank / ví"]
+    BUY["Buyer (Sàn giao dịch)"]
+    BANK["Bank / Ví thanh toán"]
   end
-  subgraph T1["Tầng 1 · platform (headless, không nghiệp vụ)"]
+
+  subgraph T1["Tầng 1 · Nền tảng lõi headless platform/ (PaaS, không nghiệp vụ)"]
     GW["APISIX – API Gateway"]
     KC["Keycloak – SSO, MFA"]
-    BAO["OpenBao – bí mật"]
-    PG["PostgreSQL + PostGIS"]
-    PGQL["PostGraphile – GraphQL tự sinh"]
-    S3["Versity S3 – đối tượng"]
-    STAC["pgSTAC + stac-fastapi – danh mục ảnh"]
-    TT["TiTiler – tile ảnh"]
-    PF["Prefect – workflow"]
-    VK["Valkey – event bus"]
-    DOLT["Dolt – sổ cái có phiên bản"]
+    BAO["OpenBao – Quản lý bí mật"]
+    PG["PostgreSQL 17 + PostGIS"]
+    PGQL["PostGraphile – GraphQL tự sinh + RLS"]
+    S3["Versity S3 – Lưu trữ đối tượng"]
+    STAC["pgSTAC + stac-fastapi – Danh mục ảnh"]
+    TT["TiTiler – Phục vụ tile ảnh COG"]
+    PF["Prefect – Workflow Engine"]
+    VK["Valkey – Event bus"]
+    DOLT["Dolt – Sổ cái phân phiên bản"]
   end
-  ND & HTX & QL --> WEB
-  WEB --> GW
+
+  ND & HTX & QL --> WEB & APP & KC_UI
+  WEB & APP & KC_UI --> GW
   MB --> PG
   GW --> KC & PGQL & STAC & TT & PF
   PGQL --> PG
