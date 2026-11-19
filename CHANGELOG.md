@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.9.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.8.0...v0.9.0) (2026-11-19)
+
+
+### Tính năng mới
+
+* **carbon:** chuẩn hóa thông báo MRV, hồi phục ghi sổ Dolt và hoàn thiện bàn làm việc ([#111](https://github.com/carbonfarm-os/carbonfarm-os/issues/111)) ([#112](https://github.com/carbonfarm-os/carbonfarm-os/issues/112)) ([7d6c6dd](https://github.com/carbonfarm-os/carbonfarm-os/commit/7d6c6dd370c64f35c0aafceaed4e05f07a3da4fd))
+
+
+### Tài liệu
+
+* chuẩn hóa kiến trúc 2 tầng DX-OS và đồng bộ sổ tay HTX vào docs-site ([#117](https://github.com/carbonfarm-os/carbonfarm-os/issues/117)) ([8074460](https://github.com/carbonfarm-os/carbonfarm-os/commit/80744606f04b37c2a1dd03b31b4ebe59dd008706))
+
+
+### Kiểm thử
+
+* **web:** bổ sung kịch bản kiểm thử E2E và hướng dẫn vận hành bàn làm việc HTX ([#114](https://github.com/carbonfarm-os/carbonfarm-os/issues/114)) ([#116](https://github.com/carbonfarm-os/carbonfarm-os/issues/116)) ([51ef429](https://github.com/carbonfarm-os/carbonfarm-os/commit/51ef42913f5def46e8ee8ffefc2f5d1f1716b38d))
+
 ## [0.8.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.7.0...v0.8.0) (2026-11-13)
 
 
