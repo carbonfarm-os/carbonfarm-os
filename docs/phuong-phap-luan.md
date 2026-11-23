@@ -133,3 +133,4 @@ Khi cán bộ thẩm định phê duyệt kết quả MRV:
 
 ### 4.2. Chuẩn hóa JSON tất định (`json_chuan`) khi đối soát với Dolt
 - Cơ sở dữ liệu Dolt tự động chuẩn hóa cột kiểu JSON khi lưu trữ (ví dụ chuyển số thực `1.0` thành số nguyên `1` và sắp xếp lại khóa).
+- Để mã băm SHA-256 của phả hệ (`pha_he`) và ranh giới (`ranh_gioi_sha256`) luôn khớp tuyệt đối giữa lúc tính toán ở Worker Python và lúc đọc lại từ sổ cái Dolt, mô-đun `mrv.json_chuan` chuẩn hóa mọi số thực có phần thập phân bằng `0` về kiểu `int`, khử `-0.0` và kết xuất JSON với `sort_keys=True`, không khoảng trắng thừa.
