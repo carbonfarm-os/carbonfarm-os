@@ -175,6 +175,13 @@ class PhuongPhapV01(unittest.TestCase):
         self.assertEqual(kq["so_ngay"], 366)
         self.assertAlmostEqual(kq["nam_tinh"], 366 / 365, places=5)
 
+    def test_ket_qua_tra_ve_day_du_bang_he_so_da_dung(self):
+        kq = uoc_luong(self.ts, 2.0, date(2026, 1, 1), date(2026, 1, 31), 2020, 2.5)
+        self.assertEqual(
+            kq["he_so"],
+            {"g_w": 9.4, "r": 0.47, "cf": 0.429, "b_max": 187, "co2_tren_c": self.ts["he_so"]["co2_tren_c"]},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
