@@ -23,6 +23,8 @@ jsonpath "$.errors" not exists
 jsonpath "$.data.allCarbonKetQuaMrvs.totalCount" >= 1
 jsonpath "$.data.allCarbonKetQuaMrvs.nodes[0].rowId" exists
 jsonpath "$.data.allCarbonKetQuaMrvs.nodes[0].doltCommit" matches "^[0-9a-v]{32}$"
+jsonpath "$.data.allCarbonKetQuaMrvs.nodes[0].trangThai" exists
+jsonpath "$.data.allCarbonKetQuaMrvs.nodes[0].phuongPhap" exists
 
 # 2. Bàn làm việc - Phân khu 2: Dải tín chỉ đã phát hành cho HTX
 POST {{gateway}}/graphql
