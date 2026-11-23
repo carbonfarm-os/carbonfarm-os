@@ -1,5 +1,53 @@
 # Changelog
 
+## [0.9.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.8.0...v0.9.0) (2026-11-23)
+
+
+### Tính năng mới
+
+* **carbon:** chuẩn hóa thông báo MRV, hồi phục ghi sổ Dolt và hoàn thiện bàn làm việc ([#111](https://github.com/carbonfarm-os/carbonfarm-os/issues/111)) ([#112](https://github.com/carbonfarm-os/carbonfarm-os/issues/112)) ([7d6c6dd](https://github.com/carbonfarm-os/carbonfarm-os/commit/7d6c6dd370c64f35c0aafceaed4e05f07a3da4fd))
+
+
+### Tài liệu
+
+* chuẩn hóa kiến trúc 2 tầng DX-OS và đồng bộ sổ tay HTX vào docs-site ([#117](https://github.com/carbonfarm-os/carbonfarm-os/issues/117)) ([8074460](https://github.com/carbonfarm-os/carbonfarm-os/commit/80744606f04b37c2a1dd03b31b4ebe59dd008706))
+* **htx:** bổ sung bảng giải thích các trạng thái đợt thẩm tra MRV trên bàn làm việc ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([5d6c25d](https://github.com/carbonfarm-os/carbonfarm-os/commit/5d6c25ddf895755e4325159424fe28eb2e2c5d9c))
+* **htx:** bổ sung bước đối chiếu lịch sử thay đổi bảng khối tín chỉ và lệnh bán ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([1ec7288](https://github.com/carbonfarm-os/carbonfarm-os/commit/1ec7288a8ffc112beec856d33c839c2725ea7263))
+* **htx:** bổ sung bước kiểm tra chữ ký SHA-256 của tệp tham số phương pháp IPCC ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([744e853](https://github.com/carbonfarm-os/carbonfarm-os/commit/744e8532710a1a758c3c9e9eaa0ac9f21fcacddc))
+* **htx:** bổ sung hướng dẫn đối soát độc lập bằng mã băm commit Dolt ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([83de8fa](https://github.com/carbonfarm-os/carbonfarm-os/commit/83de8fab39485811893a0cb61eb8614985d60fcf))
+* **htx:** bổ sung hướng dẫn kiểm tra cảnh báo mất tán và chạm trần sinh khối ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([7905aaf](https://github.com/carbonfarm-os/carbonfarm-os/commit/7905aafb2502cb33aebdc3c061373a432604675c))
+* **htx:** bổ sung quy tắc phân bổ doanh thu cho xã viên theo diện tích nhận khoán ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([55de428](https://github.com/carbonfarm-os/carbonfarm-os/commit/55de428a1e5cf480ad33b2d5ab8d2ee004758aa2))
+* **htx:** bổ sung quy trình xuất bảng kê chi trả cho xã viên tại hợp tác xã ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([6c5895a](https://github.com/carbonfarm-os/carbonfarm-os/commit/6c5895a1e5bc66993fa7cb2b5a4049629112efdf))
+* **htx:** bổ sung trạng thái đã chuyển nhượng và đã thu hồi của tín chỉ ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([6591729](https://github.com/carbonfarm-os/carbonfarm-os/commit/65917297b9101a9980c1cbd726e7e9da3dbdbe23))
+* **htx:** bổ sung trạng thái đã duyệt và không đủ ảnh trong bảng thẩm tra MRV ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([4edc402](https://github.com/carbonfarm-os/carbonfarm-os/commit/4edc40206aabdb1df2191aaf7ca865717a399819))
+* **htx:** bổ sung vòng đời trạng thái khối tín chỉ trên sổ cái Dolt ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([a59f148](https://github.com/carbonfarm-os/carbonfarm-os/commit/a59f148431876335e4ae802d61385fbe37244f82))
+* **phuong-phap:** bổ sung bảng đối chiếu mã cảnh báo tự động trong động cơ MRV ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([929adf2](https://github.com/carbonfarm-os/carbonfarm-os/commit/929adf2d47de4db2daf58503c163fe05d5ba7be6))
+* **phuong-phap:** bổ sung giải thích chuẩn hóa JSON tất định trước khi băm SHA-256 ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([75be4f6](https://github.com/carbonfarm-os/carbonfarm-os/commit/75be4f60a2d9fe2296c7d82f07269409755903c6))
+* **phuong-phap:** bổ sung mục kiểm soát sai số mép điểm ảnh 10 m trên lô nhỏ ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([5f0ea9f](https://github.com/carbonfarm-os/carbonfarm-os/commit/5f0ea9f6e36defb5c0f876a8e79d35eb1a085936))
+* **phuong-phap:** bổ sung quy tắc cắt trần diện tích tán theo diện tích địa chính PostGIS ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([9dc0367](https://github.com/carbonfarm-os/carbonfarm-os/commit/9dc0367b8bb54d9a56b0689f99739ca3be4ad1a2))
+* **phuong-phap:** bổ sung quy tắc khử sai biệt kiểu số thực và thứ tự khóa trong phả hệ ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([08c6fb8](https://github.com/carbonfarm-os/carbonfarm-os/commit/08c6fb8daf301ac6e0023a568484a23ecb03832c))
+* **phuong-phap:** hoàn thiện báo cáo giải trình phương pháp luận IPCC Tier 1 và dữ liệu viễn thám Sentinel-2 ([#118](https://github.com/carbonfarm-os/carbonfarm-os/issues/118)) ([a8a2def](https://github.com/carbonfarm-os/carbonfarm-os/commit/a8a2def4b260004ec0ee6dc09c44fca2bceb3a45))
+
+
+### Kiểm thử
+
+* **e2e:** kiểm tra diện tích tán rừng và lượng CO2e ước tính trên kết quả MRV ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([87c680d](https://github.com/carbonfarm-os/carbonfarm-os/commit/87c680d99d8abac174b6d90986941e0421963e63))
+* **e2e:** kiểm tra đơn giá, thành tiền VNĐ và danh mục người mua trên lệnh bán ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([705f6bc](https://github.com/carbonfarm-os/carbonfarm-os/commit/705f6bc3c8d11aa2b2d596289bcddc3be9c35c05))
+* **e2e:** kiểm tra số lượng tín chỉ và mã hợp tác xã trong khối tín chỉ phát hành ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([a5ce633](https://github.com/carbonfarm-os/carbonfarm-os/commit/a5ce6333b3e7dc629188e0f23413eb778d2c947f))
+* **e2e:** kiểm tra thông tin tên và mã số thuế hợp tác xã trên bàn làm việc ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([b3220df](https://github.com/carbonfarm-os/carbonfarm-os/commit/b3220df1ddf44b804d75b8deca826b31dcc069bf))
+* **e2e:** kiểm tra trường trạng thái và phương pháp luận của kết quả MRV ([#119](https://github.com/carbonfarm-os/carbonfarm-os/issues/119)) ([39f2f4e](https://github.com/carbonfarm-os/carbonfarm-os/commit/39f2f4e77d51c938289e26999ec32983ed986336))
+* **mrv:** kiểm thử cắt trần diện tích tán khi vượt diện tích ranh giới lô nhỏ ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([d68c5ca](https://github.com/carbonfarm-os/carbonfarm-os/commit/d68c5ca3d6096d88b3381cc7376760f549585e92))
+* **mrv:** kiểm thử cấu trúc từ điển hệ số trả về trong kết quả ước lượng ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([6c1df43](https://github.com/carbonfarm-os/carbonfarm-os/commit/6c1df43b0ee86d4bf02b878804821b1d99ab70e1))
+* **mrv:** kiểm thử chuẩn hóa JSON bảo toàn giá trị boolean và None không biến thành số ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([5f7c6e0](https://github.com/carbonfarm-os/carbonfarm-os/commit/5f7c6e03b3604c047bd6741ec71b37f878fd39af))
+* **mrv:** kiểm thử chuẩn hóa JSON giữ nguyên thứ tự mảng tọa độ GeoJSON ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([7131a2d](https://github.com/carbonfarm-os/carbonfarm-os/commit/7131a2dec7bf7b9852b9465dbe9277ec762128d3))
+* **mrv:** kiểm thử chuẩn hóa JSON hỗ trợ tuple tương đương với list ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([20ef93d](https://github.com/carbonfarm-os/carbonfarm-os/commit/20ef93d347777ec0a078fa480080e111c6342823))
+* **mrv:** kiểm thử chuẩn hóa JSON sắp xếp đệ quy các khóa trong dict lồng nhau ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([ed7fa90](https://github.com/carbonfarm-os/carbonfarm-os/commit/ed7fa900d758c58b75be1a0b95674d8b6c70d897))
+* **mrv:** kiểm thử chuẩn hóa JSON xử lý số không âm -0.0 về số nguyên 0 ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([8aae0df](https://github.com/carbonfarm-os/carbonfarm-os/commit/8aae0dfc4a1ff6ebaa8c0f9e0b0c213b840badae))
+* **mrv:** kiểm thử đồng thời cảnh báo mất tán và thiếu năm trồng trên cùng một lô ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([72390b5](https://github.com/carbonfarm-os/carbonfarm-os/commit/72390b5166802e55e678ca888d49f9f6a78be781))
+* **mrv:** kiểm thử kỳ giám sát rơi vào năm nhuận 366 ngày ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([c223109](https://github.com/carbonfarm-os/carbonfarm-os/commit/c22310975a8186c69c0c59fc40ef62cda7faf6d0))
+* **mrv:** kiểm thử làm tròn 4 chữ số thập phân cho diện tích và 3 chữ số cho carbon ([#120](https://github.com/carbonfarm-os/carbonfarm-os/issues/120)) ([c3cdf7f](https://github.com/carbonfarm-os/carbonfarm-os/commit/c3cdf7fed82f0b091ab3314d1e4a903face38f26))
+* **web:** bổ sung kịch bản kiểm thử E2E và hướng dẫn vận hành bàn làm việc HTX ([#114](https://github.com/carbonfarm-os/carbonfarm-os/issues/114)) ([#116](https://github.com/carbonfarm-os/carbonfarm-os/issues/116)) ([51ef429](https://github.com/carbonfarm-os/carbonfarm-os/commit/51ef42913f5def46e8ee8ffefc2f5d1f1716b38d))
+
 ## [0.8.0](https://github.com/carbonfarm-os/carbonfarm-os/compare/v0.7.0...v0.8.0) (2026-11-13)
 
 
