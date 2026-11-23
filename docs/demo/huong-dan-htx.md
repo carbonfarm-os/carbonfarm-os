@@ -55,3 +55,10 @@ Xã viên và các đối tác mua tín chỉ không cần tài khoản đăng n
 2. Nhập số sê-ri tín chỉ (ví dụ: `MCK-DM01-26-0000000217`) hoặc mã commit Dolt (32 ký tự).
 3. Hệ thống trả về toàn bộ cây phả hệ: ngày chụp ảnh vệ tinh, tọa độ ranh giới lô đất, thông tin phương pháp IPCC, và bằng chứng mã hóa.
 4. Thông tin cá nhân của xã viên được ẩn danh tự động theo chuẩn bảo vệ dữ liệu cá nhân (chỉ hiển thị mã xã viên).
+
+### Bảng trạng thái đợt thẩm tra MRV
+
+| Mã trạng thái | Ý nghĩa trên Bàn làm việc HTX | Hành động tiếp theo |
+|---|---|---|
+| `cho_do` | Yêu cầu đo mới tạo, đang chờ luồng Prefect cắt ảnh Sentinel-2 | Chờ worker MRV hoàn tất tính toán NDVI |
+| `cho_duyet` | Đã có kết quả diện tích tán và ước lượng $\text{CO}_2\text{e}$ | Cán bộ thẩm định đối chiếu bản đồ và bấm duyệt |
