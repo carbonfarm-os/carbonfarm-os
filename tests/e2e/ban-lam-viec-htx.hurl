@@ -55,3 +55,6 @@ HTTP 200
 jsonpath "$.errors" not exists
 jsonpath "$.data.allCarbonLenhBans.totalCount" >= 1
 jsonpath "$.data.allCarbonLenhBans.nodes[0].doltCommit" matches "^[0-9a-v]{32}$"
+jsonpath "$.data.allCarbonLenhBans.nodes[0].donGiaVnd" >= 1
+jsonpath "$.data.allCarbonLenhBans.nodes[0].thanhTienVnd" >= 1
+jsonpath "$.data.allCarbonNguoiMuas.nodes[0].ten" exists
