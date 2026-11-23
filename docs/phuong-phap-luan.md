@@ -128,3 +128,5 @@ Khi cán bộ thẩm định phê duyệt kết quả MRV:
 
 ### 4.1. Sai số mép điểm ảnh trên lưới 10 m
 - Một điểm ảnh Sentinel-2 băng B04/B08 có kích thước $10\text{ m} \times 10\text{ m}$ ($0,01\text{ ha}$), được tính vào lô đất khi tâm điểm ảnh nằm trong đa giác ranh giới.
+- Ở các lô có hình dạng hẹp hoặc đường biên gấp khúc, tổng diện tích các điểm ảnh có tâm nằm trong lô có thể vượt nhẹ diện tích hình học tính bằng `ST_Area(hinh::geography)`.
+- Hàm `uoc_luong` luôn áp dụng $A = \min(A_{\text{điểm ảnh tán}}, A_{\text{lô PostGIS}})$ để đảm bảo diện tích tính carbon không bao giờ vượt diện tích thực tế của lô đất.
