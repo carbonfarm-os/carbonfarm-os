@@ -30,6 +30,10 @@ class JsonChuan(unittest.TestCase):
         d2 = {"a": [{"c": 3, "d": 4}], "z": {"a": 1, "b": 2}}
         self.assertEqual(json_chuan(d1), json_chuan(d2))
 
+    def test_giu_nguyen_thu_tu_phan_tu_trong_mang_toa_do(self):
+        vong = {"coordinates": [[104.75, 8.61], [104.76, 8.62], [104.75, 8.61]]}
+        self.assertEqual(json_chuan(vong), '{"coordinates":[[104.75,8.61],[104.76,8.62],[104.75,8.61]]}')
+
 
 if __name__ == "__main__":
     unittest.main()
