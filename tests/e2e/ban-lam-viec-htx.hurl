@@ -40,6 +40,8 @@ jsonpath "$.data.allCarbonKhoiTinChis.totalCount" >= 1
 jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].maTrongNuoc" exists
 jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].seriTu" exists
 jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].seriDen" exists
+jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].soLuong" >= 1
+jsonpath "$.data.allCarbonKhoiTinChis.nodes[0].hopTacXaId" exists
 
 # 3. Bàn làm việc - Phân khu 3: Nhật ký giao dịch và lệnh bán
 POST {{gateway}}/graphql
