@@ -25,6 +25,11 @@ class JsonChuan(unittest.TestCase):
         goc = {"pha_he": {"canh_da_thu": [{"ti_le_hop_le": 1.0}], "ndvi": 0.8912345, "toa_do": [[104.8, 8.64]]}, "co2e": "15.543"}
         self.assertEqual(json_chuan(json.loads(json.dumps(goc))), json_chuan(goc))
 
+    def test_sap_xep_de_quy_dict_long_nhau(self):
+        d1 = {"z": {"b": 2, "a": 1}, "a": [{"d": 4, "c": 3}]}
+        d2 = {"a": [{"c": 3, "d": 4}], "z": {"a": 1, "b": 2}}
+        self.assertEqual(json_chuan(d1), json_chuan(d2))
+
 
 if __name__ == "__main__":
     unittest.main()
