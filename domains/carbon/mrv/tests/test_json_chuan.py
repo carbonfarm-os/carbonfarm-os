@@ -37,6 +37,9 @@ class JsonChuan(unittest.TestCase):
     def test_so_khong_am_chuan_hoa_ve_0(self):
         self.assertEqual(json_chuan({"x": -0.0, "y": 0.0, "z": 0}), '{"x":0,"y":0,"z":0}')
 
+    def test_boolean_va_none_khong_bi_ep_kieu_so(self):
+        self.assertEqual(json_chuan({"co": True, "khong": False, "rong": None}), '{"co":true,"khong":false,"rong":null}')
+
 
 if __name__ == "__main__":
     unittest.main()
