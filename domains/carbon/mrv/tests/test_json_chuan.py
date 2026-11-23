@@ -40,6 +40,9 @@ class JsonChuan(unittest.TestCase):
     def test_boolean_va_none_khong_bi_ep_kieu_so(self):
         self.assertEqual(json_chuan({"co": True, "khong": False, "rong": None}), '{"co":true,"khong":false,"rong":null}')
 
+    def test_tuple_chuan_hoa_giong_list(self):
+        self.assertEqual(json_chuan({"bbox": (104.7, 8.6, 104.8, 8.7)}), json_chuan({"bbox": [104.7, 8.6, 104.8, 8.7]}))
+
 
 if __name__ == "__main__":
     unittest.main()
