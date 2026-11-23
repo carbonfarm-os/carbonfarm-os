@@ -70,3 +70,11 @@ Xã viên và các đối tác mua tín chỉ không cần tài khoản đăng n
 
 - **`mat_tan`:** Xuất hiện khi diện tích tán rừng kỳ này giảm quá 10% so với kỳ liền trước; cán bộ HTX cần kiểm tra lớp ảnh phân loại cảnh SCL trên bản đồ để phân biệt mất rừng thật với hiện tượng triều cường ngập tán thấp.
 - **`cham_tran_sinh_khoi`:** Xuất hiện khi rừng đạt ngưỡng sinh khối ổn định $B_{\max} = 187\text{ t d.m./ha}$ (khoảng 19,9 năm tuổi); hệ thống chỉ ghi nhận phần tăng trưởng tới trần.
+
+---
+
+## 4. Vòng đời khối tín chỉ và đối soát giao dịch
+
+Mỗi dải tín chỉ sau khi phát hành trên sổ cái Dolt đi qua các trạng thái được kiểm soát chặt chẽ để không xảy ra bán trùng:
+
+- **`dang_giu`:** Khối tín chỉ đang thuộc sở hữu của Hợp tác xã, sẵn sàng niêm yết hoặc khớp lệnh chuyển nhượng.
