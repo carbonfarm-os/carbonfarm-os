@@ -80,3 +80,12 @@ Mỗi dải tín chỉ sau khi phát hành trên sổ cái Dolt đi qua các tr�
 - **`dang_giu`:** Khối tín chỉ đang thuộc sở hữu của Hợp tác xã, sẵn sàng niêm yết hoặc khớp lệnh chuyển nhượng.
 - **`da_chuyen`:** Khối tín chỉ đã được chuyển giao cho bên mua thông qua hợp đồng chuyển nhượng và thanh toán ngân hàng.
 - **`da_thu_hoi` (Retired):** Tín chỉ đã được bên mua sử dụng để bù đắp phát thải (offset) và khóa vĩnh viễn trên sổ cái, không thể mua bán lại.
+
+---
+
+## 5. Phân bổ doanh thu tín chỉ carbon cho xã viên
+
+Khi lệnh bán tín chỉ hoàn tất thanh toán qua cổng kết nối ngân hàng (`connectors/bank`):
+
+1. Hệ thống tổng hợp diện tích rừng ngập mặn hợp lệ của từng hộ xã viên đã góp vào đợt thẩm tra MRV.
+2. Tỷ lệ phân bổ của mỗi hộ được tính minh bạch theo công thức: $T_i = A_i / \sum A_k$.
