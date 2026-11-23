@@ -121,3 +121,10 @@ Khi cán bộ thẩm định phê duyệt kết quả MRV:
 - Hệ thống ghi nhận chứng nhận carbon (`chung_nhan`), từng tín chỉ có số sê-ri duy nhất (`tin_chi`) và sự kiện phát hành (`su_kien_tin_chi`) vào sổ cái **Dolt**, sau đó thực thi `CALL DOLT_COMMIT(...)`.
 - Mã commit của Dolt (chuỗi băm dạng Git như `t28k82q8u57bpnv76q91l3b723m7ck9p`) được trả về và gắn cố định vào chứng nhận cũng như trang tra cứu công khai `/kiem-chung/<ma_chung_nhan>`.
 - Bất kỳ bên thứ ba nào cũng có thể đối chiếu lịch sử thay đổi qua bảng hệ thống `dolt_log` và `dolt_diff_tin_chi` để xác thực không có tín chỉ nào bị sửa đổi hay bán trùng lặp.
+
+---
+
+## 4. Kiểm soát sai số hình học và điều kiện biên
+
+### 4.1. Sai số mép điểm ảnh trên lưới 10 m
+- Một điểm ảnh Sentinel-2 băng B04/B08 có kích thước $10\text{ m} \times 10\text{ m}$ ($0,01\text{ ha}$), được tính vào lô đất khi tâm điểm ảnh nằm trong đa giác ranh giới.
