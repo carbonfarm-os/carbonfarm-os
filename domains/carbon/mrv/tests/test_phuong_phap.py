@@ -130,6 +130,41 @@ class PhuongPhapV01(unittest.TestCase):
         self.assertNotIn("canh_id", tb_may)
         self.assertNotIn("ti_le_hop_le", tb_may)
 
+    def test_khop_vi_du_lo_dat_mui_2_muc_4_5(self):
+        # methodology §4.5 Ví dụ 2: Lô Đất Mũi 2, diện tích lô 8,8745 ha, tán đo 9,00 ha → cắt về 8,8745 ha
+        # Kỳ 30 ngày (01/04/2026 – 30/04/2026), năm trồng 2021 → ΔC_G = 4,324 t C, ΔCO₂e = 15,854 t CO₂e
+        kq = uoc_luong(self.ts, 9.0, date(2026, 4, 1), date(2026, 4, 30), 2021, 8.8745)
+        self.assertEqual(kq["dien_tich_tinh_ha"], 8.8745)
+        self.assertEqual(kq["so_ngay"], 30)
+        self.assertAlmostEqual(kq["delta_c_tan"], 4.324, places=3)
+        self.assertAlmostEqual(kq["co2e_tan"], 15.854, places=3)
+        self.assertEqual(kq["canh_bao"], [])
+
+    def test_mat_tan_nguong_bien_10_phan_tram(self):
+        # Giảm đúng 10% (từ 10,0 ha xuống 9,0 ha): chưa vượt ngưỡng > 10% nên không gắn cờ mat_tan
+        kq_bien = uoc_luong(
+            self.ts, 9.0, date(2026, 4, 1), date(2026, 4, 30), 2020, 10.0, dien_tich_tan_ky_truoc_ha=10.0
+        )
+        self.assertEqual(kq_bien["dien_tich_tinh_ha"], 9.0)
+        self.assertNotIn("mat_tan", kq_bien["canh_bao"])
+
+        # Giảm quá 10% (từ 10,0 ha xuống 8,95 ha): gắn cờ mat_tan và tính theo diện tích nhỏ hơn
+        kq_vuot = uoc_luong(
+            self.ts, 8.95, date(2026, 4, 1), date(2026, 4, 30), 2020, 10.0, dien_tich_tan_ky_truoc_ha=10.0
+        )
+        self.assertEqual(kq_vuot["dien_tich_tinh_ha"], 8.95)
+        self.assertIn("mat_tan", kq_vuot["canh_bao"])
+
+    def test_mo_ta_khong_du_anh_nhieu_canh_chon_tot_nhat(self):
+        da_thu = [
+            {"canh_id": "S2A_1", "ti_le_hop_le": 0.25},
+            {"canh_id": "S2B_2", "ti_le_hop_le": 0.642},
+            {"canh_id": "S2C_3", "ti_le_hop_le": 0.51},
+        ]
+        tb = mo_ta_khong_du_anh(0.8, da_thu)
+        self.assertIn("64,2%", tb)
+        self.assertIn("3 cảnh kiểm tra", tb)
+
 
 if __name__ == "__main__":
     unittest.main()
