@@ -170,6 +170,11 @@ class PhuongPhapV01(unittest.TestCase):
         self.assertEqual(kq["dien_tich_tan_do_ha"], 0.08)
         self.assertEqual(kq["dien_tich_tinh_ha"], 0.05)
 
+    def test_ky_nam_nhuan_366_ngay(self):
+        kq = uoc_luong(self.ts, 1.0, date(2024, 1, 1), date(2024, 12, 31), 2018, 1.0)
+        self.assertEqual(kq["so_ngay"], 366)
+        self.assertAlmostEqual(kq["nam_tinh"], 366 / 365, places=5)
+
 
 if __name__ == "__main__":
     unittest.main()
