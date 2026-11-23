@@ -189,6 +189,14 @@ class PhuongPhapV01(unittest.TestCase):
         self.assertEqual(kq["delta_c_tan"], round(kq["delta_c_tan"], 3))
         self.assertEqual(kq["co2e_tan"], round(kq["co2e_tan"], 3))
 
+    def test_ket_hop_canh_bao_mat_tan_va_thieu_nam_trong(self):
+        kq = uoc_luong(
+            self.ts, 4.0, date(2026, 4, 1), date(2026, 4, 30), None, 6.0, dien_tich_tan_ky_truoc_ha=5.0
+        )
+        self.assertIsNone(kq["co2e_tan"])
+        self.assertIn("mat_tan", kq["canh_bao"])
+        self.assertIn("thieu_nam_trong", kq["canh_bao"])
+
 
 if __name__ == "__main__":
     unittest.main()
