@@ -23,7 +23,8 @@ const TRANG = new Map([
 	['docs/viet-mien.md', 'viet-mien'],
 	['docs/roadmap.md', 'lo-trinh'],
 	['methodology/README.md', 'phuong-phap'],
-	['methodology/v0.1-rung-ngap-man-ipcc-tier1.md', 'phuong-phap/v0-1-rung-ngap-man-ipcc-tier1']
+	['methodology/v0.1-rung-ngap-man-ipcc-tier1.md', 'phuong-phap/v0-1-rung-ngap-man-ipcc-tier1'],
+	['docs/phuong-phap-luan.md', 'phuong-phap/phuong-phap-luan']
 ]);
 for (const f of readdirSync(join(GOC, 'docs/adr')).filter((f) => f.endsWith('.md') && !f.startsWith('0000'))) {
 	TRANG.set(`docs/adr/${f}`, `adr/${f.replace(/\.md$/, '')}`);

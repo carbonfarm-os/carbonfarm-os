@@ -16,3 +16,5 @@ Mỗi đặc tả phải có:
 | Phiên bản | Đặc tả | Tham số |
 |---|---|---|
 | v0.1 | [Rừng ngập mặn, IPCC Tier 1](v0.1-rung-ngap-man-ipcc-tier1.md) | [`v0.1-rung-ngap-man-ipcc-tier1.yaml`](v0.1-rung-ngap-man-ipcc-tier1.yaml) |
+
+Xem thêm: [Báo cáo giải trình phương pháp luận IPCC Tier 1 và viễn thám Sentinel-2](../docs/phuong-phap-luan.md).
