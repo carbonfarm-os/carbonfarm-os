@@ -182,6 +182,13 @@ class PhuongPhapV01(unittest.TestCase):
             {"g_w": 9.4, "r": 0.47, "cf": 0.429, "b_max": 187, "co2_tren_c": self.ts["he_so"]["co2_tren_c"]},
         )
 
+    def test_lam_tron_chu_so_thap_phan_dien_tich_va_carbon(self):
+        kq = uoc_luong(self.ts, 1.234567, date(2026, 4, 1), date(2026, 4, 30), 2021, 2.0)
+        self.assertEqual(kq["dien_tich_tan_do_ha"], 1.2346)
+        self.assertEqual(kq["dien_tich_tinh_ha"], 1.2346)
+        self.assertEqual(kq["delta_c_tan"], round(kq["delta_c_tan"], 3))
+        self.assertEqual(kq["co2e_tan"], round(kq["co2e_tan"], 3))
+
 
 if __name__ == "__main__":
     unittest.main()
