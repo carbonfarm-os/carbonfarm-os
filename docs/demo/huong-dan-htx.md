@@ -62,3 +62,6 @@ Xã viên và các đối tác mua tín chỉ không cần tài khoản đăng n
 |---|---|---|
 | `cho_do` | Yêu cầu đo mới tạo, đang chờ luồng Prefect cắt ảnh Sentinel-2 | Chờ worker MRV hoàn tất tính toán NDVI |
 | `cho_duyet` | Đã có kết quả diện tích tán và ước lượng $\text{CO}_2\text{e}$ | Cán bộ thẩm định đối chiếu bản đồ và bấm duyệt |
+| `da_duyet` | Kết quả MRV đã được phê duyệt và ghi phả hệ | Sẵn sàng lập đề nghị cấp dải tín chỉ |
+| `khong_du_anh` | Ảnh vệ tinh trong kỳ bị mây che phủ trên 20% diện tích lô | Chọn lại kỳ mùa khô ít mây (ví dụ tháng 01–04) |
+| `tu_choi` | Đợt đo bị từ chối do phát hiện suy thoái tán hoặc sai lệch ranh giới | Kiểm tra thực địa tại lô rừng ngập mặn |
