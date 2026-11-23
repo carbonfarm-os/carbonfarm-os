@@ -78,3 +78,5 @@ Xã viên và các đối tác mua tín chỉ không cần tài khoản đăng n
 Mỗi dải tín chỉ sau khi phát hành trên sổ cái Dolt đi qua các trạng thái được kiểm soát chặt chẽ để không xảy ra bán trùng:
 
 - **`dang_giu`:** Khối tín chỉ đang thuộc sở hữu của Hợp tác xã, sẵn sàng niêm yết hoặc khớp lệnh chuyển nhượng.
+- **`da_chuyen`:** Khối tín chỉ đã được chuyển giao cho bên mua thông qua hợp đồng chuyển nhượng và thanh toán ngân hàng.
+- **`da_thu_hoi` (Retired):** Tín chỉ đã được bên mua sử dụng để bù đắp phát thải (offset) và khóa vĩnh viễn trên sổ cái, không thể mua bán lại.
