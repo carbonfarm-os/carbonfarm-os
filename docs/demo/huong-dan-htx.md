@@ -89,3 +89,4 @@ Khi lệnh bán tín chỉ hoàn tất thanh toán qua cổng kết nối ngân 
 
 1. Hệ thống tổng hợp diện tích rừng ngập mặn hợp lệ của từng hộ xã viên đã góp vào đợt thẩm tra MRV.
 2. Tỷ lệ phân bổ của mỗi hộ được tính minh bạch theo công thức: $T_i = A_i / \sum A_k$.
+3. Ban quản trị HTX đối chiếu bảng kê phân bổ trên Bàn làm việc, xác nhận số tiền chi trả (VNĐ) ứng với từng mã xã viên và lưu mã giao dịch ngân hàng vào nhật ký kiểm toán.
