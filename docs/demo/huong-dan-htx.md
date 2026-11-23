@@ -65,3 +65,8 @@ Xã viên và các đối tác mua tín chỉ không cần tài khoản đăng n
 | `da_duyet` | Kết quả MRV đã được phê duyệt và ghi phả hệ | Sẵn sàng lập đề nghị cấp dải tín chỉ |
 | `khong_du_anh` | Ảnh vệ tinh trong kỳ bị mây che phủ trên 20% diện tích lô | Chọn lại kỳ mùa khô ít mây (ví dụ tháng 01–04) |
 | `tu_choi` | Đợt đo bị từ chối do phát hiện suy thoái tán hoặc sai lệch ranh giới | Kiểm tra thực địa tại lô rừng ngập mặn |
+
+### Xử lý cờ cảnh báo tự động trên kết quả MRV
+
+- **`mat_tan`:** Xuất hiện khi diện tích tán rừng kỳ này giảm quá 10% so với kỳ liền trước; cán bộ HTX cần kiểm tra lớp ảnh phân loại cảnh SCL trên bản đồ để phân biệt mất rừng thật với hiện tượng triều cường ngập tán thấp.
+- **`cham_tran_sinh_khoi`:** Xuất hiện khi rừng đạt ngưỡng sinh khối ổn định $B_{\max} = 187\text{ t d.m./ha}$ (khoảng 19,9 năm tuổi); hệ thống chỉ ghi nhận phần tăng trưởng tới trần.
