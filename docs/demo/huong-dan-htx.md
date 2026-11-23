@@ -98,3 +98,4 @@ Khi lệnh bán tín chỉ hoàn tất thanh toán qua cổng kết nối ngân 
 Đơn vị thẩm định độc lập (VVBs) có thể kiểm tra toàn bộ lịch sử biến động của từng dải tín chỉ qua ba bước:
 
 1. Lấy mã `dolt_commit` (32 ký tự chữ thường và số base32) trên trang `/kiem-chung` hoặc từ chứng nhận PDF của HTX.
+2. Đối chiếu trường `tham_so_sha256` và `ranh_gioi_sha256` trong phả hệ kết quả MRV với tệp `methodology/v0.1-rung-ngap-man-ipcc-tier1.yaml` và tọa độ GeoJSON của lô đất.
