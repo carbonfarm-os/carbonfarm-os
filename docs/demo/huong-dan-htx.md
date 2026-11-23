@@ -90,3 +90,11 @@ Khi lệnh bán tín chỉ hoàn tất thanh toán qua cổng kết nối ngân 
 1. Hệ thống tổng hợp diện tích rừng ngập mặn hợp lệ của từng hộ xã viên đã góp vào đợt thẩm tra MRV.
 2. Tỷ lệ phân bổ của mỗi hộ được tính minh bạch theo công thức: $T_i = A_i / \sum A_k$.
 3. Ban quản trị HTX đối chiếu bảng kê phân bổ trên Bàn làm việc, xác nhận số tiền chi trả (VNĐ) ứng với từng mã xã viên và lưu mã giao dịch ngân hàng vào nhật ký kiểm toán.
+
+---
+
+## 6. Quy trình kiểm toán độc lập trên sổ cái Dolt
+
+Đơn vị thẩm định độc lập (VVBs) có thể kiểm tra toàn bộ lịch sử biến động của từng dải tín chỉ qua ba bước:
+
+1. Lấy mã `dolt_commit` (32 ký tự chữ thường và số base32) trên trang `/kiem-chung` hoặc từ chứng nhận PDF của HTX.
