@@ -134,3 +134,11 @@ Khi cán bộ thẩm định phê duyệt kết quả MRV:
 ### 4.2. Chuẩn hóa JSON tất định (`json_chuan`) khi đối soát với Dolt
 - Cơ sở dữ liệu Dolt tự động chuẩn hóa cột kiểu JSON khi lưu trữ (ví dụ chuyển số thực `1.0` thành số nguyên `1` và sắp xếp lại khóa).
 - Để mã băm SHA-256 của phả hệ (`pha_he`) và ranh giới (`ranh_gioi_sha256`) luôn khớp tuyệt đối giữa lúc tính toán ở Worker Python và lúc đọc lại từ sổ cái Dolt, mô-đun `mrv.json_chuan` chuẩn hóa mọi số thực có phần thập phân bằng `0` về kiểu `int`, khử `-0.0` và kết xuất JSON với `sort_keys=True`, không khoảng trắng thừa.
+
+### 4.3. Bảng mã cảnh báo tự động của động cơ MRV
+
+| Mã cảnh báo | Điều kiện kích hoạt | Xử lý của hệ thống |
+|---|---|---|
+| `thieu_nam_trong` | Lô đất chưa khai báo năm trồng/phục hồi (`nam_trong = None`) | Không tự động tính $\text{CO}_2\text{e}$, chuyển thẩm định viên kiểm tra hồ sơ giao đất |
+| `cham_tran_sinh_khoi` | Sinh khối tích lũy $\ge B_{\max} = 187\text{ t d.m./ha}$ ($\approx 19,89\text{ năm}$) | Chỉ tính phần tăng trưởng tới trần $B_{\max}$, dừng cấp thêm cho phần vượt trần |
+| `mat_tan` | Diện tích tán kỳ này giảm $> 10\%$ so với diện tích tán kỳ trước | Tính theo diện tích nhỏ hơn và gắn cờ yêu cầu kiểm tra ảnh vệ tinh / thực địa |
