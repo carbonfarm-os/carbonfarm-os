@@ -165,6 +165,11 @@ class PhuongPhapV01(unittest.TestCase):
         self.assertIn("64,2%", tb)
         self.assertIn("3 cảnh kiểm tra", tb)
 
+    def test_cat_tran_dien_tich_tan_khi_vuot_dien_tich_lo_nho(self):
+        kq = uoc_luong(self.ts, 0.08, date(2026, 4, 1), date(2026, 4, 30), 2022, 0.05)
+        self.assertEqual(kq["dien_tich_tan_do_ha"], 0.08)
+        self.assertEqual(kq["dien_tich_tinh_ha"], 0.05)
+
 
 if __name__ == "__main__":
     unittest.main()
